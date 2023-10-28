@@ -16,4 +16,13 @@ const useMinLength = (lengthNumber: number): ValidationRuleWithParams => {
   );
 };
 
-export { useEmail, useRequired, useMinLength };
+const useName = (): ValidationRuleWithParams => {
+  return helpers.withMessage('Nama harus lebih dari 1 karakter', minLength(2));
+};
+
+const usePhoneNumber = (): ValidationRuleWithParams => {
+  const validNumber = helpers.regex(/^(?:\+62|0)[0-9]{8,15}$/);
+  return helpers.withMessage('Nomor handphone tidak valid', validNumber);
+};
+
+export { useEmail, useRequired, useMinLength, useName, usePhoneNumber };

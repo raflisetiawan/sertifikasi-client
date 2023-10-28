@@ -5,4 +5,5 @@ export interface User {
   created_at: string;
   email_verified_at?: Date | null;
   updated_at?: Date | null;
+  phone_number: number;
 }

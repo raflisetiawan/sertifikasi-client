@@ -36,6 +36,12 @@
                   <q-card-actions>
                     <q-btn label="Sign In" type="submit" :loading="loadingSignIn" color="primary" />
                   </q-card-actions>
+                  <div class="text-center">
+                    <div class="text-body2">Tidak punya akun ?<q-btn dense :to="{ name: 'SignUpPage' }" color="primary"
+                        flat>
+                        Daftar</q-btn></div>
+
+                  </div>
                 </q-form>
               </q-card-section>
             </q-card>
@@ -56,6 +62,9 @@ import { useEmail, useRequired, useMinLength } from 'src/composables/validators'
 import { api } from 'boot/axios';
 import { useQuasar } from 'quasar';
 import axios from 'axios';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 const { localStorage: qLocalStorage } = useQuasar();
 
 const signInForm = ref<SignInForm>({
@@ -82,8 +91,12 @@ const onSubmit = async () => {
     loadingSignIn.value = true;
     try {
       const response = await api.post('signin', signInForm.value);
-      // localStorage.setItem('token', response.data.token)
+      console.log(response);
+
       qLocalStorage.set('token', response.data.token);
+      console.log(qLocalStorage);
+
+      router.push({ name: 'HomePage' })
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         if (error.response.status === 401) {
@@ -114,6 +127,8 @@ const onSubmit = async () => {
       loadingSignIn.value = false;
     }
 
+  } else {
+    v$.value.$touch();
   }
 }
 </script>

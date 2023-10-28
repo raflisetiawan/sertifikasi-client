@@ -10,6 +10,7 @@ export const useUserStore = defineStore('user', {
     id: 0,
     name: '',
     created_at: '',
+    phone_number: 0,
   }),
   getters: {
     getUser: (state) => (state = state),
@@ -19,6 +20,7 @@ export const useUserStore = defineStore('user', {
       this.$state.id = userData.id;
       this.$state.name = userData.name;
       this.$state.email = userData.email;
+      this.$state.phone_number = userData.phone_number;
       this.$state.created_at = userData.created_at;
     },
     resetUser() {
