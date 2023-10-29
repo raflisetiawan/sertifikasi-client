@@ -1,5 +1,12 @@
 import { ValidationRuleWithParams } from '@vuelidate/core';
-import { email, helpers, minLength, required } from '@vuelidate/validators';
+import {
+  decimal,
+  email,
+  helpers,
+  minLength,
+  numeric,
+  required,
+} from '@vuelidate/validators';
 
 const useEmail = (): ValidationRuleWithParams => {
   return helpers.withMessage('Email tidak valid', email);
@@ -24,5 +31,19 @@ const usePhoneNumber = (): ValidationRuleWithParams => {
   const validNumber = helpers.regex(/^(?:\+62|0)[0-9]{8,15}$/);
   return helpers.withMessage('Nomor handphone tidak valid', validNumber);
 };
+const useNumeric = (): ValidationRuleWithParams => {
+  return helpers.withMessage('Form harus angka', numeric);
+};
+const useDecimal = (): ValidationRuleWithParams => {
+  return helpers.withMessage('Form harus angka desimal', decimal);
+};
 
-export { useEmail, useRequired, useMinLength, useName, usePhoneNumber };
+export {
+  useEmail,
+  useRequired,
+  useMinLength,
+  useName,
+  usePhoneNumber,
+  useNumeric,
+  useDecimal,
+};

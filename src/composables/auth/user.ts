@@ -8,6 +8,7 @@ const useUser = async (token: null | string) => {
         'Content-Type': 'application/json',
       },
     });
+
     return response;
   } catch (error) {
     throw new Error('An error occurred.');

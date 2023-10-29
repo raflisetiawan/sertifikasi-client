@@ -60,12 +60,16 @@ import { SignInForm, SignInError } from 'src/models/auth';
 import { useVuelidate } from '@vuelidate/core'
 import { useEmail, useRequired, useMinLength } from 'src/composables/validators';
 import { api } from 'boot/axios';
-import { useQuasar } from 'quasar';
+import { useQuasar, useMeta } from 'quasar';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const { localStorage: qLocalStorage } = useQuasar();
+
+useMeta({
+  title: 'Sign In - Sertifikasi'
+})
 
 const signInForm = ref<SignInForm>({
   email: '',
@@ -91,12 +95,9 @@ const onSubmit = async () => {
     loadingSignIn.value = true;
     try {
       const response = await api.post('signin', signInForm.value);
-      console.log(response);
-
       qLocalStorage.set('token', response.data.token);
-      console.log(qLocalStorage);
-
-      router.push({ name: 'HomePage' })
+      if (response.data.user.role_id === 2) router.push({ name: 'AdminPage' })
+      else router.push({ name: 'HomePage' })
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         if (error.response.status === 401) {

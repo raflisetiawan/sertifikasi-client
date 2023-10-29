@@ -34,7 +34,7 @@ export default route(function () {
       if (LocalStorage.getItem('token')) {
         try {
           const response = await useUser(LocalStorage.getItem('token'));
-          setUser(response.data);
+          setUser(response.data.user);
         } catch (error) {}
       }
     }

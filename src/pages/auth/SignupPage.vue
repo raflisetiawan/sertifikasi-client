@@ -61,6 +61,11 @@
                   </q-card-actions>
                 </q-form>
               </q-card-section>
+              <div class="text-center">
+                <div class="text-body2">Sudah punya akun ?<q-btn dense :to="{ name: 'SignInPage' }" color="primary" flat>
+                    Login</q-btn></div>
+
+              </div>
             </q-card>
 
           </div>
@@ -79,7 +84,13 @@ import { useEmail, useRequired, useMinLength, useName, usePhoneNumber } from 'sr
 import { api } from 'boot/axios';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
+import { useMeta } from 'quasar';
 const router = useRouter();
+
+useMeta({
+  title: 'Sign Up - Sertifikasi'
+})
+
 
 const signUpForm = ref<SignUpForm>({
   email: '',
