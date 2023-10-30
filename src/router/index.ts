@@ -8,7 +8,7 @@ import {
 
 import routes from './routes';
 import { LocalStorage } from 'quasar';
-import { isAuthenticated } from 'src/composables/auth';
+import { isAdmin, isAuthenticated } from 'src/composables/auth';
 import { useUserStore } from 'src/stores/user';
 import { useUser } from 'src/composables/auth/user';
 
@@ -38,8 +38,10 @@ export default route(function () {
         } catch (error) {}
       }
     }
-
-    if (to.meta.requiresAuth && !isAuthenticated()) {
+    if (to.meta.requiresAdmin) {
+      if (isAdmin()) next();
+      else next({ name: 'UnauthorizedPage' });
+    } else if (to.meta.requiresAuth && !isAuthenticated()) {
       if (to.name !== 'signin') {
         next({ name: 'SignInPage' });
       } else {

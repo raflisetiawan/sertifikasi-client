@@ -26,6 +26,11 @@
           <q-btn-dropdown stretch flat icon="fa-solid fa-user">
             <q-list>
               <q-item-label header>{{ getUser.name }}</q-item-label>
+              <q-item v-if="isAdmin()">
+                <q-item-section>
+                  <q-btn class="full-width" flat @click="$router.push({ name: 'AdminPage' })">Admin</q-btn>
+                </q-item-section>
+              </q-item>
               <q-item>
                 <q-item-section>
                   <q-btn class="full-width" :loading="logoutLoading" flat @click="handleLogout()">Logout</q-btn>
@@ -116,7 +121,7 @@
 </template>
 
 <script setup lang="ts">
-import { isAuthenticated } from 'src/composables/auth';
+import { isAdmin, isAuthenticated } from 'src/composables/auth';
 import { ref } from 'vue';
 import { useUserStore } from 'src/stores/user';
 const tab = ref();

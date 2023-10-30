@@ -1,7 +1,8 @@
 <template>
-  <div id="create-course-page">
+  <div id="update-course-page">
+    <q-ajax-bar ref="bar" color="pink-11" position="top" size="5px" skip-hijack />
     <div class="q-pa-md">
-      <div class="text-h5 q-mb-md">Buat Kelas baru</div>
+      <div class="text-h5 q-mb-md">Edit Kelas</div>
       <div class="row">
         <div class="col-md-7 col-sm-10 col-xs-12">
           <q-form @submit="onSubmit" class="q-gutter-md" enctype="multipart/form-data">
@@ -54,9 +55,18 @@
             <q-input outlined type="text" v-model="courseForm.time" lazy-rules label="Durasi *" :error="v$.time.$error"
               :error-message="v$.time.$errors.map((e) => e.$message).join()" @input="v$.time.$touch"
               @blur="v$.time.$touch" />
-            <q-file :filter="checkFileSize" hint="ukuran max 2mb" outlined v-model="courseForm.image"
-              accept=".jpg, image/*" counter use-chips label="Upload gambar" @rejected="onRejected" />
-            <q-btn color="primary" type="submit" :loading="loadingCreate">Create</q-btn>
+            <div class="row">
+              <div class="col-6 ">
+                <q-file @update:model-value="changeImagePreview" class="q-mr-md" :filter="checkFileSize"
+                  hint="ukuran max 2mb" outlined v-model="courseForm.image" accept=".jpg, image/*" counter use-chips
+                  label="Upload gambar" @rejected="onRejected" />
+              </div>
+              <div class="col-6">
+                <q-img :src="imageUrl" spinner-color="white"
+                  style="height: 140px; max-width: 150px; border: 1px solid #C2C2C2;" />
+              </div>
+            </div>
+            <q-btn color="primary" type="submit" :loading="loadingCreate">Update</q-btn>
           </q-form>
         </div>
       </div>
@@ -65,20 +75,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { CreateCourseForm } from 'src/models/course'
+import { onMounted, ref } from 'vue';
+import { UpdateCourseForm } from 'src/models/course'
 import useVuelidate from '@vuelidate/core';
 import { useName, useRequired, useDecimal, useNumeric } from 'src/composables/validators';
 import { useQuasar } from 'quasar';
-import { api } from 'src/boot/axios';
-import { useRouter } from 'vue-router';
+import { api, storageBaseUrl } from 'src/boot/axios';
+import { useRouter, useRoute } from 'vue-router';
 import { useMetaTitle } from 'src/composables/meta';
 
-useMetaTitle('Buat Kelas - Admin')
+useMetaTitle('Edit Kelas - Admin')
 const { push: routerPush } = useRouter();
+const { params: routeParams } = useRoute();
 const { notify, localStorage: qLocalStorage } = useQuasar();
+const imageUrl = ref();
+const bar = ref();
 
-const courseForm = ref<CreateCourseForm>({
+const courseForm = ref<UpdateCourseForm>({
   name: '',
   description: '',
   facility: '',
@@ -87,7 +100,33 @@ const courseForm = ref<CreateCourseForm>({
   operational: '2023/10/20 12:44',
   place: '',
   time: '',
+  _method: 'PATCH'
 })
+
+onMounted(async () => {
+  try {
+    bar.value.start();
+    await getCourse()
+  } catch (error) {
+    throw error;
+  } finally {
+    bar.value.stop();
+  }
+
+})
+
+const getCourse = async () => {
+  const response = await api.get(`course/${routeParams.id}`);
+  const course = response.data.data;
+  courseForm.value.name = course.name
+  courseForm.value.description = course.description
+  courseForm.value.facility = course.facility
+  courseForm.value.operational = course.operational
+  courseForm.value.place = course.place
+  courseForm.value.price = course.price
+  courseForm.value.time = course.time
+  imageUrl.value = storageBaseUrl + 'courses/' + course.image;
+}
 
 const rules = {
   name: { required: useRequired(), validName: useName() },
@@ -112,15 +151,17 @@ const onRejected = (rejectedEntries: any) => {
 
 const v$ = useVuelidate(rules, courseForm.value)
 const onSubmit = async () => {
+
   if (!v$.value.$invalid) {
     try {
       loadingCreate.value = true;
-      await api.post('course', courseForm.value, {
+      await api.post(`course/${routeParams.id}`, courseForm.value, {
         headers: {
           Authorization: 'Bearer ' + qLocalStorage.getItem('token'),
           'Content-Type': 'multipart/form-data'
         }
       })
+
       routerPush({ name: 'AdminCoursePage' })
     } catch (error) {
       throw error;
@@ -129,6 +170,21 @@ const onSubmit = async () => {
     }
   } else {
     v$.value.$touch();
+  }
+}
+
+
+const changeImagePreview = (value: File) => {
+  if (value) {
+    const reader = new FileReader();
+
+    reader.onload = (event: any) => {
+      // Set the image URL to the preview
+      imageUrl.value = event.target.result;
+    };
+
+    // Read the selected file as a data URL (which can be used as an image source)
+    reader.readAsDataURL(value);
   }
 }
 </script>

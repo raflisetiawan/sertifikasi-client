@@ -25,6 +25,11 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/CoursePage.vue'),
         name: 'CoursePage',
       },
+      {
+        path: 'course',
+        component: () => import('pages/CoursePage.vue'),
+        name: 'CoursePage',
+      },
     ],
   },
   {
@@ -65,7 +70,18 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/admin/course/CreatePage.vue'),
         name: 'CreateCoursePage',
       },
+      {
+        path: 'course/update/:id',
+        component: () => import('pages/admin/course/UpdatePage.vue'),
+        name: 'UpdateCoursePage',
+      },
+      {
+        path: 'course/:id',
+        component: () => import('pages/admin/course/DetailPage.vue'),
+        name: 'DetailCoursePage',
+      },
     ],
+    meta: { requiresAuth: true, requiresAdmin: true },
   },
 
   // Always leave this as last one,
@@ -75,6 +91,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('pages/SecretPage.vue'),
     name: 'SecretPage',
     meta: { requiresAuth: true },
+  },
+  {
+    path: '/unauthorized',
+    component: () => import('pages/UnauthorizedPage.vue'),
+    name: 'UnauthorizedPage',
   },
   {
     path: '/:catchAll(.*)*',
