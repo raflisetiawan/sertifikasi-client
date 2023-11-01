@@ -9,7 +9,7 @@
             dignissimos quas in pariatur dolorem sunt placeat illum quia! Quam facilis expedita inventore iusto.</div>
         </div>
         <div class="col-md-6 col-sm-8 col-xs-10">
-          <img src="../assets/banner-img-02.svg" alt="banner">
+          <img src="~/assets/banner-img-02.svg" alt="banner">
         </div>
       </div>
     </div>
@@ -18,7 +18,7 @@
 </template>
 
 <script setup>
-import FooterComVue from 'src/components/FooterCom.vue';
+import FooterComVue from 'src/components/user/home/FooterCom.vue';
 import { useMetaTitle } from 'src/composables/meta'
 
 useMetaTitle('Tentang Kami');

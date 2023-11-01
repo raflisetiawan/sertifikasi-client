@@ -14,7 +14,7 @@
         <div class="row fit justify-start items-center q-gutter-xs q-col-gutter no-wrap">
           <q-card class="my-card col-4 text-center" flat>
             <div class="row justify-center">
-              <q-img src="../assets/team-03.jpg" width="250px" />
+              <q-img src="~/assets/team-03.jpg" width="250px" />
 
             </div>
             <q-card-section>
@@ -29,7 +29,7 @@
           </q-card>
           <q-card class="my-card col-4 text-center" flat>
             <div class="row justify-center">
-              <q-img src="../assets/team-01.jpg" width="250px" />
+              <q-img src="~/assets/team-01.jpg" width="250px" />
 
             </div>
             <q-card-section>
@@ -44,7 +44,7 @@
           </q-card>
           <q-card class="my-card col-4 text-center" flat>
             <div class="row justify-center">
-              <q-img src="../assets/team-02.jpg" width="250px" />
+              <q-img src="~/assets/team-02.jpg" width="250px" />
 
             </div>
             <q-card-section>
@@ -63,7 +63,7 @@
         <div class="row fit justify-start items-center q-gutter-xs q-col-gutter no-wrap">
           <q-card class="my-card col-4 text-center" flat>
             <div class="row justify-center">
-              <q-img src="../assets/team-04.jpg" width="250px" />
+              <q-img src="~/assets/team-04.jpg" width="250px" />
 
             </div>
             <q-card-section>
@@ -78,7 +78,7 @@
           </q-card>
           <q-card class="my-card col-4 text-center" flat>
             <div class="row justify-center">
-              <q-img src="../assets/team-05.jpg" width="250px" />
+              <q-img src="~/assets/team-05.jpg" width="250px" />
 
             </div>
             <q-card-section>
@@ -93,7 +93,7 @@
           </q-card>
           <q-card class="my-card col-4 text-center" flat>
             <div class="row justify-center">
-              <q-img src="../assets/team-06.jpg" width="250px" />
+              <q-img src="~/assets/team-06.jpg" width="250px" />
 
             </div>
             <q-card-section>
@@ -112,7 +112,7 @@
         <div class="row fit justify-start items-center q-gutter-xs q-col-gutter no-wrap">
           <q-card class="my-card col-4 text-center" flat>
             <div class="row justify-center">
-              <q-img src="../assets/team-03.jpg" width="250px" />
+              <q-img src="~/assets/team-03.jpg" width="250px" />
 
             </div>
             <q-card-section>
@@ -127,7 +127,7 @@
           </q-card>
           <q-card class="my-card col-4 text-center" flat>
             <div class="row justify-center">
-              <q-img src="../assets/team-03.jpg" width="250px" />
+              <q-img src="~/assets/team-03.jpg" width="250px" />
 
             </div>
             <q-card-section>
@@ -142,7 +142,7 @@
           </q-card>
           <q-card class="my-card col-4 text-center" flat>
             <div class="row justify-center">
-              <q-img src="../assets/team-01.jpg" width="250px" />
+              <q-img src="~/assets/team-01.jpg" width="250px" />
 
             </div>
             <q-card-section>
@@ -164,7 +164,7 @@
         <div class="row fit justify-start items-center q-gutter-xs q-col-gutter no-wrap">
           <q-card class="my-card col-6 text-center" flat>
             <div class="row justify-center">
-              <q-img src="../assets/team-02.jpg" width="250px" />
+              <q-img src="~/assets/team-02.jpg" width="250px" />
 
             </div>
             <q-card-section>
@@ -179,7 +179,7 @@
           </q-card>
           <q-card class="my-card col-6 text-center" flat>
             <div class="row justify-center">
-              <q-img src="../assets/team-04.jpg" width="250px" />
+              <q-img src="~/assets/team-04.jpg" width="250px" />
 
             </div>
             <q-card-section>
@@ -198,7 +198,7 @@
         <div class="row fit justify-start items-center q-gutter-xs q-col-gutter no-wrap">
           <q-card class="my-card col-6 text-center" flat>
             <div class="row justify-center">
-              <q-img src="../assets/team-05.jpg" width="250px" />
+              <q-img src="~/assets/team-05.jpg" width="250px" />
 
             </div>
             <q-card-section>
@@ -213,7 +213,7 @@
           </q-card>
           <q-card class="my-card col-6 text-center" flat>
             <div class="row justify-center">
-              <q-img src="../assets/team-06.jpg" width="250px" />
+              <q-img src="~/assets/team-06.jpg" width="250px" />
 
             </div>
             <q-card-section>
@@ -232,7 +232,7 @@
         <div class="row fit justify-start items-center q-gutter-xs q-col-gutter no-wrap">
           <q-card class="my-card col-6 text-center" flat>
             <div class="row justify-center">
-              <q-img src="../assets/team-03.jpg" width="250px" />
+              <q-img src="~/assets/team-03.jpg" width="250px" />
 
             </div>
             <q-card-section>
@@ -247,7 +247,7 @@
           </q-card>
           <q-card class="my-card col-6 text-center" flat>
             <div class="row justify-center">
-              <q-img src="../assets/team-03.jpg" width="250px" />
+              <q-img src="~/assets/team-03.jpg" width="250px" />
 
             </div>
             <q-card-section>

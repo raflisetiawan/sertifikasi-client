@@ -7,28 +7,34 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: '',
-        component: () => import('pages/IndexPage.vue'),
+        component: () => import('pages/user/IndexPage.vue'),
         name: 'HomePage',
       },
       {
         path: 'about',
-        component: () => import('pages/AboutPage.vue'),
+        component: () => import('pages/user/AboutPage.vue'),
         name: 'AboutPage',
       },
       {
         path: 'contact',
-        component: () => import('pages/ContactPage.vue'),
+        component: () => import('pages/user/ContactPage.vue'),
         name: 'ContactPage',
       },
       {
         path: 'course',
-        component: () => import('pages/CoursePage.vue'),
+        component: () => import('pages/course/IndexPage.vue'),
         name: 'CoursePage',
       },
       {
-        path: 'course',
-        component: () => import('pages/CoursePage.vue'),
-        name: 'CoursePage',
+        path: 'course/:id',
+        component: () => import('pages/course/DetailPage.vue'),
+        name: 'DetailCourseUserPage',
+      },
+      {
+        path: 'course/:id/register',
+        component: () => import('pages/course/RegisterPage.vue'),
+        name: 'RegisterCourseUserPage',
+        meta: { requiresAuth: true },
       },
     ],
   },

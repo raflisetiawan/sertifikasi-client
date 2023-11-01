@@ -18,12 +18,11 @@
 </template>
 
 <script setup lang="ts">
-import { api } from 'src/boot/axios';
 import { computed, ref } from 'vue';
-import { useQuasar } from 'quasar';
 import { useNotify } from 'src/composables/notifications';
+import { useCourseStore } from 'src/stores/course';
+const { destroyCourse } = useCourseStore()
 const props = defineProps(['isDeleteDialogShow', 'course'])
-const { localStorage: qLocalStorage } = useQuasar();
 const emit = defineEmits(['successDelete', 'closeDeleteDialog'])
 
 const dialog = computed(() => props.isDeleteDialogShow);
@@ -31,11 +30,7 @@ const deleteLoading = ref(false);
 const deleteCourse = async () => {
   try {
     deleteLoading.value = true
-    await api.delete(`course/${props.course.id}`, {
-      headers: {
-        Authorization: 'Bearer ' + qLocalStorage.getItem('token'),
-      }
-    })
+    await destroyCourse(props.course.id)
     emit('successDelete');
     emit('closeDeleteDialog');
     useNotify('Berhasil di hapus', 'green')

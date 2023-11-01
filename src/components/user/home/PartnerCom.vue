@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 import { VueMarqueeSlider } from 'vue3-marquee-slider';
-import '../../node_modules/vue3-marquee-slider/dist/style.css'
+import '../../../../node_modules/vue3-marquee-slider/dist/style.css'
 </script>
 
 <style scoped></style>

@@ -51,7 +51,7 @@ import { useMetaTitle } from 'src/composables/meta';
 import { onMounted, ref } from 'vue';
 import { Courses } from 'src/models/course'
 import { QTableColumn } from 'quasar';
-import DeleteDialog from 'components/course/DeleteDialog.vue'
+import DeleteDialog from 'components/admin/course/DeleteDialog.vue'
 import { useRouter } from 'vue-router';
 
 useMetaTitle('Manage Kelas - Admin')
@@ -84,7 +84,8 @@ const columns = ref<QTableColumn[]>([
     format: val => `${val}`,
     sortable: true
   },
-  { name: 'operational', label: 'Tanggal pelaksanaan', align: 'left', field: 'operational', sortable: true },
+  { name: 'operational_start', label: 'Tanggal mulai pelaksanaan', align: 'left', field: 'operational_start', sortable: true },
+  { name: 'operational_end', label: 'Tanggal akhir pelaksanaan', align: 'left', field: 'operational_end', sortable: true },
 ])
 
 const rows = ref<Courses[]>([])

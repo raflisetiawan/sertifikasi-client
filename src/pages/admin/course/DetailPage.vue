@@ -37,7 +37,8 @@
           <div class="text-subtitle1">Waktu: </div>
         </div>
         <div class="col-md-10 col-sm-8 col-xs-8">
-          <div class="text-body1 ">{{ formatOperational(course.operational) }}</div>
+          <div class="text-body1 ">{{ useFormatOperational(course.operational_start) }} - {{
+            useFormatOperational(course.operational_end) }}</div>
         </div>
       </div>
       <div class="row q-mt-md">
@@ -85,17 +86,20 @@
 </template>
 
 <script setup lang="ts">
-import { api, storageBaseUrl } from 'src/boot/axios';
+import { storageBaseUrl } from 'src/boot/axios';
 import { Courses } from 'src/models/course';
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { date } from 'quasar'
 import { useMetaTitle } from 'src/composables/meta';
+import { useFormatOperational } from 'src/composables/format'
+import { useCourseStore } from 'src/stores/course';
 
 const { params: routeParams } = useRoute();
 const bar = ref();
 const loadData = ref(false);
 useMetaTitle('Detail Kelas - Admin')
+const { showCourse } = useCourseStore()
 
 const course = ref<Courses>({
   name: '',
@@ -103,7 +107,8 @@ const course = ref<Courses>({
   facility: '',
   id: 0,
   image: null,
-  operational: '',
+  operational_start: '',
+  operational_end: '',
   place: '',
   price: 0,
   time: '',
@@ -123,15 +128,11 @@ onMounted(async () => {
 })
 
 const getData = async () => {
-  const response = await api.get(`course/${routeParams.id}`)
-  course.value = response.data.data;
+  const response = await showCourse(routeParams.id)
 
+  course.value = response.data;
 }
 
-const formatOperational = (operational: string) => {
-  const dateObject = new Date(operational);
-  return date.formatDate(dateObject, 'dddd MMMM YYYY HH:mm A')
-}
 
 const formatCreatedUpdatedAt = (data: Date | undefined) => {
   return date.formatDate(data, 'dddd MMMM YYYY HH:mm A')

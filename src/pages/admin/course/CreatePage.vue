@@ -26,11 +26,11 @@
               :error="v$.place.$error" :error-message="v$.place.$errors.map((e) => e.$message).join()"
               @input="v$.place.$touch" @blur="v$.place.$touch" />
             <div class="text-body1">Operational / waktu</div>
-            <q-input filled v-model="courseForm.operational">
+            <q-input filled v-model="courseForm.operational_start">
               <template v-slot:prepend>
                 <q-icon name="event" class="cursor-pointer">
                   <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                    <q-date v-model="courseForm.operational" mask="YYYY-MM-DD HH:mm">
+                    <q-date v-model="courseForm.operational_start" mask="YYYY-MM-DD HH:mm">
                       <div class="row items-center justify-end">
                         <q-btn v-close-popup label="Close" color="primary" flat />
                       </div>
@@ -42,7 +42,32 @@
               <template v-slot:append>
                 <q-icon name="access_time" class="cursor-pointer">
                   <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                    <q-time v-model="courseForm.operational" mask="YYYY-MM-DD HH:mm" format24h>
+                    <q-time v-model="courseForm.operational_start" mask="YYYY-MM-DD HH:mm" format24h>
+                      <div class="row items-center justify-end">
+                        <q-btn v-close-popup label="Close" color="primary" flat />
+                      </div>
+                    </q-time>
+                  </q-popup-proxy>
+                </q-icon>
+              </template>
+            </q-input>
+            <q-input filled v-model="courseForm.operational_end">
+              <template v-slot:prepend>
+                <q-icon name="event" class="cursor-pointer">
+                  <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                    <q-date v-model="courseForm.operational_end" mask="YYYY-MM-DD HH:mm">
+                      <div class="row items-center justify-end">
+                        <q-btn v-close-popup label="Close" color="primary" flat />
+                      </div>
+                    </q-date>
+                  </q-popup-proxy>
+                </q-icon>
+              </template>
+
+              <template v-slot:append>
+                <q-icon name="access_time" class="cursor-pointer">
+                  <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                    <q-time v-model="courseForm.operational_end" mask="YYYY-MM-DD HH:mm" format24h>
                       <div class="row items-center justify-end">
                         <q-btn v-close-popup label="Close" color="primary" flat />
                       </div>
@@ -69,14 +94,15 @@ import { ref } from 'vue';
 import { CreateCourseForm } from 'src/models/course'
 import useVuelidate from '@vuelidate/core';
 import { useName, useRequired, useDecimal, useNumeric } from 'src/composables/validators';
-import { useQuasar } from 'quasar';
-import { api } from 'src/boot/axios';
+import { QRejectedEntry, useQuasar } from 'quasar';
 import { useRouter } from 'vue-router';
 import { useMetaTitle } from 'src/composables/meta';
+import { useCourseStore } from 'src/stores/course';
 
 useMetaTitle('Buat Kelas - Admin')
 const { push: routerPush } = useRouter();
-const { notify, localStorage: qLocalStorage } = useQuasar();
+const { notify } = useQuasar();
+const { storeCourse } = useCourseStore();
 
 const courseForm = ref<CreateCourseForm>({
   name: '',
@@ -84,7 +110,8 @@ const courseForm = ref<CreateCourseForm>({
   facility: '',
   price: 0,
   image: null,
-  operational: '2023/10/20 12:44',
+  operational_start: '2023/10/20 12:44',
+  operational_end: '2023/1025 12:44',
   place: '',
   time: '',
 })
@@ -103,7 +130,7 @@ const checkFileSize = (files: readonly any[] | FileList): readonly any[] => {
 };
 const loadingCreate = ref(false);
 
-const onRejected = (rejectedEntries: any) => {
+const onRejected = (rejectedEntries: QRejectedEntry[]) => {
   notify({
     type: 'negative',
     message: `${rejectedEntries.length} file(s) did not pass validation constraints`
@@ -115,12 +142,7 @@ const onSubmit = async () => {
   if (!v$.value.$invalid) {
     try {
       loadingCreate.value = true;
-      await api.post('course', courseForm.value, {
-        headers: {
-          Authorization: 'Bearer ' + qLocalStorage.getItem('token'),
-          'Content-Type': 'multipart/form-data'
-        }
-      })
+      await storeCourse(courseForm.value)
       routerPush({ name: 'AdminCoursePage' })
     } catch (error) {
       throw error;

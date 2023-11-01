@@ -44,15 +44,15 @@
           </q-form>
         </div>
       </div>
-      <div class="full-width">
-        <FooterComVue />
-      </div>
+    </div>
+    <div class="full-width">
+      <FooterComVue />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import FooterComVue from 'src/components/FooterCom.vue';
+import FooterComVue from 'src/components/user/home/FooterCom.vue';
 import { api } from 'src/boot/axios';
 import { ref } from 'vue';
 import { ContactForm } from 'src/models/contact';
