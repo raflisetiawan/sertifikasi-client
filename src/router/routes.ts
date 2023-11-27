@@ -36,6 +36,11 @@ const routes: RouteRecordRaw[] = [
         name: 'RegisterCourseUserPage',
         meta: { requiresAuth: true },
       },
+      {
+        path: 'faq',
+        component: () => import('pages/faq/IndexPage.vue'),
+        name: 'FaqIndexPage',
+      },
     ],
   },
   {
@@ -85,6 +90,11 @@ const routes: RouteRecordRaw[] = [
         path: 'course/:id',
         component: () => import('pages/admin/course/DetailPage.vue'),
         name: 'DetailCoursePage',
+      },
+      {
+        path: 'faq',
+        component: () => import('pages/admin/faq/IndexPage.vue'),
+        name: 'FaqAdminIndexPage',
       },
     ],
     meta: { requiresAuth: true, requiresAdmin: true },

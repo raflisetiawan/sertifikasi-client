@@ -16,6 +16,7 @@
           <q-route-tab :to="{ name: 'CoursePage' }" name="Kelas" label="Kelas" />
           <q-route-tab :to="{ name: 'AboutPage' }" name="Tentang Kami" label="Tentang Kami" />
           <q-route-tab :to="{ name: 'ContactPage' }" name="Kontak" label="Kontak" />
+          <q-route-tab :to="{ name: 'FaqIndexPage' }" name="Faq" label="FAQ" />
         </q-tabs>
         <div class="q-mx-md" v-if="!isAuthenticated()">
           <q-btn flat class="text-black" :to="{ name: 'SignInPage' }">Login</q-btn>
