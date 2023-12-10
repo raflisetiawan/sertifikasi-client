@@ -124,7 +124,7 @@ const rules = {
   place: { required: useRequired() },
   time: { required: useRequired() },
 }
-const checkFileSize = (files: readonly any[] | FileList): readonly any[] => {
+const checkFileSize = (files: readonly unknown[] | FileList): readonly unknown[] => {
   const fileList = Array.from(files);
   return fileList.filter(file => (file instanceof File) && file.size < 2e+6);
 };

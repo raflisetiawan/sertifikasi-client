@@ -10,267 +10,46 @@
     </div>
     <q-carousel v-if="$q.screen.gt.sm" height="70vh" autoplay v-model="slide" infinite transition-prev="slide-right"
       transition-next="slide-left" swipeable animated control-color="primary" navigation arrows>
-      <q-carousel-slide :name="1" class="column no-wrap">
+      <!-- Loop through the computed property `groupedTrainers` -->
+      <q-carousel-slide :name="index + 1" :key="index" v-for="(group, index) in groupedTrainers" class="column no-wrap">
         <div class="row fit justify-start items-center q-gutter-xs q-col-gutter no-wrap">
-          <q-card class="my-card col-4 text-center" flat>
+          <!-- Loop through the trainers in the current group -->
+          <q-card v-for="trainer in group" :key="trainer.id" class="my-card col-4 text-center" flat
+            @click="$router.push({ name: 'TrainerIndexPage', params: { id: trainer.id } })">
             <div class="row justify-center">
-              <q-img src="~/assets/team-03.jpg" width="250px" />
+              <q-img :src="storageBaseUrl + trainer.image" width="250px" />
 
             </div>
             <q-card-section>
-              <div class="text-h5 q-mt-sm q-mb-xs">John Doe</div>
-              <div class=" text-overline text-orange-9">Software Engineer
+              <div class="text-h5 q-mt-sm q-mb-xs">{{ trainer.name }}</div>
+              <div class=" text-overline text-orange-9">{{ trainer.qualification }}
               </div>
-              <div class="text-caption text-grey">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua.
-              </div>
-            </q-card-section>
-          </q-card>
-          <q-card class="my-card col-4 text-center" flat>
-            <div class="row justify-center">
-              <q-img src="~/assets/team-01.jpg" width="250px" />
-
-            </div>
-            <q-card-section>
-              <div class="text-h5 q-mt-sm q-mb-xs">John Doe</div>
-              <div class=" text-overline text-orange-9">Software Engineer
-              </div>
-              <div class="text-caption text-grey">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua.
-              </div>
-            </q-card-section>
-          </q-card>
-          <q-card class="my-card col-4 text-center" flat>
-            <div class="row justify-center">
-              <q-img src="~/assets/team-02.jpg" width="250px" />
-
-            </div>
-            <q-card-section>
-              <div class="text-h5 q-mt-sm q-mb-xs">John Doe</div>
-              <div class=" text-overline text-orange-9">Software Engineer
-              </div>
-              <div class="text-caption text-grey">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua.
-              </div>
+              <div class="text-caption text-grey">{{ trainer.description }}</div>
             </q-card-section>
           </q-card>
         </div>
       </q-carousel-slide>
-      <q-carousel-slide :name="2" class="column no-wrap">
-        <div class="row fit justify-start items-center q-gutter-xs q-col-gutter no-wrap">
-          <q-card class="my-card col-4 text-center" flat>
-            <div class="row justify-center">
-              <q-img src="~/assets/team-04.jpg" width="250px" />
-
-            </div>
-            <q-card-section>
-              <div class="text-h5 q-mt-sm q-mb-xs">John Doe</div>
-              <div class=" text-overline text-orange-9">Software Engineer
-              </div>
-              <div class="text-caption text-grey">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua.
-              </div>
-            </q-card-section>
-          </q-card>
-          <q-card class="my-card col-4 text-center" flat>
-            <div class="row justify-center">
-              <q-img src="~/assets/team-05.jpg" width="250px" />
-
-            </div>
-            <q-card-section>
-              <div class="text-h5 q-mt-sm q-mb-xs">John Doe</div>
-              <div class=" text-overline text-orange-9">Software Engineer
-              </div>
-              <div class="text-caption text-grey">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua.
-              </div>
-            </q-card-section>
-          </q-card>
-          <q-card class="my-card col-4 text-center" flat>
-            <div class="row justify-center">
-              <q-img src="~/assets/team-06.jpg" width="250px" />
-
-            </div>
-            <q-card-section>
-              <div class="text-h5 q-mt-sm q-mb-xs">John Doe</div>
-              <div class=" text-overline text-orange-9">Software Engineer
-              </div>
-              <div class="text-caption text-grey">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua.
-              </div>
-            </q-card-section>
-          </q-card>
-        </div>
-      </q-carousel-slide>
-      <q-carousel-slide :name="3" class="column no-wrap">
-        <div class="row fit justify-start items-center q-gutter-xs q-col-gutter no-wrap">
-          <q-card class="my-card col-4 text-center" flat>
-            <div class="row justify-center">
-              <q-img src="~/assets/team-03.jpg" width="250px" />
-
-            </div>
-            <q-card-section>
-              <div class="text-h5 q-mt-sm q-mb-xs">John Doe</div>
-              <div class=" text-overline text-orange-9">Software Engineer
-              </div>
-              <div class="text-caption text-grey">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua.
-              </div>
-            </q-card-section>
-          </q-card>
-          <q-card class="my-card col-4 text-center" flat>
-            <div class="row justify-center">
-              <q-img src="~/assets/team-03.jpg" width="250px" />
-
-            </div>
-            <q-card-section>
-              <div class="text-h5 q-mt-sm q-mb-xs">John Doe</div>
-              <div class=" text-overline text-orange-9">Software Engineer
-              </div>
-              <div class="text-caption text-grey">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua.
-              </div>
-            </q-card-section>
-          </q-card>
-          <q-card class="my-card col-4 text-center" flat>
-            <div class="row justify-center">
-              <q-img src="~/assets/team-01.jpg" width="250px" />
-
-            </div>
-            <q-card-section>
-              <div class="text-h5 q-mt-sm q-mb-xs">John Doe</div>
-              <div class=" text-overline text-orange-9">Software Engineer
-              </div>
-              <div class="text-caption text-grey">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua.
-              </div>
-            </q-card-section>
-          </q-card>
-        </div>
-      </q-carousel-slide>
-    </q-carousel>
-    <q-carousel v-else height="93vh" v-model="slide" transition-prev="slide-right" transition-next="slide-left" swipeable
-      animated control-color="primary" navigation arrows>
-      <q-carousel-slide :name="1" class="column no-wrap">
-        <div class="row fit justify-start items-center q-gutter-xs q-col-gutter no-wrap">
-          <q-card class="my-card col-6 text-center" flat>
-            <div class="row justify-center">
-              <q-img src="~/assets/team-02.jpg" width="250px" />
-
-            </div>
-            <q-card-section>
-              <div class="text-h5 q-mt-sm q-mb-xs">John Doe</div>
-              <div class=" text-overline text-orange-9">Software Engineer
-              </div>
-              <div class="text-caption text-grey">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua.
-              </div>
-            </q-card-section>
-          </q-card>
-          <q-card class="my-card col-6 text-center" flat>
-            <div class="row justify-center">
-              <q-img src="~/assets/team-04.jpg" width="250px" />
-
-            </div>
-            <q-card-section>
-              <div class="text-h5 q-mt-sm q-mb-xs">John Doe</div>
-              <div class=" text-overline text-orange-9">Software Engineer
-              </div>
-              <div class="text-caption text-grey">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua.
-              </div>
-            </q-card-section>
-          </q-card>
-        </div>
-      </q-carousel-slide>
-      <q-carousel-slide :name="2" class="column no-wrap">
-        <div class="row fit justify-start items-center q-gutter-xs q-col-gutter no-wrap">
-          <q-card class="my-card col-6 text-center" flat>
-            <div class="row justify-center">
-              <q-img src="~/assets/team-05.jpg" width="250px" />
-
-            </div>
-            <q-card-section>
-              <div class="text-h5 q-mt-sm q-mb-xs">John Doe</div>
-              <div class=" text-overline text-orange-9">Software Engineer
-              </div>
-              <div class="text-caption text-grey">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua.
-              </div>
-            </q-card-section>
-          </q-card>
-          <q-card class="my-card col-6 text-center" flat>
-            <div class="row justify-center">
-              <q-img src="~/assets/team-06.jpg" width="250px" />
-
-            </div>
-            <q-card-section>
-              <div class="text-h5 q-mt-sm q-mb-xs">John Doe</div>
-              <div class=" text-overline text-orange-9">Software Engineer
-              </div>
-              <div class="text-caption text-grey">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua.
-              </div>
-            </q-card-section>
-          </q-card>
-        </div>
-      </q-carousel-slide>
-      <q-carousel-slide :name="3" class="column no-wrap">
-        <div class="row fit justify-start items-center q-gutter-xs q-col-gutter no-wrap">
-          <q-card class="my-card col-6 text-center" flat>
-            <div class="row justify-center">
-              <q-img src="~/assets/team-03.jpg" width="250px" />
-
-            </div>
-            <q-card-section>
-              <div class="text-h5 q-mt-sm q-mb-xs">John Doe</div>
-              <div class=" text-overline text-orange-9">Software Engineer
-              </div>
-              <div class="text-caption text-grey">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua.
-              </div>
-            </q-card-section>
-          </q-card>
-          <q-card class="my-card col-6 text-center" flat>
-            <div class="row justify-center">
-              <q-img src="~/assets/team-03.jpg" width="250px" />
-
-            </div>
-            <q-card-section>
-              <div class="text-h5 q-mt-sm q-mb-xs">John Doe</div>
-              <div class=" text-overline text-orange-9">Software Engineer
-              </div>
-              <div class="text-caption text-grey">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua.
-              </div>
-            </q-card-section>
-          </q-card>
-        </div>
-      </q-carousel-slide>
-
     </q-carousel>
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref } from 'vue';
+<script setup lang="ts" async>
+import { storageBaseUrl } from 'src/boot/axios';
+import { useTrainerStore } from 'src/stores/trainer';
+import { computed, ref } from 'vue';
+
+const { getStarredTrainer } = useTrainerStore()
 
 const slide = ref(1)
+const trainers = await getStarredTrainer();
+const groupedTrainers = computed(() => {
+  const result = [];
+  for (let i = 0; i < trainers.length; i += 3) {
+    result.push(trainers.slice(i, i + 3));
+  }
+  return result;
+});
+
 </script>
 
 <style scoped></style>

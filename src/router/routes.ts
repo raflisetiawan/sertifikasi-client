@@ -41,6 +41,11 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/faq/IndexPage.vue'),
         name: 'FaqIndexPage',
       },
+      {
+        path: 'trainer/:id',
+        component: () => import('pages/trainer/IndexPage.vue'),
+        name: 'TrainerIndexPage',
+      },
     ],
   },
   {
@@ -95,6 +100,11 @@ const routes: RouteRecordRaw[] = [
         path: 'faq',
         component: () => import('pages/admin/faq/IndexPage.vue'),
         name: 'FaqAdminIndexPage',
+      },
+      {
+        path: 'trainer',
+        component: () => import('pages/admin/trainer/IndexPage.vue'),
+        name: 'TrainerAdminIndexPage',
       },
     ],
     meta: { requiresAuth: true, requiresAdmin: true },

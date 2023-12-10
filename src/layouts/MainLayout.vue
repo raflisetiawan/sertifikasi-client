@@ -81,6 +81,15 @@
               Kontak
             </q-item-section>
           </q-item>
+          <q-item clickable v-ripple @click="$router.push({ name: 'FaqIndexPage' })">
+            <q-item-section avatar>
+              <q-icon name="quiz"></q-icon>
+            </q-item-section>
+
+            <q-item-section>
+              FAQ
+            </q-item-section>
+          </q-item>
           <div v-if="!isAuthenticated()">
             <q-separator></q-separator>
             <q-item clickable v-ripple @click="$router.push({ name: 'SignInPage' })">
@@ -101,6 +110,19 @@
                 Daftar
               </q-item-section>
             </q-item>
+          </div>
+          <div v-else>
+            <q-separator></q-separator>
+            <q-item v-if="$state.role === 'admin'" clickable v-ripple @click="$router.push({ name: 'AdminPage' })">
+              <q-item-section avatar>
+                <q-icon name="admin_panel_settings"></q-icon>
+              </q-item-section>
+
+              <q-item-section>
+                Admin
+              </q-item-section>
+            </q-item>
+
           </div>
         </q-list>
       </q-scroll-area>
@@ -127,7 +149,7 @@ import { ref } from 'vue';
 import { useUserStore } from 'src/stores/user';
 const tab = ref();
 
-const { getUser, logout } = useUserStore();
+const { getUser, logout, $state } = useUserStore();
 const leftDrawer = ref(false);
 const logoutLoading = ref(false);
 
