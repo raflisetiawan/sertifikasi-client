@@ -1,6 +1,5 @@
 <template>
-  <div id="update-course-page">
-    <q-ajax-bar ref="bar" color="pink-11" position="top" size="5px" skip-hijack />
+  <div id="create-course-page">
     <div class="q-pa-md">
       <div class="text-h5 q-mb-md">Edit Kelas</div>
       <div class="row">
@@ -9,12 +8,98 @@
             <q-input outlined type="text" v-model="courseForm.name" lazy-rules label="Nama kelas *"
               :error="v$.name.$error" :error-message="v$.name.$errors.map((e) => e.$message).join()"
               @input="v$.name.$touch" @blur="v$.name.$touch" />
-            <q-input outlined type="text" autogrow v-model="courseForm.description" lazy-rules label="Deskripsi *"
-              :error="v$.description.$error" :error-message="v$.description.$errors.map((e) => e.$message).join()"
-              @input="v$.description.$touch" @blur="v$.description.$touch" />
+            <div class="text-body1">Deskripsi: </div>
+            <q-editor v-model="courseForm.description" :dense="$q.screen.lt.md" :toolbar="[
+              [
+                {
+                  label: $q.lang.editor.align,
+                  icon: $q.iconSet.editor.align,
+                  fixedLabel: true,
+                  list: 'only-icons',
+                  options: ['left', 'center', 'right', 'justify']
+                },
+                {
+                  label: $q.lang.editor.align,
+                  icon: $q.iconSet.editor.align,
+                  fixedLabel: true,
+                  options: ['left', 'center', 'right', 'justify']
+                }
+              ],
+              ['bold', 'italic', 'strike', 'underline', 'subscript', 'superscript'],
+              ['token', 'hr', 'link', 'custom_btn'],
+              ['print', 'fullscreen'],
+              [
+                {
+                  label: $q.lang.editor.formatting,
+                  icon: $q.iconSet.editor.formatting,
+                  list: 'no-icons',
+                  options: [
+                    'p',
+                    'h1',
+                    'h2',
+                    'h3',
+                    'h4',
+                    'h5',
+                    'h6',
+                    'code'
+                  ]
+                },
+                {
+                  label: $q.lang.editor.fontSize,
+                  icon: $q.iconSet.editor.fontSize,
+                  fixedLabel: true,
+                  fixedIcon: true,
+                  list: 'no-icons',
+                  options: [
+                    'size-1',
+                    'size-2',
+                    'size-3',
+                    'size-4',
+                    'size-5',
+                    'size-6',
+                    'size-7'
+                  ]
+                },
+                {
+                  label: $q.lang.editor.defaultFont,
+                  icon: $q.iconSet.editor.font,
+                  fixedIcon: true,
+                  list: 'no-icons',
+                  options: [
+                    'default_font',
+                    'arial',
+                    'arial_black',
+                    'comic_sans',
+                    'courier_new',
+                    'impact',
+                    'lucida_grande',
+                    'times_new_roman',
+                    'verdana'
+                  ]
+                },
+                'removeFormat'
+              ],
+              ['quote', 'unordered', 'ordered', 'outdent', 'indent'],
+
+              ['undo', 'redo'],
+              ['viewsource']
+            ]" :fonts="{
+  arial: 'Arial',
+  arial_black: 'Arial Black',
+  comic_sans: 'Comic Sans MS',
+  courier_new: 'Courier New',
+  impact: 'Impact',
+  lucida_grande: 'Lucida Grande',
+  times_new_roman: 'Times New Roman',
+  verdana: 'Verdana'
+}">
+            </q-editor>
             <q-input outlined type="text" autogrow v-model="courseForm.facility" lazy-rules label="Fasilitas *"
               :error="v$.facility.$error" :error-message="v$.facility.$errors.map((e) => e.$message).join()"
               @input="v$.facility.$touch" @blur="v$.facility.$touch" />
+            <q-input outlined type="text" autogrow v-model="courseForm.benefit" lazy-rules label="Benefit *"
+              :error="v$.benefit.$error" :error-message="v$.benefit.$errors.map((e) => e.$message).join()"
+              @input="v$.benefit.$touch" @blur="v$.benefit.$touch" />
             <q-input outlined type="number" autogrow v-model="courseForm.price" lazy-rules label="Harga *"
               :error="v$.price.$error" :error-message="v$.price.$errors.map((e) => e.$message).join()"
               @input="v$.price.$touch" @blur="v$.price.$touch" hint="Contoh: 1000 / 10.000">
@@ -31,23 +116,11 @@
               <template v-slot:prepend>
                 <q-icon name="event" class="cursor-pointer">
                   <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                    <q-date v-model="courseForm.operational_start" mask="YYYY-MM-DD HH:mm">
+                    <q-date v-model="courseForm.operational_start" mask="YYYY-MM-DD">
                       <div class="row items-center justify-end">
                         <q-btn v-close-popup label="Close" color="primary" flat />
                       </div>
                     </q-date>
-                  </q-popup-proxy>
-                </q-icon>
-              </template>
-
-              <template v-slot:append>
-                <q-icon name="access_time" class="cursor-pointer">
-                  <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                    <q-time v-model="courseForm.operational_start" mask="YYYY-MM-DD HH:mm" format24h>
-                      <div class="row items-center justify-end">
-                        <q-btn v-close-popup label="Close" color="primary" flat />
-                      </div>
-                    </q-time>
                   </q-popup-proxy>
                 </q-icon>
               </template>
@@ -56,7 +129,7 @@
               <template v-slot:prepend>
                 <q-icon name="event" class="cursor-pointer">
                   <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                    <q-date v-model="courseForm.operational_end" mask="YYYY-MM-DD HH:mm">
+                    <q-date v-model="courseForm.operational_end" mask="YYYY-MM-DD">
                       <div class="row items-center justify-end">
                         <q-btn v-close-popup label="Close" color="primary" flat />
                       </div>
@@ -64,33 +137,33 @@
                   </q-popup-proxy>
                 </q-icon>
               </template>
-
-              <template v-slot:append>
-                <q-icon name="access_time" class="cursor-pointer">
-                  <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                    <q-time v-model="courseForm.operational_end" mask="YYYY-MM-DD HH:mm" format24h>
-                      <div class="row items-center justify-end">
-                        <q-btn v-close-popup label="Close" color="primary" flat />
-                      </div>
-                    </q-time>
-                  </q-popup-proxy>
-                </q-icon>
-              </template>
             </q-input>
-            <q-input outlined type="text" v-model="courseForm.time" lazy-rules label="Durasi *" :error="v$.time.$error"
-              :error-message="v$.time.$errors.map((e) => e.$message).join()" @input="v$.time.$touch"
-              @blur="v$.time.$touch" />
-            <div class="row">
-              <div class="col-6 ">
-                <q-file @update:model-value="changeImagePreview" class="q-mr-md" :filter="checkFileSize"
-                  hint="ukuran max 2mb" outlined v-model="courseForm.image" accept=".jpg, image/*" counter use-chips
-                  label="Upload gambar" @rejected="onRejected" />
-              </div>
-              <div class="col-6">
-                <q-img :src="imageUrl" spinner-color="white"
-                  style="height: 140px; max-width: 150px; border: 1px solid #C2C2C2;" />
-              </div>
-            </div>
+            <q-input outlined type="text" v-model="courseForm.duration" lazy-rules label="Durasi *"
+              :error="v$.duration.$error" :error-message="v$.duration.$errors.map((e) => e.$message).join()"
+              @input="v$.duration.$touch" @blur="v$.duration.$touch" />
+            <q-file :filter="checkFileSize" hint="ukuran max 2mb" outlined v-model="courseForm.image"
+              accept=".jpg, image/*" counter use-chips label="Upload gambar" @rejected="onRejected">
+              <template v-slot:default v-if="imageUrl.length !== 0 && !courseForm.image">
+                <q-img :src="imageUrl" width="100px" class="q-mb-sm" />
+              </template>
+            </q-file>
+            <q-file :filter="checkFileSize20Mb" hint="ukuran max 20mb" outlined v-model="courseForm.guidelines"
+              accept=".pdf" counter use-chips label="Upload Pedoman / handbook" @rejected="onRejected">
+              <template v-slot:default>
+                <q-btn :href="guidelinesUrl" target="_blank" color="primary" size="sm" dense class="q-mb-sm">Lihat
+                  dokumen</q-btn>
+              </template>
+            </q-file>
+            <q-select filled v-model="courseForm.trainer_selected" use-input hide-selected fill-input input-debounce="0"
+              label="Trainer untuk kelas ini" :options="courseForm.trainerSelect" @filter="filterFnAutoselect">
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">
+                    No results
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
             <q-btn color="primary" type="submit" :loading="loadingCreate">Update</q-btn>
           </q-form>
         </div>
@@ -100,62 +173,43 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import { UpdateCourseForm } from 'src/models/course'
+import { ref, onMounted } from 'vue';
+import { CreateCourseForm } from 'src/models/course'
 import useVuelidate from '@vuelidate/core';
 import { useName, useRequired, useDecimal, useNumeric } from 'src/composables/validators';
-import { QRejectedEntry, useQuasar } from 'quasar';
-import { storageBaseUrl } from 'src/boot/axios';
-import { useRouter, useRoute } from 'vue-router';
+import { QRejectedEntry, QSelect, useQuasar } from 'quasar';
+import { useRoute, useRouter } from 'vue-router';
 import { useMetaTitle } from 'src/composables/meta';
 import { useCourseStore } from 'src/stores/course';
+import { useTrainerStore } from 'src/stores/trainer';
+import { storageBaseUrl } from 'src/boot/axios';
 
 useMetaTitle('Edit Kelas - Admin')
 const { push: routerPush } = useRouter();
-const { params: routeParams } = useRoute();
 const { notify } = useQuasar();
-const imageUrl = ref();
-const bar = ref();
-const { showCourse, updateCourse } = useCourseStore()
+const { updateCourse, showCourse } = useCourseStore();
+const { getTrainers, $state } = useTrainerStore();
+const { params: routeParam } = useRoute();
 
-const courseForm = ref<UpdateCourseForm>({
+const courseForm = ref<CreateCourseForm>({
   name: '',
   description: '',
   facility: '',
   price: 0,
   image: null,
-  operational_start: '2023/10/20 12:44',
-  operational_end: '2023/10/25 12:44',
+  operational_start: '2023/10/20',
+  operational_end: '2023/1025',
   place: '',
-  time: '',
-  _method: 'PATCH'
-})
-
-onMounted(async () => {
-  try {
-    bar.value.start();
-    await getCourse()
-  } catch (error) {
-    throw error;
-  } finally {
-    bar.value.stop();
+  duration: '',
+  benefit: '',
+  guidelines: null,
+  trainerSelect: [],
+  trainer_id: 0,
+  trainer_selected: {
+    label: '',
+    value: 0
   }
-
 })
-
-const getCourse = async () => {
-  const response = await showCourse(routeParams.id);
-  const course = response.data;
-  courseForm.value.name = course.name
-  courseForm.value.description = course.description
-  courseForm.value.facility = course.facility
-  courseForm.value.operational_start = course.operational_start
-  courseForm.value.operational_end = course.operational_end
-  courseForm.value.place = course.place
-  courseForm.value.price = course.price
-  courseForm.value.time = course.time
-  imageUrl.value = storageBaseUrl + 'courses/' + course.image;
-}
 
 const rules = {
   name: { required: useRequired(), validName: useName() },
@@ -163,12 +217,19 @@ const rules = {
   facility: { required: useRequired() },
   price: { required: useRequired(), numeric: useNumeric(), decimal: useDecimal() },
   place: { required: useRequired() },
-  time: { required: useRequired() },
+  duration: { required: useRequired() },
+  benefit: { required: useRequired() },
 }
-const checkFileSize = (files: readonly any[] | FileList): readonly any[] => {
+const checkFileSize = (files: readonly unknown[] | FileList): readonly unknown[] => {
   const fileList = Array.from(files);
   return fileList.filter(file => (file instanceof File) && file.size < 2e+6);
 };
+
+const checkFileSize20Mb = (files: readonly unknown[] | FileList): readonly unknown[] => {
+  const fileList = Array.from(files);
+  return fileList.filter(file => (file instanceof File) && file.size < 20e+6);
+};
+
 const loadingCreate = ref(false);
 
 const onRejected = (rejectedEntries: QRejectedEntry[]) => {
@@ -184,7 +245,9 @@ const onSubmit = async () => {
   if (!v$.value.$invalid) {
     try {
       loadingCreate.value = true;
-      await updateCourse(routeParams.id, courseForm.value)
+      if (courseForm.value.trainer_selected.value !== undefined) {
+        await updateCourse(routeParam.id, { ...courseForm.value, trainer_id: courseForm.value.trainer_selected.value, _method: 'PATCH' })
+      }
       routerPush({ name: 'AdminCoursePage' })
     } catch (error) {
       throw error;
@@ -195,21 +258,63 @@ const onSubmit = async () => {
     v$.value.$touch();
   }
 }
-
-
-const changeImagePreview = (value: File) => {
-  if (value) {
-    const reader = new FileReader();
-
-    reader.onload = (event: any) => {
-      // Set the image URL to the preview
-      imageUrl.value = event.target.result;
-    };
-
-    // Read the selected file as a data URL (which can be used as an image source)
-    reader.readAsDataURL(value);
+type DoneFunction = (callbackFn: () => void, afterFn?: ((ref: QSelect) => void) | undefined) => void;
+const filterFnAutoselect = async (val: string, update: DoneFunction) => {
+  if (courseForm.value.trainerSelect.length === 0) {
+    if ($state.trainers.length === 0) {
+      await getTrainers();
+      $state.trainers.map((trainer) => {
+        courseForm.value.trainerSelect.push({ label: trainer.name, value: trainer.id })
+      })
+      update(() => { return })
+    } else {
+      $state.trainers.map((trainer) => {
+        courseForm.value.trainerSelect.push({ label: trainer.name, value: trainer.id })
+      })
+      update(() => { return })
+    }
   }
-}
+  update(() => { return })
+};
+
+const imageUrl = ref('');
+const guidelinesUrl = ref('');
+const loading = ref(false);
+
+
+onMounted(async () => {
+  try {
+    loading.value = true;
+    await getTrainers();
+    $state.trainers.map((trainer) => {
+      courseForm.value.trainerSelect.push({ label: trainer.name, value: trainer.id })
+    })
+    const response = await showCourse(routeParam.id);
+    courseForm.value.name = response.data.name;
+    courseForm.value.benefit = response.data.benefit;
+    courseForm.value.description = response.data.description;
+    courseForm.value.duration = response.data.duration;
+    courseForm.value.facility = response.data.facility;
+    courseForm.value.operational_end = response.data.operational_end;
+    courseForm.value.operational_start = response.data.operational_start;
+    courseForm.value.place = response.data.place;
+    courseForm.value.price = response.data.price;
+    courseForm.value.trainer_id = response.data.trainer_id;
+    courseForm.value.trainer_selected = {
+      value: response.data.trainer.id,
+      label: response.data.trainer.name,
+    }
+    imageUrl.value = storageBaseUrl + 'courses/' + response.data.image;
+    guidelinesUrl.value = storageBaseUrl + 'courses/guideline/' + response.data.guidelines;
+  } catch (error) {
+    throw error;
+  } finally {
+    loading.value = false
+  }
+
+})
+
+
 </script>
 
 <style scoped></style>

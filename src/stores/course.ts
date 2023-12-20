@@ -48,5 +48,10 @@ export const useCourseStore = defineStore('course', {
       });
       await this.setCourses();
     },
+
+    async getCourseNameById(id: string | string[]): Promise<string> {
+      const response = await api.get(`courses/name/${id}`);
+      return response.data.course_name;
+    },
   },
 });

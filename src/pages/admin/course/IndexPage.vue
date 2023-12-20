@@ -18,8 +18,16 @@
                 <q-td auto-width>
                   <q-btn size="sm" color="red" class="q-mr-md" @click="showDeleteDialog(props.row)" round dense
                     icon="delete" />
-                  <q-btn size="sm" color="green" round dense
+                  <q-btn size="sm" color="green" class="q-mr-md" round dense
                     @click="$router.push({ name: 'UpdateCoursePage', params: { id: props.row.id } })" icon="edit" />
+                  <q-btn class="q-mr-md" @click="showAddDialog(props.row.id, props.row.name)" size="sm" color="primary"
+                    round dense icon="assignment_add">
+                    <q-tooltip>Tambahkan Materi</q-tooltip>
+                  </q-btn>
+                  <q-btn size="sm" color="blue" round dense icon="menu_book"
+                    :to="{ name: 'MaterialAdminIndexPage', params: { id: props.row.id } }">
+                    <q-tooltip>Lihat list Materi</q-tooltip>
+                  </q-btn>
                 </q-td>
                 <q-td v-for="col in props.cols" :key="col.name" :props="props" @click="handleRowClick(props.row.id)">
                   {{ col.value }}
@@ -42,6 +50,7 @@
     </div>
     <delete-dialog :course="course" :isDeleteDialogShow="isDeleteDialogShow"
       @closeDeleteDialog="isDeleteDialogShow = false" @successDelete="(async () => await getCourses())" />
+    <AddDialog :courseId="courseId" :courseName="courseName" />
   </div>
 </template>
 
@@ -53,9 +62,14 @@ import { Courses } from 'src/models/course'
 import { QTableColumn } from 'quasar';
 import DeleteDialog from 'components/admin/course/DeleteDialog.vue'
 import { useRouter } from 'vue-router';
+import AddDialog from 'components/admin/material/AddDialog.vue';
+import { useMaterialStore } from 'src/stores/material';
 
 useMetaTitle('Manage Kelas - Admin')
+const { $state } = useMaterialStore();
 const bar = ref();
+const courseId = ref(0);
+const courseName = ref('');
 const { push: routerPush } = useRouter();
 
 onMounted(async () => {
@@ -100,6 +114,12 @@ const showDeleteDialog = (row: Courses) => {
 const handleRowClick = (id: number) => {
   routerPush({ name: 'DetailCoursePage', params: { id } })
 
+}
+
+const showAddDialog = (id: number, name: string) => {
+  courseId.value = id;
+  courseName.value = name;
+  $state.addDialog = true;
 }
 
 const filter = ref('')

@@ -5,48 +5,42 @@
         <div class="col-12 banner">
           <div class="row justify-between items-center full-height q-pa-md">
             <div class="col-4">
-              <q-skeleton type="text"></q-skeleton>
-            </div>
-            <div class="col-4">
               <q-skeleton height="200px" square />
             </div>
+            <div class="col-md-6 text-center">
+              <q-skeleton type="text"></q-skeleton>
+              <q-skeleton type="text"></q-skeleton>
+              <q-skeleton type="text"></q-skeleton>
+              <q-skeleton type="text"></q-skeleton>
+            </div>
           </div>
         </div>
       </div>
-      <div class="row q-mt-lg justify-around">
-        <div class="col-md-2 col-sm-3 col-xs-4">
-          <div class="text-h6">Penjelasan</div>
-        </div>
-        <div class="col-md-10 col-sm-9 col-xs-8">
-          <div class="text-body1"> <q-skeleton type="text"></q-skeleton>
-          </div>
-        </div>
-      </div>
-      <div class="row q-mt-lg justify-around">
-        <div class="col-md-2 col-sm-3 col-xs-4">
-          <div class="text-h6">Fasilitas</div>
-        </div>
-        <div class="col-md-10 col-sm-9 col-xs-8">
-          <div class="text-body1"> <q-skeleton type="text"></q-skeleton>
-          </div>
+    </div>
+    <div class="text-h5 q-mt-md text-center">Deskripsi Kelas :</div>
+    <div class="row q-mt-md justify-center">
+      <div class="col-md-6 col-sm-8 col-xs-10">
+        <div class="text-body1 text-center">
+          <q-skeleton type="text"></q-skeleton>
+          <q-skeleton type="text"></q-skeleton>
+          <q-skeleton type="text"></q-skeleton>
         </div>
       </div>
-      <div class="row q-mt-lg justify-around">
-        <div class="col-md-2 col-sm-3 col-xs-4">
-          <div class="text-h6">Tempat</div>
+    </div>
+    <div class="text-h5 q-mt-md text-center">Trainer </div>
+    <div class="row justify-center">
+      <q-skeleton type="circle" width="150px" height="150px"></q-skeleton>
+    </div>
+    <div class="row q-mt-md justify-center">
+      <div class="col-md-6 col-sm-8 col-xs-10">
+        <div class="text-h6 text-center">
+          <q-skeleton type="text"></q-skeleton>
         </div>
-        <div class="col-md-10 col-sm-9 col-xs-8">
-          <div class="text-body1"> <q-skeleton type="text"></q-skeleton>
-          </div>
+        <div class="text-overline text-center">
+          <q-skeleton type="text"></q-skeleton>
         </div>
-      </div>
-      <div class="row q-mt-lg justify-around">
-        <div class="col-md-2 col-sm-3 col-xs-4">
-          <div class="text-h6">Waktu pelaksanaan</div>
-        </div>
-        <div class="col-md-10 col-sm-9 col-xs-8">
-          <div class="text-body1"> <q-skeleton type="text"></q-skeleton>
-          </div>
+        <div class="text-overline text-center">
+          <q-skeleton type="text"></q-skeleton>
         </div>
       </div>
     </div>
@@ -56,16 +50,12 @@
 <script setup lang="ts">
 </script>
 
+
 <style scoped>
 .banner {
   height: 250px;
   border-radius: 5px;
-  background: #cb2d3e;
-  /* fallback for old browsers */
-  background: -webkit-linear-gradient(to right, #cb2d3e, #ef473a);
-  /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to right, #cb2d3e, #ef473a);
-  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  border: solid 2px grey;
 
 }
 </style>

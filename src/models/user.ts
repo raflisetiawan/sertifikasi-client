@@ -7,4 +7,12 @@ export interface User {
   updated_at?: Date | null;
   phone_number: number;
   role: string;
+  image?: string;
+}
+
+export interface UserEditForm {
+  name: string;
+  phone_number: number;
+  image?: null | File;
+  _method?: string;
 }

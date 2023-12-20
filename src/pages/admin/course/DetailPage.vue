@@ -21,7 +21,7 @@
           <div class="text-subtitle1">Deskripsi: </div>
         </div>
         <div class="col-md-10 col-sm-8 col-xs-8">
-          <div class="text-body1 ">{{ course.description }}</div>
+          <div v-html="course.description"></div>
         </div>
       </div>
       <div class="row q-mt-md">

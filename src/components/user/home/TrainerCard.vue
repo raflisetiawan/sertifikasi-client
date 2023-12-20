@@ -24,7 +24,6 @@
               <div class="text-h5 q-mt-sm q-mb-xs">{{ trainer.name }}</div>
               <div class=" text-overline text-orange-9">{{ trainer.qualification }}
               </div>
-              <div class="text-caption text-grey">{{ trainer.description }}</div>
             </q-card-section>
           </q-card>
         </div>

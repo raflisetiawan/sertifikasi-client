@@ -60,12 +60,13 @@
                     <q-btn label="Daftar" type="submit" :loading="loadingSignup" color="primary" />
                   </q-card-actions>
                 </q-form>
-              </q-card-section>
-              <div class="text-center">
-                <div class="text-body2">Sudah punya akun ?<q-btn dense :to="{ name: 'SignInPage' }" color="primary" flat>
-                    Login</q-btn></div>
+                <div class="text-center">
+                  <div class="text-body2">Sudah punya akun ?<q-btn dense :to="{ name: 'SignInPage' }" color="primary"
+                      flat>
+                      Login</q-btn></div>
 
-              </div>
+                </div>
+              </q-card-section>
             </q-card>
 
           </div>

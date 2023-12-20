@@ -96,7 +96,7 @@ const onSubmit = async () => {
     try {
       const response = await api.post('signin', signInForm.value);
       qLocalStorage.set('token', response.data.token);
-      if (response.data.user.role_id === 2) router.push({ name: 'AdminPage' })
+      if (response.data.user.role_id === 1) router.push({ name: 'AdminPage' })
       else router.push({ name: 'HomePage' })
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {

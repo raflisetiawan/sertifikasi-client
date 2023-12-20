@@ -13,8 +13,8 @@
     </div>
     <div class="text-h6 text-center q-mt-md">{{ trainer.name }}</div>
     <div class="text-subtitle1 text-center q-mt-md">{{ trainer.qualification }}</div>
-    <div class="text-subtitle2 text-center q-mt-md">{{ trainer.email }}</div>
-    <div class="text-body1 text-center q-mt-md">{{ trainer.description }}</div>
+    <div class="text-subtitle1 text-center q-mt-md text-orange">Email : {{ trainer.email }}</div>
+    <div v-html="trainer.description"></div>
   </div>
   <Suspense>
     <TrainerList :trainer="theTrainer"></TrainerList>

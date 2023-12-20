@@ -37,8 +37,9 @@
           </q-select>
           <q-input outlined type="text" v-model="registerCourseForm.voucher_code" lazy-rules label="Kode Voucher *"
             :error="v$.voucher_code.$error" :error-message="v$.voucher_code.$errors.map((e) => e.$message).join()"
-            @input="v$.voucher_code.$touch" @blur="v$.voucher_code.$touch" /> </q-form>
-        <q-btn color="primary" type="submit" class="q-mt-lg">Bayar</q-btn>
+            @input="v$.voucher_code.$touch" @blur="v$.voucher_code.$touch" />
+          <q-btn color="primary" type="submit" class="q-mt-lg">Bayar</q-btn>
+        </q-form>
       </div>
     </div>
   </div>
@@ -48,13 +49,22 @@
 import { Courses, CreateRegisterForm } from 'src/models/course';
 import { useCourseStore } from 'src/stores/course';
 import { onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useVuelidate } from '@vuelidate/core'
 import { useEmail, useRequired, useName, usePhoneNumber } from 'src/composables/validators';
 import { useUserStore } from 'src/stores/user';
+import { useMetaTitle } from 'src/composables/meta';
+import { api } from 'src/boot/axios';
+import { useQuasar } from 'quasar';
+import { AxiosError } from 'axios';
+import { useNotify } from 'src/composables/notifications';
 
+useMetaTitle('Pendaftaran')
 const { name: userName, email: userEmail, phone_number: userPhone } = useUserStore()
 const bar = ref();
+const router = useRouter();
+const { $state: userState } = useUserStore()
+const { localStorage: qLocalStorage } = useQuasar();
 const course = ref<Courses>({
   name: '',
   description: '',
@@ -111,7 +121,27 @@ const rules = {
 const v$ = useVuelidate(rules, registerCourseForm.value)
 
 const onSubmit = async () => {
+
   if (!v$.value.$invalid) {
+    try {
+      await api.post('registration', { user_id: userState.id, course_id: routeParams.id }, {
+        headers: {
+          Authorization: `Bearer ${qLocalStorage.getItem('token')}`
+        }
+      });
+      router.push({ name: 'MyProfileIndexPage' });
+    } catch (error) {
+      if (error instanceof AxiosError) {
+
+        if (error.response?.status == 422) {
+          useNotify(error.response?.data.message, 'warning');
+        } else {
+          useNotify(error.message, 'red');
+        }
+      } else {
+        useNotify('Terjadi masalah', 'red');
+      }
+    }
 
   } else {
     v$.value.$touch();

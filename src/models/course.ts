@@ -1,13 +1,24 @@
+import { Trainer } from './trainer';
 export interface CreateCourseForm {
   name: string;
   description: string;
   facility: string;
   price: number;
   place: string;
-  time: string;
+  duration: string;
   image: File | null;
+  benefit: string;
+  guidelines: File | null;
   operational_start: string | null | undefined;
   operational_end: string | null | undefined;
+  trainerSelect: TrainerSelect[];
+  trainer_id: number;
+  trainer_selected: TrainerSelect;
+}
+
+export interface TrainerSelect {
+  label: string;
+  value: number | undefined;
 }
 
 export interface Courses {
@@ -23,6 +34,7 @@ export interface Courses {
   operational_end: string;
   created_at?: Date;
   updated_at?: Date;
+  trainer?: Trainer;
 }
 export interface UpdateCourseForm {
   name: string;
@@ -30,10 +42,15 @@ export interface UpdateCourseForm {
   facility: string;
   price: number;
   place: string;
-  time: string;
-  image?: File | null;
+  duration: string;
+  image: File | null;
+  benefit: string;
+  guidelines: File | null;
   operational_start: string | null | undefined;
   operational_end: string | null | undefined;
+  trainerSelect: TrainerSelect[];
+  trainer_id: number;
+  trainer_selected: TrainerSelect;
   _method?: string;
 }
 
@@ -43,10 +60,11 @@ export interface DetailCourse {
   facility: string;
   price: number;
   place: string;
-  time: string;
   image?: File | null;
   operational_start: string | null | undefined;
   operational_end: string | null | undefined;
+  benefit?: string;
+  guidelines: File | null;
 }
 
 export interface CreateRegisterForm {
@@ -56,4 +74,21 @@ export interface CreateRegisterForm {
   price: number;
   bank: null | string;
   voucher_code: string;
+}
+
+export interface UserCourses {
+  id: number;
+  name: string;
+  description: string;
+  facility: string;
+  price: number;
+  place: string;
+  time: string;
+  image: File | null;
+  operational_start: string;
+  operational_end: string;
+  created_at?: Date;
+  updated_at?: Date;
+  trainer?: Trainer;
+  guidelines: File | null;
 }

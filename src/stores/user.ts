@@ -3,6 +3,9 @@ import { User } from 'src/models/user';
 import { api } from 'src/boot/axios';
 import { Router } from 'src/router/index';
 import { useNotify } from 'src/composables/notifications';
+import { UserEditForm } from 'src/models/user';
+import { LocalStorage } from 'quasar';
+import { useUser } from 'src/composables/auth/user';
 
 export const useUserStore = defineStore('user', {
   state: (): User => ({
@@ -12,6 +15,7 @@ export const useUserStore = defineStore('user', {
     created_at: '',
     role: '',
     phone_number: 0,
+    image: '',
   }),
   getters: {
     getUser: (state) => (state = state),
@@ -24,6 +28,7 @@ export const useUserStore = defineStore('user', {
       this.$state.phone_number = userData.phone_number;
       this.$state.created_at = userData.created_at;
       this.$state.role = userData.role;
+      this.$state.email_verified_at = userData.email_verified_at;
     },
     resetUser() {
       this.$state.id = 0;
@@ -33,6 +38,7 @@ export const useUserStore = defineStore('user', {
       this.$state.updated_at = null;
       this.$state.created_at = '';
       this.$state.role = '';
+      this.$state.email_verified_at = null;
 
       localStorage.removeItem('token');
       localStorage.removeItem('signedIn');
@@ -51,6 +57,17 @@ export const useUserStore = defineStore('user', {
         useNotify('Terjadi masalah', 'red');
         throw error;
       }
+    },
+    async editProfile(data: UserEditForm): Promise<void> {
+      await api.post(`user-profile/${this.id}`, data, {
+        headers: {
+          Authorization: `Bearer ${LocalStorage.getItem('token')}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      const response = await useUser(LocalStorage.getItem('token'));
+      this.setUser(response.data.user);
     },
   },
 });

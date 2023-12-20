@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="hHh lpR fFf">
+  <q-layout view="lHh lpR fFf">
 
     <q-header bordered elevated class="bg-white text-black">
       <q-toolbar>
@@ -48,7 +48,7 @@
         </div>
       </q-toolbar>
     </q-header>
-    <q-drawer v-model="leftDrawer" :width="200" :breakpoint="700" elevated>
+    <q-drawer v-model="leftDrawer" :breakpoint="700" bordered side="left">
       <q-scroll-area style="height: calc(100% - 150px); margin-top: 150px; border-right: 1px solid #ddd">
         <q-list padding>
           <q-item clickable v-ripple @click="$router.push({ name: 'HomePage' })">
@@ -119,13 +119,31 @@
           </div>
           <div v-else>
             <q-separator></q-separator>
-            <q-item v-if="$state.role === 'admin'" clickable v-ripple @click="$router.push({ name: 'AdminPage' })">
+            <q-item clickable v-ripple @click="logout()">
               <q-item-section avatar>
-                <q-icon name="admin_panel_settings"></q-icon>
+                <q-icon name="history"></q-icon>
               </q-item-section>
 
               <q-item-section>
-                Admin
+                Riwayat Belajar
+              </q-item-section>
+            </q-item>
+            <q-item clickable v-ripple :to="{ name: 'MyProfileIndexPage' }">
+              <q-item-section avatar>
+                <q-icon name="manage_accounts"></q-icon>
+              </q-item-section>
+
+              <q-item-section>
+                Profile saya
+              </q-item-section>
+            </q-item>
+            <q-item clickable v-ripple @click="logout()">
+              <q-item-section avatar>
+                <q-icon name="logout"></q-icon>
+              </q-item-section>
+
+              <q-item-section>
+                Logout
               </q-item-section>
             </q-item>
 
@@ -143,6 +161,7 @@
       </q-img>
     </q-drawer>
     <q-page-container>
+
       <router-view />
     </q-page-container>
 
@@ -156,7 +175,7 @@ import { useUserStore } from 'src/stores/user';
 const tab = ref();
 
 const { getUser, logout, $state } = useUserStore();
-const leftDrawer = ref(false);
+const leftDrawer = ref(true);
 const logoutLoading = ref(false);
 
 const handleLogout = async () => {
