@@ -11,6 +11,9 @@
               <div class="text-caption text-grey q-mb-md">
                 Online via {{ course.place }}
               </div>
+              <div class="row q-mb-md">
+                <StatusBadgeComponent :status="course.status" />
+              </div>
               <q-btn class="q-mr-md" color="primary" target="_blank"
                 :href="storageBaseUrl + 'courses/guideline/' + course.guidelines">Pedoman</q-btn>
               <q-btn color="blue" class="q-mr-md"
@@ -28,6 +31,8 @@
 import { storageBaseUrl } from 'src/boot/axios';
 import { useUserStore } from 'src/stores/user';
 import { useUserCourse } from 'stores/userCourse';
+import StatusBadgeComponent from 'src/components/StatusBadgeComponent.vue';
+
 const { getFollowedCourse, $state } = useUserCourse();
 const { $state: userState } = useUserStore();
 const initData = async () => {

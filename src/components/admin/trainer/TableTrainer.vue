@@ -18,7 +18,9 @@
             <td class="text-left">
               <q-checkbox color="yellow" v-model="trainer.starred"
                 @update:model-value="toggleStarredTrainer(trainer.id, trainer)" checked-icon="star"
-                unchecked-icon="star_border" indeterminate-icon="help" />
+                unchecked-icon="star_border" indeterminate-icon="help">
+                <q-tooltip>Letakkan trainer pada halaman utama</q-tooltip>
+              </q-checkbox>
 
               <q-btn icon="info" flat color="blue"
                 :to="{ name: 'TrainerIndexPage', params: { id: trainer.id } }"><q-tooltip>Detail</q-tooltip></q-btn>

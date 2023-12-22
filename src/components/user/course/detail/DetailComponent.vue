@@ -4,16 +4,14 @@
       <div class="row q-pa-md">
         <div class="col-12 banner">
           <div class="row justify-between items-center full-height q-pa-md">
-            <div class="col-4">
+            <div class="col-md-4 col-sm-4 col-xs-12">
               <q-img :src="`${storageBaseUrl}courses/${course?.image}`" fit="cover" :ratio="4 / 3" height="200px" />
             </div>
-            <div class="col-md-6 text-center">
-              <div class="text-h3">{{ course.name }}</div>
-              <div class="text-overline">Rp.{{ course.price }}</div>
+            <div class="col-md-6 col-sm-6 col-xs-12 text-center">
+              <div :class="$q.screen.lt.sm ? 'text-h4' : 'text-h3'">{{ course.name }}</div>
+              <div class="text-overline">{{ toRupiah(course.price) }}</div>
               <div class="text-body1">Online Via : {{ course.place }}
-                <div class="text-body2">{{
-                  new Date(course?.operational_start).getDate() }} - {{
-    useFormatOperationalEnd(course?.operational_end) }}</div>
+                <div class="text-body2">{{ useFormatDateRange(course.operational_start, course.operational_end) }}</div>
                 <q-btn color="primary" :to="{ name: 'RegisterCourseUserPage', params: { id: course.id } }">Daftar</q-btn>
               </div>
             </div>
@@ -83,13 +81,14 @@
 
 <script setup lang="ts" async>
 import { storageBaseUrl } from 'src/boot/axios';
-import { useFormatOperationalEnd } from 'src/composables/format';
+import { useFormatDateRange } from 'src/composables/format';
 import { Courses } from 'src/models/course';
 import { useCourseStore } from 'src/stores/course';
 import { defineAsyncComponent, ref, watchEffect } from 'vue';
 import { useRoute } from 'vue-router';
 import CourseCardSkeleton from '../CourseCardSkeleton.vue';
 import FooterCom from '../../home/FooterCom.vue';
+import toRupiah from '@develoka/angka-rupiah-js';
 
 const RelatedCourseComponent = defineAsyncComponent(() => import('components/user/course/detail/RelatedCourseComponent.vue'));
 const { params: routeParams } = useRoute();
@@ -132,6 +131,11 @@ const listenRefreshCourseDetail = async (id: number) => {
   height: 250px;
   border-radius: 5px;
   border: solid 2px #ff4d5f;
+}
 
+@media (max-width: 600px) {
+  .banner {
+    height: 80vh;
+  }
 }
 </style>

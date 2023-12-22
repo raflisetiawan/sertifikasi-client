@@ -8,10 +8,10 @@
           <q-card-section>
             <div class="text-h6 q-mt-sm q-mb-xs">{{ course.name }}</div>
             <div class="text-caption text-grey3">
-              {{ new Date(course.operational_start).getDate() }} - {{ useFormatOperationalEnd(course.operational_end) }}
+              {{ useFormatDateRange(course.operational_start, course.operational_end) }}
             </div>
             <div class="text-overline text-grey3" v-if="courseState">
-              Rp.{{ useRemoveDecimal(Number(course.price), 2) }}
+              {{ toRupiah(course.price) }}
             </div>
           </q-card-section>
           <q-card-actions>
@@ -25,8 +25,9 @@
 
 <script setup lang="ts" async>
 import { storageBaseUrl } from 'src/boot/axios';
-import { useFormatOperationalEnd, useRemoveDecimal } from 'src/composables/format';
+import { useFormatDateRange } from 'src/composables/format/index'
 import { useCourseStore } from 'src/stores/course';
+import toRupiah from '@develoka/angka-rupiah-js';
 
 const { setCourses, $state: courseState } = useCourseStore();
 
@@ -37,6 +38,7 @@ if (!courseState.courses) {
     throw error;
   }
 }
+
 </script>
 
 <style scoped></style>

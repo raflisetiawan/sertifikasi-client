@@ -6,6 +6,7 @@ import {
   minLength,
   numeric,
   required,
+  url,
 } from '@vuelidate/validators';
 
 const useEmail = (): ValidationRuleWithParams => {
@@ -38,6 +39,10 @@ const useDecimal = (): ValidationRuleWithParams => {
   return helpers.withMessage('Form harus angka desimal', decimal);
 };
 
+const useUrl = (): ValidationRuleWithParams => {
+  return helpers.withMessage('Link tidak valid', url);
+};
+
 export {
   useEmail,
   useRequired,
@@ -46,4 +51,5 @@ export {
   usePhoneNumber,
   useNumeric,
   useDecimal,
+  useUrl,
 };

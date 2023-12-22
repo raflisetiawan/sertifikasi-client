@@ -35,6 +35,7 @@ export interface Courses {
   created_at?: Date;
   updated_at?: Date;
   trainer?: Trainer;
+  status?: string;
 }
 export interface UpdateCourseForm {
   name: string;
@@ -91,4 +92,30 @@ export interface UserCourses {
   updated_at?: Date;
   trainer?: Trainer;
   guidelines: File | null;
+  status?: string;
+}
+
+export interface CourseTable {
+  id: number;
+  name: string;
+  operational_start: string;
+  operational_end: string;
+  status: string;
+  zoom_link?: ZoomLink;
+}
+
+export interface ZoomLink {
+  id: number;
+  link: string;
+  courseId: number;
+}
+
+export interface CourseRows {
+  id: number;
+  name: string;
+  operational_start: string;
+  operational_end: string;
+  status: string;
+  zoom_link?: string;
+  zoom_link_id?: number;
 }

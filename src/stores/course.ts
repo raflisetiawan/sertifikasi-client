@@ -1,6 +1,11 @@
 import { defineStore } from 'pinia';
 import { api } from 'src/boot/axios';
-import { UpdateCourseForm, Courses, CreateCourseForm } from 'src/models/course';
+import {
+  UpdateCourseForm,
+  Courses,
+  CreateCourseForm,
+  CourseTable,
+} from 'src/models/course';
 import { LocalStorage } from 'quasar';
 import { AxiosResponse } from 'axios';
 
@@ -52,6 +57,15 @@ export const useCourseStore = defineStore('course', {
     async getCourseNameById(id: string | string[]): Promise<string> {
       const response = await api.get(`courses/name/${id}`);
       return response.data.course_name;
+    },
+    async getCourseForTable(): Promise<CourseTable[]> {
+      const response = await api.get('courses/with-zoom-link', {
+        headers: {
+          Authorization: 'Bearer ' + LocalStorage.getItem('token'),
+        },
+      });
+
+      return response.data.data;
     },
   },
 });

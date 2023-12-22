@@ -3,34 +3,51 @@
     <q-ajax-bar ref="bar" color="pink-11" position="top" size="5px" skip-hijack />
     <div class="q-pa-md">
       <div class="row">
-        <div class="col-md-10 col-sm-12 col-xs-12">
+        <div class="col-md-12 col-sm-12 col-xs-12">
           <q-table title="Semua Kelas" :rows="rows" :columns="columns" row-key="name" :filter="filter">
             <template v-slot:header="props">
               <q-tr :props="props">
-                <q-th auto-width />
                 <q-th v-for="col in props.cols" :key="col.name" :props="props">
                   {{ col.label }}
                 </q-th>
+                <q-th>Action</q-th>
               </q-tr>
             </template>
             <template v-slot:body="props">
-              <q-tr :props="props">
-                <q-td auto-width>
+              <q-tr :props="props" @dblclick="handleRowClick(props.row.id)">
+                <CourseMenuTableVue :touchPosition="true" :contextMenu="true" :propsData="props"
+                  @showAddDialog="(id, name) => showAddDialog(id, name)" @handleRowClick="(id) => handleRowClick(id)" />
+                <q-td key="name" :props="props" style="cursor: pointer;" @click="handleRowClick(props.row.id)">
+                  <div></div>{{ props.row.name }}
+                </q-td>
+                <q-td key="operational_start" :props="props">
+                  {{ props.row.operational_start }}
+                </q-td>
+                <q-td key="status" :props="props">
+                  <StatusBadgeComponentVue :status="props.row.status" />
+                </q-td>
+                <template v-if="props.row.zoom_link">
+                  <q-td key="zoom_link" :props="props">
+                    <q-btn size="sm" flat dense style="text-transform: lowercase;" color="blue"
+                      :href="props.row.zoom_link" target="_blank"> {{
+                        useSimplifyUrl(props.row.zoom_link, 30) }}</q-btn>
+                  </q-td>
+                </template>
+                <template v-else>
+                  <q-td>
+                    Belum ada link zoom
+                  </q-td>
+                </template>
+                <q-td class="text-center">
                   <q-btn size="sm" color="red" class="q-mr-md" @click="showDeleteDialog(props.row)" round dense
-                    icon="delete" />
+                    icon="delete"> <q-tooltip>Hapus Kelas</q-tooltip> </q-btn>
                   <q-btn size="sm" color="green" class="q-mr-md" round dense
                     @click="$router.push({ name: 'UpdateCoursePage', params: { id: props.row.id } })" icon="edit" />
-                  <q-btn class="q-mr-md" @click="showAddDialog(props.row.id, props.row.name)" size="sm" color="primary"
-                    round dense icon="assignment_add">
-                    <q-tooltip>Tambahkan Materi</q-tooltip>
+                  <q-btn icon="more_vert" flat>
+                    <CourseMenuTableVue :touchPosition="false" :contextMenu="false" :propsData="props"
+                      @showAddDialog="(id, name) => showAddDialog(id, name)"
+                      @handleRowClick="(id) => handleRowClick(id)" />
                   </q-btn>
-                  <q-btn size="sm" color="blue" round dense icon="menu_book"
-                    :to="{ name: 'MaterialAdminIndexPage', params: { id: props.row.id } }">
-                    <q-tooltip>Lihat list Materi</q-tooltip>
-                  </q-btn>
-                </q-td>
-                <q-td v-for="col in props.cols" :key="col.name" :props="props" @click="handleRowClick(props.row.id)">
-                  {{ col.value }}
                 </q-td>
               </q-tr>
             </template>
@@ -51,19 +68,28 @@
     <delete-dialog :course="course" :isDeleteDialogShow="isDeleteDialogShow"
       @closeDeleteDialog="isDeleteDialogShow = false" @successDelete="(async () => await getCourses())" />
     <AddDialog :courseId="courseId" :courseName="courseName" />
+    <AddZoomDialog @getCourses="() => getCourses()" />
+    <EditZoomDialog @getCourses="() => getCourses()" />
+    <DeleteZoomDialog @getCourses="() => getCourses()" />
   </div>
 </template>
 
 <script setup lang="ts" async>
-import { api } from 'src/boot/axios';
 import { useMetaTitle } from 'src/composables/meta';
 import { onMounted, ref } from 'vue';
-import { Courses } from 'src/models/course'
+import { Courses, CourseTable, CourseRows } from 'src/models/course'
 import { QTableColumn } from 'quasar';
 import DeleteDialog from 'components/admin/course/DeleteDialog.vue'
 import { useRouter } from 'vue-router';
 import AddDialog from 'components/admin/material/AddDialog.vue';
 import { useMaterialStore } from 'src/stores/material';
+import { useFormatDateRange, useSimplifyUrl } from 'src/composables/format';
+import StatusBadgeComponentVue from 'src/components/StatusBadgeComponent.vue';
+import { useCourseStore } from 'src/stores/course';
+import AddZoomDialog from 'src/components/admin/course/AddZoomDialog.vue';
+import CourseMenuTableVue from 'src/components/admin/course/CourseMenuTable.vue';
+import EditZoomDialog from 'src/components/admin/course/EditZoomDialog.vue';
+import DeleteZoomDialog from 'src/components/admin/course/DeleteZoomDialog.vue';
 
 useMetaTitle('Manage Kelas - Admin')
 const { $state } = useMaterialStore();
@@ -71,23 +97,36 @@ const bar = ref();
 const courseId = ref(0);
 const courseName = ref('');
 const { push: routerPush } = useRouter();
+const { getCourseForTable } = useCourseStore();
 
 onMounted(async () => {
   try {
-    bar.value.start()
     await getCourses();
   } catch (error) {
     throw error;
-  } finally {
-    bar.value.stop();
   }
 })
 
 const getCourses = async () => {
-  const response = await api.get('course');
-  rows.value = response.data.data;
-}
+  try {
+    bar.value.start()
+    rows.value = [];
+    const response = await getCourseForTable();
+    response.map((course: CourseTable) => {
+      rows.value.push({
+        ...course,
+        operational_start: useFormatDateRange(course.operational_start, course.operational_end),
+        zoom_link: course.zoom_link?.link,
+        zoom_link_id: course.zoom_link?.id
+      })
+    })
 
+  } catch (error) {
+    throw error
+  } finally {
+    bar.value.stop();
+  }
+}
 const columns = ref<QTableColumn[]>([
   {
     name: 'name',
@@ -98,11 +137,12 @@ const columns = ref<QTableColumn[]>([
     format: val => `${val}`,
     sortable: true
   },
-  { name: 'operational_start', label: 'Tanggal mulai pelaksanaan', align: 'left', field: 'operational_start', sortable: true },
-  { name: 'operational_end', label: 'Tanggal akhir pelaksanaan', align: 'left', field: 'operational_end', sortable: true },
+  { name: 'operational_start', label: 'Tanggal pelaksanaan', align: 'left', field: 'operational_start', sortable: true },
+  { name: 'status', label: 'Status', align: 'left', field: 'status', sortable: true },
+  { name: 'zoom_link', label: 'Link Zoom', align: 'left', field: 'zoom_link', sortable: true },
 ])
 
-const rows = ref<Courses[]>([])
+const rows = ref<CourseRows[]>([])
 
 const isDeleteDialogShow = ref(false);
 const course = ref<Courses>();
@@ -113,7 +153,6 @@ const showDeleteDialog = (row: Courses) => {
 
 const handleRowClick = (id: number) => {
   routerPush({ name: 'DetailCoursePage', params: { id } })
-
 }
 
 const showAddDialog = (id: number, name: string) => {
@@ -121,8 +160,8 @@ const showAddDialog = (id: number, name: string) => {
   courseName.value = name;
   $state.addDialog = true;
 }
-
 const filter = ref('')
+
 </script>
 
 <style scoped></style>
