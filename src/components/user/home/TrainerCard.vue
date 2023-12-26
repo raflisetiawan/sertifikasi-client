@@ -8,7 +8,7 @@
         </div>
       </div>
     </div>
-    <q-carousel v-if="$q.screen.gt.sm" height="70vh" autoplay v-model="slide" infinite transition-prev="slide-right"
+    <q-carousel v-show="$q.screen.gt.sm" height="70vh" autoplay v-model="slide" infinite transition-prev="slide-right"
       transition-next="slide-left" swipeable animated control-color="primary" navigation arrows>
       <!-- Loop through the computed property `groupedTrainers` -->
       <q-carousel-slide :name="index + 1" :key="index" v-for="(group, index) in groupedTrainers" class="column no-wrap">

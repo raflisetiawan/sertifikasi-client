@@ -3,7 +3,8 @@
 
     <q-header bordered elevated class="bg-white text-black">
       <q-toolbar>
-        <q-btn v-if="$q.screen.lt.md" flat dense round @click="leftDrawer = !leftDrawer" aria-label="Menu" icon="menu" />
+        <q-btn v-show="$q.screen.lt.md" flat dense round @click="leftDrawer = !leftDrawer" aria-label="Menu"
+          icon="menu" />
         <q-toolbar-title>
           <q-avatar>
             <img src="../assets/profile.jpg">
@@ -11,7 +12,7 @@
           logo project
         </q-toolbar-title>
         <q-space></q-space>
-        <q-tabs v-if="$q.screen.gt.sm" v-model="tab" shrink>
+        <q-tabs v-show="$q.screen.gt.sm" v-model="tab" shrink>
           <q-route-tab :to="{ name: 'HomePage' }" name="Home" label="Home" />
           <q-route-tab :to="{ name: 'CoursePage' }" name="Kelas" label="Kelas" />
           <q-route-tab :to="{ name: 'AboutPage' }" name="Tentang Kami" label="Tentang Kami" />
@@ -150,7 +151,7 @@
           </div>
         </q-list>
       </q-scroll-area>
-      <q-img v-if="isAuthenticated()" class="absolute-top drawer-user-bg" style="height: 150px">
+      <q-img v-show="isAuthenticated()" class="absolute-top drawer-user-bg" style="height: 150px">
         <div class="absolute-bottom bg-transparent">
           <q-avatar size="56px" class="q-mb-sm">
             <q-icon name="fa-solid fa-user"></q-icon>
@@ -174,7 +175,7 @@ import { ref } from 'vue';
 import { useUserStore } from 'src/stores/user';
 const tab = ref();
 
-const { getUser, logout, $state } = useUserStore();
+const { getUser, logout, } = useUserStore();
 const leftDrawer = ref(true);
 const logoutLoading = ref(false);
 

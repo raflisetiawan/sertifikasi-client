@@ -7,7 +7,7 @@ import {
 } from 'vue-router';
 
 import routes from './routes';
-import { LocalStorage } from 'quasar';
+import { Cookies } from 'quasar';
 import { isAdmin, isAuthenticated } from 'src/composables/auth';
 import { useUserStore } from 'src/stores/user';
 import { useUser } from 'src/composables/auth/user';
@@ -26,14 +26,15 @@ const Router = createRouter({
 });
 
 // Use the router instance in the route function
-export default route(function () {
+export default route(function ({ ssrContext }) {
   const { $state, setUser } = useUserStore();
+  const cookies = process.env.SERVER ? Cookies.parseSSR(ssrContext) : Cookies; // otherwise we're on client
   Router.beforeEach(async (to, from, next) => {
     // set user store before rendering page
     if ($state.id === 0) {
-      if (LocalStorage.getItem('token')) {
+      if (cookies.get('token')) {
         try {
-          const response = await useUser(LocalStorage.getItem('token'));
+          const response = await useUser(cookies.get('token'));
           setUser(response.data.user);
         } catch (error) {}
       }

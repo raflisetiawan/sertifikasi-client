@@ -36,7 +36,7 @@
       </q-item-section>
       <q-item-section>Edit Link Zoom</q-item-section>
     </q-item>
-    <q-item clickable v-if="props.propsData?.row.zoom_link" v-ripple @click="showDeleteZoomDialog(
+    <q-item clickable v-show="props.propsData?.row.zoom_link" v-ripple @click="showDeleteZoomDialog(
       props.propsData.row.id,
       props.propsData.row.zoom_link,
       props.propsData.row.zoom_link_id)">

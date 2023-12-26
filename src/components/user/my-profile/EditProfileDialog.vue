@@ -40,7 +40,7 @@ import { api } from 'src/boot/axios';
 
 const { $state } = useUserDialog()
 const { $state: userState, editProfile } = useUserStore();
-const { notify, localStorage: qLocalStorage } = useQuasar();
+const { notify, cookies: qCookies } = useQuasar();
 
 const formDialog = ref<UserEditForm>({
   name: '',
@@ -62,7 +62,7 @@ const onSubmit = async () => {
       await editProfile({ ...formDialog.value, _method: 'PATCH' });
       const response = await api.get(`user-profile/${userState.id}`, {
         headers: {
-          Authorization: `Bearer ${qLocalStorage.getItem('token')}`
+          Authorization: `Bearer ${qCookies.get('token')}`
         }
       });
       userState.image = response.data.data.image;

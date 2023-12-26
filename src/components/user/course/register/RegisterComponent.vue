@@ -64,7 +64,7 @@ const { name: userName, email: userEmail, phone_number: userPhone } = useUserSto
 const bar = ref();
 const router = useRouter();
 const { $state: userState } = useUserStore()
-const { localStorage: qLocalStorage } = useQuasar();
+const { cookies: qCookies } = useQuasar();
 const course = ref<Courses>({
   name: '',
   description: '',
@@ -126,7 +126,7 @@ const onSubmit = async () => {
     try {
       await api.post('registration', { user_id: userState.id, course_id: routeParams.id }, {
         headers: {
-          Authorization: `Bearer ${qLocalStorage.getItem('token')}`
+          Authorization: `Bearer ${qCookies.get('token')}`
         }
       });
       router.push({ name: 'MyProfileIndexPage' });

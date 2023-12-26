@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { LocalStorage } from 'quasar';
+import { Cookies } from 'quasar';
 import { api } from 'src/boot/axios';
 import { ZoomLink } from 'src/models/course';
 
@@ -18,7 +18,7 @@ export const useZoomLinkStore = defineStore('zoomLink', {
         { link, course_id: this.courseId },
         {
           headers: {
-            Authorization: 'Bearer ' + LocalStorage.getItem('token'),
+            Authorization: 'Bearer ' + Cookies.get('token'),
           },
         }
       );
@@ -29,7 +29,7 @@ export const useZoomLinkStore = defineStore('zoomLink', {
         { link, course_id: this.zoomLinkData.courseId, _method: 'PATCH' },
         {
           headers: {
-            Authorization: 'Bearer ' + LocalStorage.getItem('token'),
+            Authorization: 'Bearer ' + Cookies.get('token'),
           },
         }
       );
@@ -37,7 +37,7 @@ export const useZoomLinkStore = defineStore('zoomLink', {
     async deleteZoomLink(): Promise<void> {
       await api.delete(`zoom-link/${this.zoomLinkData.id}`, {
         headers: {
-          Authorization: 'Bearer ' + LocalStorage.getItem('token'),
+          Authorization: 'Bearer ' + Cookies.get('token'),
         },
       });
     },

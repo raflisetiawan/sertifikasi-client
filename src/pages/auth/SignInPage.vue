@@ -8,7 +8,7 @@
               <q-card-section>
                 <div class="text-h6">Sign In</div>
                 <q-banner inline-actions :class="signInError.isError ? `text-white bg-red` : `text-white bg-red hidden `"
-                  rounded v-if="signInError.isError">
+                  rounded v-show="signInError.isError">
                   {{ signInError.message }}
                   <template v-slot:action>
                     <q-btn flat dense icon="fa-solid fa-xmark" @click="signInError.isError = false" />
@@ -65,7 +65,7 @@ import axios from 'axios';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
-const { localStorage: qLocalStorage } = useQuasar();
+const { cookies: qCookies } = useQuasar();
 
 useMeta({
   title: 'Sign In - Sertifikasi'
@@ -95,7 +95,7 @@ const onSubmit = async () => {
     loadingSignIn.value = true;
     try {
       const response = await api.post('signin', signInForm.value);
-      qLocalStorage.set('token', response.data.token);
+      qCookies.set('token', response.data.token);
       if (response.data.user.role_id === 1) router.push({ name: 'AdminPage' })
       else router.push({ name: 'HomePage' })
     } catch (error) {

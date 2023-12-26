@@ -8,7 +8,7 @@
               <q-card-section>
                 <div class="text-h6">Daftar</div>
                 <q-banner inline-actions :class="signUpError.isError ? `text-white bg-red` : `text-white bg-red hidden `"
-                  rounded v-if="signUpError.isError">
+                  rounded v-show="signUpError.isError">
                   {{ signUpError.message }}
                   <template v-slot:action>
                     <q-btn flat dense icon="fa-solid fa-xmark" @click="signUpError.isError = false" />

@@ -21,7 +21,7 @@
           <div class="row">
             <div class="col-12">
               <q-btn flat dense icon="fa-brands fa-tiktok" color="white"><span class="q-ml-md">Tiktok</span></q-btn>
-              <q-separator v-if="$q.screen.lt.md" class="q-my-md" color="white"></q-separator>
+              <q-separator v-show="$q.screen.lt.md" class="q-my-md" color="white"></q-separator>
             </div>
           </div>
         </div>
@@ -40,13 +40,13 @@
           <div class="row">
             <q-btn dense flat icon="contacts" :to="{ name: 'ContactPage' }"><span class="q-ml-md">Kontak</span></q-btn>
           </div>
-          <q-separator v-if="$q.screen.lt.md" class="q-my-md" color="white"></q-separator>
+          <q-separator v-show="$q.screen.lt.md" class="q-my-md" color="white"></q-separator>
         </div>
         <div class="col-md-4 col-sm-8 col-xs-10 text-white">
           <div class="text-h6">Office: </div>
           <div class="text-body1">Kompleks PT. Semen Indonesia (Persero) Tbk, Jl. Veteran, Kb. Dalem, Sidomoro, Kebomas,
             Gresik Regency, East Java 61122</div>
-          <q-separator v-if="$q.screen.lt.md" class="q-my-md" color="white"></q-separator>
+          <q-separator v-show="$q.screen.lt.md" class="q-my-md" color="white"></q-separator>
         </div>
 
       </div>

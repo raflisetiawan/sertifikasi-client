@@ -10,7 +10,7 @@
             <div class="text-caption text-grey3">
               {{ useFormatDateRange(course.operational_start, course.operational_end) }}
             </div>
-            <div class="text-overline text-grey3" v-if="courseState">
+            <div class="text-overline text-grey3" v-show="courseState">
               {{ toRupiah(course.price) }}
             </div>
           </q-card-section>

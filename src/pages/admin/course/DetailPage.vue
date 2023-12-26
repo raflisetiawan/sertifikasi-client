@@ -4,7 +4,7 @@
     <div class="q-pa-md">
       <div class="row justify-center">
         <div class="col-md-8 col-sm-10 col-xs-12">
-          <q-img v-if="course.image !== null" :src="`${storageBaseUrl}courses/${course.image}`" loading="eager"
+          <q-img v-show="course.image !== null" :src="`${storageBaseUrl}courses/${course.image}`" loading="eager"
             spinner-color="white" style="height: 140px; max-width: 150px" />
         </div>
       </div>

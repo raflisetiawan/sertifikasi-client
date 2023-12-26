@@ -26,7 +26,7 @@
             <q-item-section>
               <q-item-label><q-btn color="blue">Ubah Password</q-btn></q-item-label>
             </q-item-section>
-            <q-item-section v-if="$state.email_verified_at === null">
+            <q-item-section v-show="$state.email_verified_at === null">
               <q-item-label><q-btn color="warning">Verifikasi Email</q-btn></q-item-label>
             </q-item-section>
           </q-item>
@@ -52,7 +52,7 @@ import { defineAsyncComponent, onMounted } from 'vue';
 import { useUserDialog } from 'stores/userDialog'
 import EditProfileDialog from 'src/components/user/my-profile/EditProfileDialog.vue';
 
-const { localStorage: qLocalStorage } = useQuasar();
+const { cookies: qCookies } = useQuasar();
 const FollowedCourseCard = defineAsyncComponent(() => import('components/user/my-profile/FollowedCourseCard.vue'));
 useMetaTitle('My Profile')
 
@@ -63,7 +63,7 @@ onMounted(async () => {
   if ($state.image?.length === 0) {
     const response = await api.get(`user-profile/${$state.id}`, {
       headers: {
-        Authorization: `Bearer ${qLocalStorage.getItem('token')}`
+        Authorization: `Bearer ${qCookies.get('token')}`
       }
     });
     $state.image = response.data.data.image;

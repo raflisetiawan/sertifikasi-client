@@ -41,7 +41,7 @@
         </div>
         <div class="row q-mt-md justify-center">
           <div class="col-md-6 col-sm-8 col-xs-10">
-            <div v-if="course.trainer?.image" class="text-center">
+            <div v-show="course.trainer?.image" class="text-center">
               <div style="cursor: pointer;">
                 <q-img @click="$router.push({ name: 'TrainerIndexPage', params: { id: course.trainer.id } })"
                   width="200px" height="200px" style="border-radius: 50%; overflow: hidden; border: solid 1px grey;"

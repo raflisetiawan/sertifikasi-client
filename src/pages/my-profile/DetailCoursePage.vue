@@ -33,7 +33,7 @@ import { api } from 'src/boot/axios';
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
-const { localStorage: qLocalStorage } = useQuasar();
+const { cookies: qCookies } = useQuasar();
 const route = useRoute();
 const course = ref({ name: '', description: '', image: '', materials: [] });
 
@@ -41,7 +41,7 @@ onMounted(async () => {
   try {
     const response = await api.get(`courses/${route.params.id}/with-materials`, {
       headers: {
-        Authorization: `Bearer ${qLocalStorage.getItem('token')}`
+        Authorization: `Bearer ${qCookies.get('token')}`
       }
     });
     course.value = response.data.data;

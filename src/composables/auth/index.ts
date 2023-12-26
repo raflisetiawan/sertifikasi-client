@@ -1,7 +1,8 @@
 import { useUserStore } from 'src/stores/user';
+import { qCookies } from 'src/boot/cookies';
 
 const isAuthenticated = (): boolean => {
-  const token = localStorage.getItem('token');
+  const token = qCookies.get('token');
   return !!token;
 };
 

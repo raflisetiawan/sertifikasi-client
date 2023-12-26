@@ -30,7 +30,7 @@
                   <q-td key="zoom_link" :props="props">
                     <q-btn size="sm" flat dense style="text-transform: lowercase;" color="blue"
                       :href="props.row.zoom_link" target="_blank"> {{
-                        useSimplifyUrl(props.row.zoom_link, 30) }}</q-btn>
+                      useSimplifyUrl(props.row.zoom_link, 30) }}</q-btn>
                   </q-td>
                 </template>
                 <template v-else>

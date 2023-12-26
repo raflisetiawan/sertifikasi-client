@@ -4,7 +4,7 @@ import { api } from 'src/boot/axios';
 import { Router } from 'src/router/index';
 import { useNotify } from 'src/composables/notifications';
 import { UserEditForm } from 'src/models/user';
-import { LocalStorage } from 'quasar';
+import { Cookies } from 'quasar';
 import { useUser } from 'src/composables/auth/user';
 
 export const useUserStore = defineStore('user', {
@@ -40,8 +40,8 @@ export const useUserStore = defineStore('user', {
       this.$state.role = '';
       this.$state.email_verified_at = null;
 
-      localStorage.removeItem('token');
-      localStorage.removeItem('signedIn');
+      Cookies.remove('token');
+      Cookies.remove('signedIn');
     },
     async logout() {
       try {
@@ -61,12 +61,12 @@ export const useUserStore = defineStore('user', {
     async editProfile(data: UserEditForm): Promise<void> {
       await api.post(`user-profile/${this.id}`, data, {
         headers: {
-          Authorization: `Bearer ${LocalStorage.getItem('token')}`,
+          Authorization: `Bearer ${Cookies.get('token')}`,
           'Content-Type': 'multipart/form-data',
         },
       });
 
-      const response = await useUser(LocalStorage.getItem('token'));
+      const response = await useUser(Cookies.get('token'));
       this.setUser(response.data.user);
     },
   },

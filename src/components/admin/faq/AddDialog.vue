@@ -107,7 +107,7 @@
   times_new_roman: 'Times New Roman',
   verdana: 'Verdana'
 }" />
-            <div class="q-ml-md text-body2 text-red-8" v-if="v$.answer.$error">{{ v$.question.$errors.map((e) =>
+            <div class="q-ml-md text-body2 text-red-8" v-show="v$.answer.$error">{{ v$.question.$errors.map((e) =>
               e.$message).join()
             }}</div>
           </q-card-section>

@@ -31,8 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { VueMarqueeSlider } from 'vue3-marquee-slider';
-import '../../../../node_modules/vue3-marquee-slider/dist/style.css'
+// import { VueMarqueeSlider } from 'vue3-marquee-slider/dist/vue3-marquee-slider.es';
 </script>
 
 <style scoped></style>
