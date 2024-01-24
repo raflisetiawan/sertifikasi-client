@@ -3,8 +3,8 @@
     <div class="row justify-center">
       <div class="col-12">
         <div class="row justify-center">
-          <div class="col-md-6 col-sm-8 col-xs-11">
-            <q-card class="my-card">
+          <div class="col-md-10 col-sm-10 col-xs-11">
+            <q-card class="my-card" bordered flat>
               <q-card-section>
                 <div class="text-h6">Sign In</div>
                 <q-banner inline-actions :class="signInError.isError ? `text-white bg-red` : `text-white bg-red hidden `"
@@ -60,16 +60,15 @@ import { SignInForm, SignInError } from 'src/models/auth';
 import { useVuelidate } from '@vuelidate/core'
 import { useEmail, useRequired, useMinLength } from 'src/composables/validators';
 import { api } from 'boot/axios';
-import { useQuasar, useMeta } from 'quasar';
+import { useQuasar } from 'quasar';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
+import { useMetaTitle } from 'src/composables/meta';
 
 const router = useRouter();
 const { cookies: qCookies } = useQuasar();
 
-useMeta({
-  title: 'Sign In - Sertifikasi'
-})
+useMetaTitle('Sign In')
 
 const signInForm = ref<SignInForm>({
   email: '',

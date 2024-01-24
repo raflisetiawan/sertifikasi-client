@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-img loading="lazy" id="hero" src="~/assets/Selamat datang.svg">
+    <q-img loading="lazy" id="hero" src="~/assets/Selamat-datang-polos.svg">
       <div :class="$q.screen.lt.sm ? 'q-mt-xl absolute-full flex flex-center' : 'absolute-full flex flex-center'">
         <div class="container">
           <div class="row ">

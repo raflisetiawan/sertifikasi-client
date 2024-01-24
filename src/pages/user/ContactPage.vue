@@ -5,8 +5,6 @@
         <div class="col-md-5 col-sm-8 col-xs-10">
           <div class="text-h3 text-primary">Contact</div>
           <q-separator color="primary" size="5px" style="width: 200px"></q-separator>
-          <div class="text-body2">Lorem ipsum dolor sit amet consectetur adipisicing elit. Eos nostrum reprehenderit
-            dignissimos quas in pariatur dolorem sunt placeat illum quia! Quam facilis expedita inventore iusto.</div>
         </div>
         <div class="col-md-6 col-sm-8 col-xs-10">
           <q-form @submit="onSubmit" class="q-gutter-md">

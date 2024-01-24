@@ -2,7 +2,7 @@
   <div id="course-page">
     <q-ajax-bar ref="bar" color="pink-11" position="top" size="5px" skip-hijack />
     <div class="banner">
-      <q-img src="~/assets/banner-bg-02.jpg" fit="cover" position="center" height="200px">
+      <q-img src="~/assets/Daftar-Kelas-polos.svg" fit="cover" position="center" height="200px">
         <div class="absolute-center bg-transparent">
           <div class="text-h4 text-white text-center">Daftar Kelas</div>
           <q-separator size="5px" class="q-mt-md" color="primary"></q-separator>

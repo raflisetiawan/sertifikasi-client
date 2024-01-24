@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { Cookies } from 'quasar';
+import { qCookies } from 'src/boot/cookies';
 import { api } from 'src/boot/axios';
 import { UserCourses } from 'src/models/course';
 
@@ -11,7 +11,7 @@ export const useUserCourse = defineStore('userCourse', {
     async getFollowedCourse(userId: number) {
       const response = await api.get(`user/course/${userId}`, {
         headers: {
-          Authorization: `Bearer ${Cookies.get('token')}`,
+          Authorization: `Bearer ${qCookies.get('token')}`,
         },
       });
       this.followedCourses = response.data.data;

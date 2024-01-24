@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { Cookies } from 'quasar';
+import { qCookies } from 'src/boot/cookies';
 import { api } from 'src/boot/axios';
 import { Trainer } from 'src/models/trainer';
 
@@ -32,7 +32,7 @@ export const useTrainerStore = defineStore('trainer', {
     async addTrainer(data: Trainer) {
       await api.post('trainers', data, {
         headers: {
-          Authorization: 'Bearer ' + Cookies.get('token'),
+          Authorization: 'Bearer ' + qCookies.get('token'),
           'Content-Type': 'multipart/form-data',
         },
       });
@@ -48,7 +48,7 @@ export const useTrainerStore = defineStore('trainer', {
         },
         {
           headers: {
-            Authorization: 'Bearer ' + Cookies.get('token'),
+            Authorization: 'Bearer ' + qCookies.get('token'),
             'Content-Type': 'multipart/form-data',
           },
         }
@@ -58,7 +58,7 @@ export const useTrainerStore = defineStore('trainer', {
     async deleteTrainer(id: number): Promise<void> {
       await api.delete(`trainers/${id}`, {
         headers: {
-          Authorization: 'Bearer ' + Cookies.get('token'),
+          Authorization: 'Bearer ' + qCookies.get('token'),
         },
       });
       await this.getTrainers();
@@ -72,7 +72,7 @@ export const useTrainerStore = defineStore('trainer', {
         { trainer },
         {
           headers: {
-            Authorization: 'Bearer ' + Cookies.get('token'),
+            Authorization: 'Bearer ' + qCookies.get('token'),
           },
         }
       );

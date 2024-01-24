@@ -6,10 +6,11 @@
         <q-btn v-show="$q.screen.lt.md" flat dense round @click="leftDrawer = !leftDrawer" aria-label="Menu"
           icon="menu" />
         <q-toolbar-title>
-          <q-avatar>
-            <img src="../assets/profile.jpg">
+          <q-avatar rounded @click="$router.push({ name: 'HomePage' })" style="cursor: pointer;">
+            <img src="icons/favicon-128x128.png">
           </q-avatar>
-          <span v-show="$q.screen.gt.xs" class="q-ml-sm">Digiclass</span>
+          <span v-show="$q.screen.gt.xs" class="q-ml-sm" @click="$router.push({ name: 'HomePage' })"
+            style="cursor: pointer;">Digiclass</span>
         </q-toolbar-title>
         <q-space></q-space>
         <q-tabs v-show="$q.screen.gt.sm" v-model="tab" shrink>

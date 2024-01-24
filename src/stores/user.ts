@@ -1,10 +1,9 @@
 import { defineStore } from 'pinia';
 import { User } from 'src/models/user';
 import { api } from 'src/boot/axios';
-import { Router } from 'src/router/index';
 import { useNotify } from 'src/composables/notifications';
 import { UserEditForm } from 'src/models/user';
-import { Cookies } from 'quasar';
+import { qCookies } from 'src/boot/cookies';
 import { useUser } from 'src/composables/auth/user';
 
 export const useUserStore = defineStore('user', {
@@ -40,8 +39,8 @@ export const useUserStore = defineStore('user', {
       this.$state.role = '';
       this.$state.email_verified_at = null;
 
-      Cookies.remove('token');
-      Cookies.remove('signedIn');
+      qCookies.remove('token');
+      qCookies.remove('signedIn');
     },
     async logout() {
       try {
@@ -49,7 +48,7 @@ export const useUserStore = defineStore('user', {
         if (response.data.success) {
           this.resetUser();
           useNotify('Berhasil logout', 'green');
-          Router.push({ name: 'SignInPage' });
+          this.router.push({ name: 'SignInPage' });
         } else {
           useNotify('Berhasil logout', 'green');
         }
@@ -61,12 +60,12 @@ export const useUserStore = defineStore('user', {
     async editProfile(data: UserEditForm): Promise<void> {
       await api.post(`user-profile/${this.id}`, data, {
         headers: {
-          Authorization: `Bearer ${Cookies.get('token')}`,
+          Authorization: `Bearer ${qCookies.get('token')}`,
           'Content-Type': 'multipart/form-data',
         },
       });
 
-      const response = await useUser(Cookies.get('token'));
+      const response = await useUser(qCookies.get('token'));
       this.setUser(response.data.user);
     },
   },

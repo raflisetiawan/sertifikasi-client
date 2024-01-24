@@ -6,7 +6,7 @@ import {
   CreateCourseForm,
   CourseTable,
 } from 'src/models/course';
-import { Cookies } from 'quasar';
+import { qCookies } from 'src/boot/cookies';
 import { AxiosResponse } from 'axios';
 
 export const useCourseStore = defineStore('course', {
@@ -24,7 +24,7 @@ export const useCourseStore = defineStore('course', {
     async storeCourse(data: CreateCourseForm) {
       await api.post('course', data, {
         headers: {
-          Authorization: 'Bearer ' + Cookies.get('token'),
+          Authorization: 'Bearer ' + qCookies.get('token'),
           'Content-Type': 'multipart/form-data',
         },
       });
@@ -38,7 +38,7 @@ export const useCourseStore = defineStore('course', {
     async updateCourse(id: string | string[] | number, data: UpdateCourseForm) {
       await api.post(`course/${id}`, data, {
         headers: {
-          Authorization: 'Bearer ' + Cookies.get('token'),
+          Authorization: 'Bearer ' + qCookies.get('token'),
           'Content-Type': 'multipart/form-data',
         },
       });
@@ -48,7 +48,7 @@ export const useCourseStore = defineStore('course', {
     async destroyCourse(id: number) {
       await api.delete(`course/${id}`, {
         headers: {
-          Authorization: 'Bearer ' + Cookies.get('token'),
+          Authorization: 'Bearer ' + qCookies.get('token'),
         },
       });
       await this.setCourses();
@@ -61,7 +61,7 @@ export const useCourseStore = defineStore('course', {
     async getCourseForTable(): Promise<CourseTable[]> {
       const response = await api.get('courses/with-zoom-link', {
         headers: {
-          Authorization: 'Bearer ' + Cookies.get('token'),
+          Authorization: 'Bearer ' + qCookies.get('token'),
         },
       });
 

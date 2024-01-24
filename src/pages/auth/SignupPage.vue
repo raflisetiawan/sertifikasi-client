@@ -3,8 +3,8 @@
     <div class="row justify-center">
       <div class="col-12">
         <div class="row justify-center">
-          <div class="col-md-6 col-sm-8 col-xs-11">
-            <q-card class="my-card">
+          <div class="col-md-10 col-sm-10 col-xs-11">
+            <q-card class="my-card" flat bordered>
               <q-card-section>
                 <div class="text-h6">Daftar</div>
                 <q-banner inline-actions :class="signUpError.isError ? `text-white bg-red` : `text-white bg-red hidden `"
@@ -85,13 +85,10 @@ import { useEmail, useRequired, useMinLength, useName, usePhoneNumber } from 'sr
 import { api } from 'boot/axios';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
-import { useMeta } from 'quasar';
+import { useMetaTitle } from 'src/composables/meta';
 const router = useRouter();
 
-useMeta({
-  title: 'Sign Up - Sertifikasi'
-})
-
+useMetaTitle('Sign Up')
 
 const signUpForm = ref<SignUpForm>({
   email: '',

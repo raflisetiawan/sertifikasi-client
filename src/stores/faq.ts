@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { Cookies } from 'quasar';
+import { qCookies } from 'src/boot/cookies';
 import { api } from 'src/boot/axios';
 import { Faqs } from 'src/models/faq';
 
@@ -25,7 +25,7 @@ export const useFaqStore = defineStore('faq', {
         },
         {
           headers: {
-            Authorization: 'Bearer ' + Cookies.get('token'),
+            Authorization: 'Bearer ' + qCookies.get('token'),
           },
         }
       );
@@ -42,7 +42,7 @@ export const useFaqStore = defineStore('faq', {
         },
         {
           headers: {
-            Authorization: 'Bearer ' + Cookies.get('token'),
+            Authorization: 'Bearer ' + qCookies.get('token'),
           },
         }
       );
@@ -51,7 +51,7 @@ export const useFaqStore = defineStore('faq', {
     async deleteFaq(id: number) {
       await api.delete(`faqs/${id}`, {
         headers: {
-          Authorization: 'Bearer ' + Cookies.get('token'),
+          Authorization: 'Bearer ' + qCookies.get('token'),
         },
       });
       await this.setFaqs();

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { Cookies } from 'quasar';
+import { qCookies } from 'src/boot/cookies';
 import { api } from 'src/boot/axios';
 import { MaterialForm, Material } from 'src/models/material';
 
@@ -15,7 +15,7 @@ export const useMaterialStore = defineStore('material', {
     async addMaterial(data: MaterialForm): Promise<void> {
       await api.post('materials', data, {
         headers: {
-          Authorization: `Bearer ${Cookies.get('token')}`,
+          Authorization: `Bearer ${qCookies.get('token')}`,
           'Content-Type': 'multipart/form-data',
         },
       });
@@ -33,7 +33,7 @@ export const useMaterialStore = defineStore('material', {
     ): Promise<void> {
       await api.post(`materials/${materialId}`, data, {
         headers: {
-          Authorization: `Bearer ${Cookies.get('token')}`,
+          Authorization: `Bearer ${qCookies.get('token')}`,
           'Content-Type': 'multipart/form-data',
         },
       });
@@ -45,7 +45,7 @@ export const useMaterialStore = defineStore('material', {
     ): Promise<void> {
       await api.delete(`materials/${id}`, {
         headers: {
-          Authorization: `Bearer ${Cookies.get('token')}`,
+          Authorization: `Bearer ${qCookies.get('token')}`,
           'Content-Type': 'multipart/form-data',
         },
       });
