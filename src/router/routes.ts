@@ -111,6 +111,20 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/admin/material/IndexPage.vue'),
         name: 'MaterialAdminIndexPage',
       },
+      // registrant
+      {
+        path: 'course-registrant',
+        component: () =>
+          import('pages/admin/course/course-registrant/IndexPage.vue'),
+        name: 'CourseRegistrantIndexPage',
+      },
+      {
+        path: 'course-registrant/:id',
+        component: () => import(
+          'pages/admin/course/course-registrant/DetailRegistrantPage.vue'
+        ),
+        name: 'CourseRegistrantDetailPage',
+      },
     ],
     meta: { requiresAuth: true, requiresAdmin: true },
   },
@@ -138,6 +152,11 @@ const routes: RouteRecordRaw[] = [
         name: 'MyProfileDetailCoursePage',
       },
     ],
+  },
+  {
+    path: '/email/verify/already-success',
+    component: () => import('pages/auth/AlreadyVerifiedPage.vue'),
+    name: 'AlreadyVerifiedPage',
   },
   {
     path: '/unauthorized',

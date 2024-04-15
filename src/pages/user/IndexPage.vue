@@ -22,8 +22,6 @@
 </template>
 
 <script setup lang="ts">
-// import CarouselCom from 'components/user/home/CarouselCom.vue';
-// import PartnerCom from 'components/user/home/PartnerCom.vue';
 import FooterCom from 'components/user/home/FooterCom.vue';
 import CourseTitle from 'components/user/course/CourseTitle.vue';
 import SeeMore from 'src/components/user/course/SeeMore.vue';

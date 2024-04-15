@@ -50,7 +50,7 @@ onMounted(async () => {
   }
 });
 
-const downloadMaterial = (file) => {
+const downloadMaterial = (file: any) => {
   // Implement your download logic here
   console.log('Downloading material:', file);
 };

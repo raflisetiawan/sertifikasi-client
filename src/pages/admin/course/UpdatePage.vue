@@ -143,7 +143,7 @@
               @input="v$.duration.$touch" @blur="v$.duration.$touch" />
             <q-file :filter="checkFileSize" hint="ukuran max 2mb" outlined v-model="courseForm.image"
               accept=".jpg, image/*" counter use-chips label="Upload gambar" @rejected="onRejected">
-              <template v-slot:default v-show="imageUrl.length !== 0 && !courseForm.image">
+              <template v-slot:default v-if="imageUrl.length !== 0 && !courseForm.image">
                 <q-img :src="imageUrl" width="100px" class="q-mb-sm" />
               </template>
             </q-file>

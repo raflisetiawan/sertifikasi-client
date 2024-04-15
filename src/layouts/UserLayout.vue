@@ -7,9 +7,9 @@
           icon="menu" />
         <q-toolbar-title>
           <q-avatar>
-            <img src="../assets/profile.jpg">
+            <img src="../assets/Logo-Digiclass-Red.png">
           </q-avatar>
-          logo project
+          UISI DIGICLASS
         </q-toolbar-title>
         <q-space></q-space>
         <q-tabs v-show="$q.screen.gt.sm" v-model="tab" shrink>

@@ -74,7 +74,7 @@ export interface CreateRegisterForm {
   email: string;
   price: number;
   bank: null | string;
-  voucher_code: string;
+  proofOfPayment: null;
 }
 
 export interface UserCourses {

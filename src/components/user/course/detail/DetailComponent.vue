@@ -12,7 +12,8 @@
               <div class="text-overline">{{ toRupiah(course.price) }}</div>
               <div class="text-body1">Online Via : {{ course.place }}
                 <div class="text-body2">{{ useFormatDateRange(course.operational_start, course.operational_end) }}</div>
-                <q-btn color="primary" :to="{ name: 'RegisterCourseUserPage', params: { id: course.id } }">Daftar</q-btn>
+                <q-btn color="primary"
+                  :to="{ name: 'RegisterCourseUserPage', params: { id: course.id } }">Daftar</q-btn>
               </div>
             </div>
           </div>
@@ -43,18 +44,18 @@
           <div class="col-md-6 col-sm-8 col-xs-10">
             <div v-show="course.trainer?.image" class="text-center">
               <div style="cursor: pointer;">
-                <q-img @click="$router.push({ name: 'TrainerIndexPage', params: { id: course.trainer.id } })"
+                <q-img @click="$router.push({ name: 'TrainerIndexPage', params: { id: course.trainer?.id } })"
                   width="200px" height="200px" style="border-radius: 50%; overflow: hidden; border: solid 1px grey;"
                   :src="getTrainerImage(course.trainer?.image)"></q-img>
-                <div @click="$router.push({ name: 'TrainerIndexPage', params: { id: course.trainer.id } })"
+                <div @click="$router.push({ name: 'TrainerIndexPage', params: { id: course.trainer?.id } })"
                   class="text-h6 text-center">
-                  {{ course.trainer.name }}
+                  {{ course.trainer?.name }}
                 </div>
               </div>
               <div class="text-overline text-center">
-                {{ course.trainer.qualification }}
+                {{ course.trainer?.qualification }}
               </div>
-              <div v-html="course.trainer.description">
+              <div v-html="course.trainer?.description">
               </div>
             </div>
           </div>
@@ -109,7 +110,7 @@ const course = ref<Courses>({
 const response = await showCourse(routeParams.id)
 course.value = response.data;
 
-const getTrainerImage = (image: string | undefined | File) => {
+const getTrainerImage = (image: string | File | undefined | null) => {
   return storageBaseUrl + image;
 }
 

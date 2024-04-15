@@ -2,14 +2,14 @@
   <div class="fullscreen bg-primary text-white text-center q-pa-md flex flex-center">
     <div>
       <div style="font-size: 30vh">
-        401
       </div>
 
       <div class="text-h2" style="opacity:.4">
-        Unauthorized
+        Akun anda sudah ter verifikasi
       </div>
 
-      <q-btn class="q-mt-xl" color="white" text-color="primary" unelevated to="/" label="Go Home" no-caps />
+      <q-btn class="q-mt-xl" color="white" text-color="primary" unelevated :to="{ name: 'SignInPage' }" label="Sign In"
+        no-caps />
     </div>
   </div>
 </template>

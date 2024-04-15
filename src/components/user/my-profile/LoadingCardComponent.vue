@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Secret</h1>
+    <q-spinner color="primary" size="3em" />
   </div>
 </template>
 

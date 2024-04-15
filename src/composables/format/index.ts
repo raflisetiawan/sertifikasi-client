@@ -21,12 +21,6 @@ export function useFormatDateRange(
   const start = new Date(operationalStart);
   const end = new Date(operationalEnd);
 
-  const options: Intl.DateTimeFormatOptions = {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  };
-
   // Jika bulan dan tahun sama
   if (
     start.getMonth() === end.getMonth() &&
@@ -45,10 +39,14 @@ export function useFormatDateRange(
     month: 'long',
   }).format(end)} ${end.getFullYear()}`;
 }
-
 export function useDateFormat(tanggal: string): string {
-  const options = { day: 'numeric', month: 'long', year: 'numeric' };
-  const formattedDate = new Date(tanggal).toLocaleDateString('id-ID', options);
+  const date = new Date(tanggal);
+  const options: Intl.DateTimeFormatOptions = {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  };
+  const formattedDate = date.toLocaleDateString('id-ID', options);
   return formattedDate;
 }
 

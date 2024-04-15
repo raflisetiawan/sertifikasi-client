@@ -11,7 +11,7 @@
             <q-input v-model="formDialog.name" class="q-my-md" label="Nama" outlined type="text" :error="v$.name.$error"
               :error-message="v$.name.$errors.map((e) => e.$message).join()" @input="v$.name.$touch"
               @blur="v$.name.$touch" />
-            <q-input v-model="formDialog.phone_number" class="q-my-md" label="Nama" outlined type="text"
+            <q-input v-model="formDialog.phone_number" class="q-my-md" label="Nomor Whatsapp" outlined type="text"
               :error="v$.phone_number.$error" :error-message="v$.phone_number.$errors.map((e) => e.$message).join()"
               @input="v$.phone_number.$touch" @blur="v$.phone_number.$touch" />
             <q-file hint="ukuran max 2mb" :filter="checkFileSize" outlined v-model="formDialog.image"
