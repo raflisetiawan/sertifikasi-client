@@ -8,7 +8,7 @@
       <q-item-section>Detail Kelas</q-item-section>
     </q-item>
     <q-separator></q-separator>
-    <q-item clickable v-ripple @click="$emit('showAddDialog', [props.propsData.row.id, props.propsData.row.name])">
+    <q-item clickable v-ripple @click="$emit('showAddDialog', props.propsData.row.id, props.propsData.row.name)">
       <q-item-section avatar>
         <q-icon name="assignment_add" color="primary"></q-icon>
       </q-item-section>
@@ -21,25 +21,26 @@
       <q-item-section>Lihat Materi</q-item-section>
     </q-item>
     <q-separator></q-separator>
-    <q-item clickable v-if="!props.propsData?.row.zoom_link" v-ripple @click="showAddZoomDialog(props.propsData.row.id)">
+    <q-item clickable v-if="!props.propsData?.row.zoom_link" v-ripple
+      @click="showAddZoomDialog(props.propsData.row.id)">
       <q-item-section avatar>
         <q-icon name="videocam" color="primary"></q-icon>
       </q-item-section>
       <q-item-section>Buat Link Zoom</q-item-section>
     </q-item>
     <q-item clickable v-ripple @click="showEditZoomDialog(
-      props.propsData.row.id,
-      props.propsData.row.zoom_link,
-      props.propsData.row.zoom_link_id)" v-else>
+    props.propsData.row.id,
+    props.propsData.row.zoom_link,
+    props.propsData.row.zoom_link_id)" v-else>
       <q-item-section avatar>
         <q-icon name="videocam" color="green"></q-icon>
       </q-item-section>
       <q-item-section>Edit Link Zoom</q-item-section>
     </q-item>
     <q-item clickable v-show="props.propsData?.row.zoom_link" v-ripple @click="showDeleteZoomDialog(
-      props.propsData.row.id,
-      props.propsData.row.zoom_link,
-      props.propsData.row.zoom_link_id)">
+    props.propsData.row.id,
+    props.propsData.row.zoom_link,
+    props.propsData.row.zoom_link_id)">
       <q-item-section avatar>
         <q-icon name="videocam" color="red">
         </q-icon>

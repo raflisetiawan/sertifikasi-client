@@ -84,8 +84,31 @@
 
         </div>
       </div>
-      <q-btn color="primary" type="submit">Daftar</q-btn>
+      <q-btn color="primary" type="submit" :loading="loading">Daftar</q-btn>
     </q-form>
+    <q-dialog v-model="pendingApproval">
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">Pendaftaran Anda Berhasil!</div>
+          <div class="text-body1 q-mb-sm">Terima kasih telah mendaftar kelas <span class="text-weight-bold"> {{
+        course.name
+      }}.</span>
+          </div>
+          <div class="text-body1 q-mb-sm">Pendaftaran Anda berhasil, namun saat ini sedang menunggu verifikasi dari
+            admin.
+          </div>
+          <div class="text-body1 q-mb-sm">Kami akan segera memberitahu Anda melalui email setelah pendaftaran Anda
+            diverifikasi.
+          </div>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="Lihat Detail Kelas" @click="$router.push({ name: 'MyProfileIndexPage' })" color="primary"
+            v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
   </div>
 </template>
 
@@ -93,7 +116,7 @@
 import { Courses, CreateRegisterForm } from 'src/models/course';
 import { useCourseStore } from 'src/stores/course';
 import { onMounted, ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
 import { useVuelidate } from '@vuelidate/core'
 import { useEmail, useRequired, useName, usePhoneNumber } from 'src/composables/validators';
 import { useUserStore } from 'src/stores/user';
@@ -107,9 +130,10 @@ import toRupiah from '@develoka/angka-rupiah-js';
 useMetaTitle('Pendaftaran')
 const { name: userName, email: userEmail, phone_number: userPhone } = useUserStore()
 const bar = ref();
-const router = useRouter();
 const { $state: userState } = useUserStore()
 const { cookies: qCookies } = useQuasar();
+const pendingApproval = ref<boolean>(false);
+const loading = ref<boolean>(false);
 const course = ref<Courses>({
   name: '',
   description: '',
@@ -153,16 +177,16 @@ const rules = {
 const v$ = useVuelidate(rules, registerCourseForm.value)
 
 const onSubmit = async () => {
-
   if (!v$.value.$invalid) {
     try {
+      loading.value = true;
       await api.post('registration', { user_id: userState.id, course_id: routeParams.id, payment_proof: registerCourseForm.value.proofOfPayment }, {
         headers: {
           Authorization: `Bearer ${qCookies.get('token')}`,
           'Content-Type': 'multipart/form-data'
         }
       });
-      router.push({ name: 'MyProfileIndexPage' });
+      pendingApproval.value = true;
     } catch (error) {
       if (error instanceof AxiosError) {
 
@@ -174,6 +198,8 @@ const onSubmit = async () => {
       } else {
         useNotify('Terjadi masalah', 'red');
       }
+    } finally {
+      loading.value = false;
     }
 
   } else {

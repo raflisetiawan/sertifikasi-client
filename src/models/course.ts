@@ -95,6 +95,17 @@ export interface UserCourses {
   status?: string;
 }
 
+export interface RegisteredCourse {
+  id: number;
+  name: string;
+  image: string;
+  operational_start: string;
+  place: string;
+  status: string;
+  verification: boolean;
+  guidelines: string;
+}
+
 export interface CourseTable {
   id: number;
   name: string;
@@ -118,4 +129,14 @@ export interface CourseRows {
   status: string;
   zoom_link?: string;
   zoom_link_id?: number;
+}
+
+export interface CourseIdAndNames {
+  id: number;
+  name: string;
+}
+
+export interface CourseIdAndNameOptions {
+  value: number;
+  label: string;
 }

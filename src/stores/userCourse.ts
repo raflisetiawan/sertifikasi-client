@@ -1,11 +1,11 @@
 import { defineStore } from 'pinia';
 import { qCookies } from 'src/boot/cookies';
 import { api } from 'src/boot/axios';
-import { UserCourses } from 'src/models/course';
+import { RegisteredCourse } from 'src/models/course';
 
 export const useUserCourse = defineStore('userCourse', {
   state: () => ({
-    followedCourses: [] as UserCourses[],
+    followedCourses: [] as RegisteredCourse[],
   }),
   actions: {
     async getFollowedCourse(userId: number) {

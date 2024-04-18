@@ -1,75 +1,76 @@
 <template>
   <div id="course-admin-page">
-      <div class="q-pa-md">
-        <div class="row">
-          <div class="col-md-12 col-sm-12 col-xs-12">
-            <q-table title="Semua Kelas" :rows="rows" :columns="columns" row-key="name" :filter="filter">
-              <template v-slot:header="props">
-                <q-tr :props="props">
-                  <q-th v-for="col in props.cols" :key="col.name" :props="props">
-                    {{ col.label }}
-                  </q-th>
-                  <q-th>Action</q-th>
-                </q-tr>
-              </template>
-              <template v-slot:body="props">
-                <q-tr :props="props" @dblclick="handleRowClick(props.row.id)">
-                  <CourseMenuTableVue :touchPosition="true" :contextMenu="true" :propsData="props"
-                    @showAddDialog="(id, name) => showAddDialog(id, name)" @handleRowClick="(id) => handleRowClick(id)" />
-                  <q-td key="name" :props="props" style="cursor: pointer;" @click="handleRowClick(props.row.id)">
-                    {{ props.row.name }}
+    <div class="q-pa-md">
+      <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+          <q-table title="Semua Kelas" :rows="rows" :columns="columns" row-key="name" :filter="filter">
+            <template v-slot:header="props">
+              <q-tr :props="props">
+                <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                  {{ col.label }}
+                </q-th>
+                <q-th>Action</q-th>
+              </q-tr>
+            </template>
+            <template v-slot:body="props">
+              <q-tr :props="props" @dblclick="handleRowClick(props.row.id)">
+                <CourseMenuTableVue :touchPosition="true" :contextMenu="true" :propsData="props"
+                  @showAddDialog="(id, name) => showAddDialog(id, name)" @handleRowClick="(id) => handleRowClick(id)" />
+                <q-td key="name" :props="props" style="cursor: pointer;" @click="handleRowClick(props.row.id)">
+                  {{ props.row.name }}
+                </q-td>
+                <q-td key="operational_start" :props="props">
+                  {{ props.row.operational_start }}
+                </q-td>
+                <q-td key="status" :props="props">
+                  <StatusBadgeComponentVue :status="props.row.status" />
+                </q-td>
+                <template v-if="props.row.zoom_link">
+                  <q-td key="zoom_link" :props="props">
+                    <q-btn size="sm" flat dense style="text-transform: lowercase;" color="blue"
+                      :href="props.row.zoom_link" target="_blank"> {{
+            useSimplifyUrl(props.row.zoom_link, 30) }}</q-btn>
                   </q-td>
-                  <q-td key="operational_start" :props="props">
-                    {{ props.row.operational_start }}
+                </template>
+                <template v-else>
+                  <q-td>
+                    Belum ada link zoom
                   </q-td>
-                  <q-td key="status" :props="props">
-                    <StatusBadgeComponentVue :status="props.row.status" />
-                  </q-td>
-                  <template v-if="props.row.zoom_link">
-                    <q-td key="zoom_link" :props="props">
-                      <q-btn size="sm" flat dense style="text-transform: lowercase;" color="blue"
-                        :href="props.row.zoom_link" target="_blank"> {{
-                          useSimplifyUrl(props.row.zoom_link, 30) }}</q-btn>
-                    </q-td>
-                  </template>
-                  <template v-else>
-                    <q-td>
-                      Belum ada link zoom
-                    </q-td>
-                  </template>
-                  <q-td class="text-center">
-                    <q-btn size="sm" color="red" class="q-mr-md" @click="showDeleteDialog(props.row)" round dense
-                      icon="delete"> <q-tooltip>Hapus Kelas</q-tooltip> </q-btn>
-                    <q-btn size="sm" color="green" class="q-mr-md" round dense
-                      @click="$router.push({ name: 'UpdateCoursePage', params: { id: props.row.id } })" icon="edit" />
-                    <q-btn icon="more_vert" flat>
-                      <CourseMenuTableVue :touchPosition="false" :contextMenu="false" :propsData="props"
-                        @showAddDialog="(id, name) => showAddDialog(id, name)"
-                        @handleRowClick="(id) => handleRowClick(id)" />
-                    </q-btn>
-                  </q-td>
-                </q-tr>
-              </template>
-              <template v-slot:top-right>
-                <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
-                  <template v-slot:append>
-                    <q-icon name="search" />
-                  </template>
-                </q-input>
-              </template>
-            </q-table>
-          </div>
+                </template>
+                <q-td class="text-center">
+                  <q-btn size="sm" color="red" class="q-mr-md" @click="showDeleteDialog(props.row)" round dense
+                    icon="delete">
+                    <q-tooltip>Hapus Kelas</q-tooltip> </q-btn>
+                  <q-btn size="sm" color="green" class="q-mr-md" round dense
+                    @click="$router.push({ name: 'UpdateCoursePage', params: { id: props.row.id } })" icon="edit" />
+                  <q-btn icon="more_vert" flat>
+                    <CourseMenuTableVue :touchPosition="false" :contextMenu="false" :propsData="props"
+                      @showAddDialog="(id, name) => showAddDialog(id, name)"
+                      @handleRowClick="(id) => handleRowClick(id)" />
+                  </q-btn>
+                </q-td>
+              </q-tr>
+            </template>
+            <template v-slot:top-right>
+              <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
+                <template v-slot:append>
+                  <q-icon name="search" />
+                </template>
+              </q-input>
+            </template>
+          </q-table>
         </div>
-        <q-page-sticky position="bottom-right" :offset="[18, 18]">
-          <q-btn fab icon="add" color="primary" :to="{ name: 'CreateCoursePage' }" />
-        </q-page-sticky>
       </div>
-      <delete-dialog :course="course" :isDeleteDialogShow="isDeleteDialogShow"
-        @closeDeleteDialog="isDeleteDialogShow = false" @successDelete="(async () => await getCourses())" />
-      <AddDialog :courseId="courseId" :courseName="courseName" />
-      <AddZoomDialog @getCourses="() => getCourses()" />
-      <EditZoomDialog @getCourses="() => getCourses()" />
-      <DeleteZoomDialog @getCourses="() => getCourses()" />
+      <q-page-sticky position="bottom-right" :offset="[18, 18]">
+        <q-btn fab icon="add" color="primary" :to="{ name: 'CreateCoursePage' }" />
+      </q-page-sticky>
+    </div>
+    <delete-dialog :course="course" :isDeleteDialogShow="isDeleteDialogShow"
+      @closeDeleteDialog="isDeleteDialogShow = false" @successDelete="(async () => await getCourses())" />
+    <AddDialog :courseId="courseId" :courseName="courseName" />
+    <AddZoomDialog @getCourses="() => getCourses()" />
+    <EditZoomDialog @getCourses="() => getCourses()" />
+    <DeleteZoomDialog @getCourses="() => getCourses()" />
   </div>
 </template>
 

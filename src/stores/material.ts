@@ -23,7 +23,11 @@ export const useMaterialStore = defineStore('material', {
     async getMaterialByCourseId(
       courseId: string | string[] | number | undefined
     ): Promise<void> {
-      const response = await api.get(`materials/by-course/${courseId}`);
+      const response = await api.get(`materials/by-course/${courseId}`, {
+        headers: {
+          Authorization: `Bearer ${qCookies.get('token')}`,
+        },
+      });
       this.materials = response.data.data;
     },
     async updateMaterial(

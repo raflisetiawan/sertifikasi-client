@@ -44,7 +44,8 @@
       </div>
       <div class="row q-my-sm items-center q-mt-md">
         <div class="q-col">
-          <q-btn @click="submitRegistration" color="primary">Setujui Pendaftaran</q-btn>
+          <q-btn @click="submitRegistration" color="primary" :loading="loading">
+            {{ registrant.verification === 1 ? 'Batalkan Pendaftaran' : 'Setujui Pendaftaran' }}</q-btn>
         </div>
       </div>
       <vue-easy-lightbox :visible="visibleRef" :imgs="imgsRef" :index="indexRef" @hide="onHide" />
@@ -57,13 +58,14 @@ import { useMetaTitle } from 'src/composables/meta';
 import { useCourseRegistrantStore } from 'src/stores/course-registrant';
 import { DetailRegistration } from 'src/models/course-registrant';
 import { onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useDateFormat } from 'src/composables/format';
 import toRupiah from '@develoka/angka-rupiah-js'
 import VueEasyLightbox from 'vue-easy-lightbox/dist/external-css/vue-easy-lightbox.esm.min.js'
 import 'vue-easy-lightbox/external-css/vue-easy-lightbox.css'
 import { api } from 'src/boot/axios';
 import { qCookies } from 'src/boot/cookies';
+import { useNotify } from 'src/composables/notifications';
 
 const route = useRoute()
 const { getCourseRegistrant } = useCourseRegistrantStore()
@@ -75,7 +77,10 @@ const registrant = ref<DetailRegistration>({
   phone_number: 0,
   registration_date: '',
   payment_proof_url: '',
+  verification: 0
 })
+const router = useRouter();
+const loading = ref(false);
 
 useMetaTitle('Detail Pendaftar Kelas - Admin')
 
@@ -98,15 +103,18 @@ const onHide = () => {
 
 const submitRegistration = async () => {
   try {
-    const response = await api.post(`course-registrant/approve/${route.params.id}`, {}, {
+    loading.value = true;
+    await api.post(`course-registrant/approve/${route.params.id}`, {}, {
       headers: {
         Authorization: `Bearer ${qCookies.get('token')}`
       }
     })
-    console.log(response);
-
+    useNotify('Berhasil menyetujui pendaftaran', 'positive');
+    router.push({ name: 'CourseRegistrantIndexPage' })
   } catch (error) {
     throw error;
+  } finally {
+    loading.value = false;
   }
 
 }

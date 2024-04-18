@@ -25,4 +25,5 @@ export interface DetailRegistration {
   course_name: string;
   course_price: string;
   payment_proof_url: string;
+  verification: number;
 }
