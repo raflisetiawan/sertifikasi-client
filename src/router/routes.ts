@@ -129,15 +129,6 @@ const routes: RouteRecordRaw[] = [
     ],
     meta: { requiresAuth: true, requiresAdmin: true },
   },
-
-  // Always leave this as last one,
-  // but you can also remove it
-  {
-    path: '/secret',
-    component: () => import('pages/SecretPage.vue'),
-    name: 'SecretPage',
-    meta: { requiresAuth: true },
-  },
   {
     path: '/my-profile',
     component: () => import('layouts/UserLayout.vue'),
