@@ -61,7 +61,7 @@ import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useDateFormat } from 'src/composables/format';
 import toRupiah from '@develoka/angka-rupiah-js'
-import VueEasyLightbox from 'vue-easy-lightbox/dist/external-css/vue-easy-lightbox.esm.min.js'
+const VueEasyLightbox = () => import('vue-easy-lightbox');
 import 'vue-easy-lightbox/external-css/vue-easy-lightbox.css'
 import { api } from 'src/boot/axios';
 import { qCookies } from 'src/boot/cookies';
