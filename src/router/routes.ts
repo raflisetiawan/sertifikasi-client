@@ -120,9 +120,10 @@ const routes: RouteRecordRaw[] = [
       },
       {
         path: 'course-registrant/:id',
-        component: () => import(
-          'pages/admin/course/course-registrant/DetailRegistrantPage.vue'
-        ),
+        component: () =>
+          import(
+            'pages/admin/course/course-registrant/DetailRegistrantPage.vue'
+          ),
         name: 'CourseRegistrantDetailPage',
       },
     ],
@@ -152,6 +153,7 @@ const routes: RouteRecordRaw[] = [
         name: 'MyProfileDetailCoursePage',
       },
     ],
+    meta: { requiresAuth: true },
   },
   {
     path: '/email/verify/already-success',

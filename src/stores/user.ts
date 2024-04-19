@@ -5,6 +5,7 @@ import { useNotify } from 'src/composables/notifications';
 import { UserEditForm } from 'src/models/user';
 import { qCookies } from 'src/boot/cookies';
 import { useUser } from 'src/composables/auth/user';
+import { Cookies } from 'quasar';
 
 export const useUserStore = defineStore('user', {
   state: (): User => ({
@@ -39,14 +40,16 @@ export const useUserStore = defineStore('user', {
       this.$state.role = '';
       this.$state.email_verified_at = null;
 
-      qCookies.remove('token');
-      qCookies.remove('signedIn');
+      // qCookies.remove('token');
+      // qCookies.remove('signedIn');
     },
     async logout() {
       try {
         const response = await api.post('signout');
         if (response.data.success) {
           this.resetUser();
+          Cookies.remove('token');
+          Cookies.remove('signedIn');
           useNotify('Berhasil logout', 'green');
           this.router.push({ name: 'SignInPage' });
         } else {

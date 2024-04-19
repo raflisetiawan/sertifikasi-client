@@ -1,9 +1,9 @@
 <template>
   <q-card>
     <q-card-section>
-      <h2>Materi</h2>
+      <div class="text-h4 q-mb-md">Materi</div>
       <q-list bordered separator>
-        <q-item v-for="material in course.materials" :key="material.id" clickable>
+        <q-item v-for="material in course.materials" :key="material.file" clickable>
           <q-item-section>
             <q-item-label>{{ material.title }}</q-item-label>
             <div v-html="material.description"></div>
@@ -15,27 +15,60 @@
       </q-list>
     </q-card-section>
     <q-card-section>
+      <div class="text-h4 q-mb-md">Deskripsi Kelas</div>
+      <q-list bordered separator>
+        <q-item>
+          <q-item-section no-wrap>
+            <q-item-label>Link Zoom: <q-btn :href="course.zoom_link.link" target="_blank" flat color="blue">Buka link
+                Zoom</q-btn></q-item-label>
+          </q-item-section>
+          <q-item-section>
+          </q-item-section>
+        </q-item>
+        <q-item>
+          <q-item-section no-wrap>
+            <q-item-label>Fasilitas : <span class="text-body-1 text-weight-bold">{{ course.facility
+                }}</span></q-item-label>
+          </q-item-section>
+          <q-item-section>
+          </q-item-section>
+        </q-item>
+        <q-item>
+          <q-item-section no-wrap>
+            <q-item-label>Durasi : <span class="text-body-1 text-weight-bold">{{ course.duration
+                }}</span></q-item-label>
+          </q-item-section>
+          <q-item-section>
+          </q-item-section>
+        </q-item>
+      </q-list>
+    </q-card-section>
+    <q-card-section>
       <div>
-        <q-card-title class="text-h3">{{ course.name }}</q-card-title>
+        <div class="text-h4">{{ course.name }}</div>
         <div v-html="course.description"></div>
       </div>
     </q-card-section>
 
     <q-separator />
-
-
   </q-card>
 </template>
 
-<script setup lang="ts">
-import { useQuasar } from 'quasar';
-import { api } from 'src/boot/axios';
+<script async setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
+import { useMeta, useQuasar } from 'quasar';
+import { api } from 'src/boot/axios';
+import { MyProfileDetailCourse } from 'src/models/course';
 
 const { cookies: qCookies } = useQuasar();
 const route = useRoute();
-const course = ref({ name: '', description: '', image: '', materials: [] });
+const course = ref<MyProfileDetailCourse>({ name: '', description: '', materials: [], duration: '', facility: '', id: 0, zoom_link: { courseId: 0, link: '' } });
+useMeta(() => {
+  return {
+    title: course.value.name + ' - My Profile - UISI Digiclass'
+  }
+})
 
 onMounted(async () => {
   try {
@@ -45,15 +78,14 @@ onMounted(async () => {
       }
     });
     course.value = response.data.data;
+
   } catch (error) {
     console.error('Error fetching course details:', error);
   }
+
 });
 
-const downloadMaterial = (file: any) => {
-  // Implement your download logic here
-  console.log('Downloading material:', file);
-};
+
 </script>
 
 <style scoped>

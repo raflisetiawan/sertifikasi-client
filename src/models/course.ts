@@ -140,3 +140,23 @@ export interface CourseIdAndNameOptions {
   value: number;
   label: string;
 }
+
+interface Material {
+  title: string;
+  file: string;
+  course_id: number;
+  description: string;
+}
+
+export interface MyProfileDetailCourse {
+  name: string;
+  description: string;
+  duration: string;
+  facility: string;
+  id: number;
+  materials: Material[];
+  zoom_link: {
+    courseId: number;
+    link: string;
+  };
+}
