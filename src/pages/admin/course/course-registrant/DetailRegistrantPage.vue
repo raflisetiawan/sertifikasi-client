@@ -57,12 +57,12 @@
 import { useMetaTitle } from 'src/composables/meta';
 import { useCourseRegistrantStore } from 'src/stores/course-registrant';
 import { DetailRegistration } from 'src/models/course-registrant';
-import { onMounted, ref } from 'vue';
+import { defineAsyncComponent, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useDateFormat } from 'src/composables/format';
 import toRupiah from '@develoka/angka-rupiah-js'
-const VueEasyLightbox = () => import('vue-easy-lightbox');
-import 'vue-easy-lightbox/external-css/vue-easy-lightbox.css'
+const VueEasyLightbox = defineAsyncComponent(() => import('vue-easy-lightbox/dist/external-css/vue-easy-lightbox.esm.min.js'));
+import 'vue-easy-lightbox/dist/external-css/vue-easy-lightbox.css'
 import { api } from 'src/boot/axios';
 import { qCookies } from 'src/boot/cookies';
 import { useNotify } from 'src/composables/notifications';

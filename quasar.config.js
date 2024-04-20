@@ -54,6 +54,14 @@ module.exports = configure(function (/* ctx */) {
         browser: ['es2019', 'edge88', 'firefox78', 'chrome87', 'safari13.1'],
         node: 'node16',
       },
+      // extendViteConf(viteConf) {
+      //   viteConf.resolve = {
+      //     alias: {
+      //       'vue-easy-lightbox$':
+      //         'vue-easy-lightbox/dist/external-css/vue-easy-lightbox.esm.min.js',
+      //     },
+      //   };
+      // },
       afterBuild({ quasarConf }) {
         // 为 netlify 创建 function
         const distDir = path.resolve(__dirname, quasarConf.build.distDir);
