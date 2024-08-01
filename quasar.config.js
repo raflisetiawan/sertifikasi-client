@@ -9,8 +9,6 @@
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
 
 const { configure } = require('quasar/wrappers');
-const fs = require('fs');
-const path = require('path');
 
 module.exports = configure(function (/* ctx */) {
   return {
@@ -62,36 +60,6 @@ module.exports = configure(function (/* ctx */) {
       //     },
       //   };
       // },
-      afterBuild({ quasarConf }) {
-        // 为 netlify 创建 function
-        const distDir = path.resolve(__dirname, quasarConf.build.distDir);
-        const netifyFuncDir = path.join(distDir, '/netlify/functions');
-        fs.mkdirSync(netifyFuncDir, {
-          recursive: true,
-        });
-        const code =
-          "const ssr = require('../../index.js')\nexports.handler = ssr.default.handler";
-        fs.writeFileSync(path.join(netifyFuncDir, 'index.js'), code, {
-          encoding: 'utf-8',
-        });
-
-        // 为 netlify 创建静态资源目录
-        const clientDir = path.join(distDir, 'client');
-        let str =
-          '# Redirects from what the browser requests to what we serve\n';
-        const files = fs.readdirSync(clientDir);
-        for (const file of files) {
-          if (file.includes('.')) {
-            str += `/${file}                        /${file}\n`;
-          } else {
-            str += `/${file}/*                        /${file}/:splat\n`;
-          }
-        }
-
-        fs.writeFileSync(path.join(clientDir, '_redirects'), str, {
-          encoding: 'utf-8',
-        });
-      },
 
       vueRouterMode: 'history', // available values: 'hash', 'history'
       // vueRouterBase,

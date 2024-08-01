@@ -14,6 +14,8 @@ export const useUserCourse = defineStore('userCourse', {
           Authorization: `Bearer ${qCookies.get('token')}`,
         },
       });
+      console.log(response);
+
       this.followedCourses = response.data.data;
     },
   },

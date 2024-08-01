@@ -16,8 +16,8 @@
               </div>
               <div class="row q-mb-md">
                 <StatusBadgeComponent :status="course.status" />
-                <q-badge class="q-ml-md" :color="course.verification ? 'red' : 'green'">
-                  {{ course.verification ? 'Pembayaran anda belum di verifikasi' : 'Terverifikasi' }}</q-badge>
+                <q-badge class="q-ml-md" :color="course.verification ? 'green' : 'false'">
+                  {{ course.verification ? 'Terverifikasi' : 'Pembayaran anda belum di verifikasi' }}</q-badge>
               </div>
               <q-btn class="q-mr-md" color="primary" target="_blank" :href="course.guidelines"
                 :disable="course.verification">Pedoman</q-btn>
@@ -46,6 +46,8 @@ const { notify } = useQuasar();
 const initData = async () => {
   try {
     await getFollowedCourse(userState.id);
+
+
   } catch (error) {
     if (error instanceof AxiosError) {
       if (error.response?.status !== 404) {

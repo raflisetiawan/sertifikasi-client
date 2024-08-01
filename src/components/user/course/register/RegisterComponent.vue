@@ -20,7 +20,7 @@
           <q-input outlined type="email" v-model="registerCourseForm.email" lazy-rules label="Email *"
             :error="v$.email.$error" :error-message="v$.email.$errors.map((e) => e.$message).join()"
             @input="v$.email.$touch" @blur="v$.email.$touch" disable />
-          <q-input outlined type="text" v-model="registerCourseForm.price" lazy-rules label="Biaya *" disable>
+          <q-input outlined type="text" v-model="registerCourseForm.priceRupiah" lazy-rules label="Biaya *" disable>
             <template v-slot:prepend>
               <div class="text-subtitle2">Rp.</div>
             </template>
@@ -153,6 +153,7 @@ const registerCourseForm = ref<CreateRegisterForm>({
   name: userName,
   phone: userPhone,
   price: 0,
+  priceRupiah: 0,
   proofOfPayment: null
 })
 
@@ -180,16 +181,30 @@ const onSubmit = async () => {
   if (!v$.value.$invalid) {
     try {
       loading.value = true;
-      await api.post('registration', { user_id: userState.id, course_id: routeParams.id, payment_proof: registerCourseForm.value.proofOfPayment }, {
+      const registrationResponse = await api.post('registration', { user_id: userState.id, course_id: routeParams.id, payment_proof: registerCourseForm.value.proofOfPayment }, {
         headers: {
           Authorization: `Bearer ${qCookies.get('token')}`,
           'Content-Type': 'multipart/form-data'
         }
       });
+
+      const priceWithoutCurrency = course.value.price.toString().replace(/[^\d]/g, '');
+      const amount = parseInt(priceWithoutCurrency);
+      const paymentResponse = await api.post('payments/create', {
+        user_id: userState.id,
+        course_id: routeParams.id,
+        amount: amount,
+        registration_id: registrationResponse.data.registration_id
+      }, {
+        headers: {
+          Authorization: `Bearer ${qCookies.get('token')}`
+        }
+      });
+      console.log(paymentResponse)
       pendingApproval.value = true;
     } catch (error) {
+      console.log(error);
       if (error instanceof AxiosError) {
-
         if (error.response?.status == 422) {
           useNotify(error.response?.data.message, 'negative');
         } else {
@@ -210,8 +225,8 @@ onMounted(async () => {
   try {
     bar.value.start()
     const response = await showCourse(routeParams.id)
-    course.value = { ...response.data, price: toRupiah(response.data.price) }
-    registerCourseForm.value.price = course.value.price;
+    course.value = { ...response.data, priceRupiah: toRupiah(response.data.price) }
+    registerCourseForm.value.priceRupiah = toRupiah(course.value.price);
 
   } catch (error) {
 

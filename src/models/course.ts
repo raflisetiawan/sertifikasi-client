@@ -75,6 +75,7 @@ export interface CreateRegisterForm {
   price: number;
   bank: null | string;
   proofOfPayment: null;
+  priceRupiah: number;
 }
 
 export interface UserCourses {
