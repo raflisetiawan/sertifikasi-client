@@ -12,6 +12,10 @@ import { AxiosResponse } from 'axios';
 export const useCourseStore = defineStore('course', {
   state: () => ({
     courses: null as Courses[] | null,
+    showEditStatusDialog: false,
+    editedStatusDialog: 0,
+    showUploadCertificateTemplateDialog: false,
+    uploadedCerticiateTemplateDialogId: 0,
   }),
   getters: {
     getCourses: (state) => state.courses,

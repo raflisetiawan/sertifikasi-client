@@ -120,15 +120,6 @@
           </div>
           <div v-else>
             <q-separator></q-separator>
-            <q-item clickable v-ripple @click="logout()">
-              <q-item-section avatar>
-                <q-icon name="history"></q-icon>
-              </q-item-section>
-
-              <q-item-section>
-                Riwayat Belajar
-              </q-item-section>
-            </q-item>
             <q-item clickable v-ripple :to="{ name: 'MyProfileIndexPage' }">
               <q-item-section avatar>
                 <q-icon name="manage_accounts"></q-icon>

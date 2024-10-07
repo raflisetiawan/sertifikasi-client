@@ -29,7 +29,7 @@
                   <q-td key="zoom_link" :props="props">
                     <q-btn size="sm" flat dense style="text-transform: lowercase;" color="blue"
                       :href="props.row.zoom_link" target="_blank"> {{
-            useSimplifyUrl(props.row.zoom_link, 30) }}</q-btn>
+                        useSimplifyUrl(props.row.zoom_link, 30) }}</q-btn>
                   </q-td>
                 </template>
                 <template v-else>
@@ -71,6 +71,8 @@
     <AddZoomDialog @getCourses="() => getCourses()" />
     <EditZoomDialog @getCourses="() => getCourses()" />
     <DeleteZoomDialog @getCourses="() => getCourses()" />
+    <EditStatusDialog @getCourses="() => getCourses()" />
+    <UploadCertificateTemplateDialog @getCourses="() => getCourses()" />
   </div>
 </template>
 
@@ -90,6 +92,8 @@ import AddZoomDialog from 'src/components/admin/course/AddZoomDialog.vue';
 import CourseMenuTableVue from 'src/components/admin/course/CourseMenuTable.vue';
 import EditZoomDialog from 'src/components/admin/course/EditZoomDialog.vue';
 import DeleteZoomDialog from 'src/components/admin/course/DeleteZoomDialog.vue';
+import EditStatusDialog from './EditStatusDialog.vue';
+import UploadCertificateTemplateDialog from './UploadCertificateTemplateDialog.vue';
 
 useMetaTitle('Manage Kelas - Admin')
 const { $state } = useMaterialStore();

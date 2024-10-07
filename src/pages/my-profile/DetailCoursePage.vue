@@ -26,8 +26,10 @@
           </q-item-section>
         </q-item>
         <q-item>
-          <q-item-section no-wrap>
-            <q-item-label>Fasilitas : <span class="text-body-1 text-weight-bold">{{ course.facility
+          <q-item-section>
+            <q-item-label>
+              Fasilitas : <span class="text-body-1 ">{{
+                course.facility
                 }}</span></q-item-label>
           </q-item-section>
           <q-item-section>

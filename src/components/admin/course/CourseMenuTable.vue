@@ -20,6 +20,21 @@
       </q-item-section>
       <q-item-section>Lihat Materi</q-item-section>
     </q-item>
+    <!-- :to="{ name: 'MaterialAdminIndexPage', params: { id: props.propsData.row.id } }" -->
+    <q-item clickable v-ripple
+      @click="courseState.showEditStatusDialog = true; courseState.editedStatusDialog = props.propsData.row.id">
+      <q-item-section avatar>
+        <q-icon name="edit_note" color="green"></q-icon>
+      </q-item-section>
+      <q-item-section>Ubah Status</q-item-section>
+    </q-item>
+    <q-item clickable v-ripple
+      @click="courseState.showUploadCertificateTemplateDialog = true; courseState.uploadedCerticiateTemplateDialogId = props.propsData.row.id">
+      <q-item-section avatar>
+        <q-icon name="upload" color="primary"></q-icon>
+      </q-item-section>
+      <q-item-section>Upload Template Sertifikat</q-item-section>
+    </q-item>
     <q-separator></q-separator>
     <q-item clickable v-if="!props.propsData?.row.zoom_link" v-ripple
       @click="showAddZoomDialog(props.propsData.row.id)">
@@ -29,18 +44,18 @@
       <q-item-section>Buat Link Zoom</q-item-section>
     </q-item>
     <q-item clickable v-ripple @click="showEditZoomDialog(
-    props.propsData.row.id,
-    props.propsData.row.zoom_link,
-    props.propsData.row.zoom_link_id)" v-else>
+      props.propsData.row.id,
+      props.propsData.row.zoom_link,
+      props.propsData.row.zoom_link_id)" v-else>
       <q-item-section avatar>
         <q-icon name="videocam" color="green"></q-icon>
       </q-item-section>
       <q-item-section>Edit Link Zoom</q-item-section>
     </q-item>
     <q-item clickable v-show="props.propsData?.row.zoom_link" v-ripple @click="showDeleteZoomDialog(
-    props.propsData.row.id,
-    props.propsData.row.zoom_link,
-    props.propsData.row.zoom_link_id)">
+      props.propsData.row.id,
+      props.propsData.row.zoom_link,
+      props.propsData.row.zoom_link_id)">
       <q-item-section avatar>
         <q-icon name="videocam" color="red">
         </q-icon>
@@ -51,10 +66,12 @@
 </template>
 
 <script setup lang="ts">
+import { useCourseStore } from 'src/stores/course';
 import { useZoomLinkStore } from 'src/stores/zoomLink';
 
 const props = defineProps(['propsData', 'touchPosition', 'contextMenu'])
 const { $state: zoomLinkState } = useZoomLinkStore()
+const { $state: courseState } = useCourseStore();
 
 
 const showAddZoomDialog = (courseId: number) => {
