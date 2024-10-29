@@ -20,9 +20,9 @@
                   {{ course.verification ? 'Terverifikasi' : 'Pembayaran anda belum di verifikasi' }}</q-badge>
               </div>
               <q-btn class="q-mr-md" color="primary" target="_blank" :href="course.guidelines"
-                :disable="course.verification">Pedoman</q-btn>
+                :disable="!course.verification">Pedoman</q-btn>
               <q-btn color="blue" class="q-mr-md" :to="{ name: 'MyProfileDetailCoursePage', params: { id: course.id } }"
-                :disable="course.verification">Detail</q-btn>
+                :disable="!course.verification">Detail</q-btn>
             </q-card-section>
           </q-card-section>
         </q-card>
@@ -46,6 +46,7 @@ const { notify } = useQuasar();
 const initData = async () => {
   try {
     await getFollowedCourse(userState.id);
+    console.log($state.followedCourses);
 
 
   } catch (error) {
