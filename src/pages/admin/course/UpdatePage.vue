@@ -8,8 +8,8 @@
             <q-input outlined type="text" v-model="courseForm.name" lazy-rules label="Nama kelas *"
               :error="v$.name.$error" :error-message="v$.name.$errors.map((e) => e.$message).join()"
               @input="v$.name.$touch" @blur="v$.name.$touch" />
-            <div class="text-body1">Deskripsi: </div>
-            <q-editor v-model="courseForm.description" :dense="$q.screen.lt.md" :toolbar="[
+            <div class="text-body1">Konsep Utama: </div>
+            <q-editor v-model="courseForm.key_concepts" :dense="$q.screen.lt.md" :toolbar="[
               [
                 {
                   label: $q.lang.editor.align,
@@ -84,15 +84,15 @@
               ['undo', 'redo'],
               ['viewsource']
             ]" :fonts="{
-  arial: 'Arial',
-  arial_black: 'Arial Black',
-  comic_sans: 'Comic Sans MS',
-  courier_new: 'Courier New',
-  impact: 'Impact',
-  lucida_grande: 'Lucida Grande',
-  times_new_roman: 'Times New Roman',
-  verdana: 'Verdana'
-}">
+              arial: 'Arial',
+              arial_black: 'Arial Black',
+              comic_sans: 'Comic Sans MS',
+              courier_new: 'Courier New',
+              impact: 'Impact',
+              lucida_grande: 'Lucida Grande',
+              times_new_roman: 'Times New Roman',
+              verdana: 'Verdana'
+            }">
             </q-editor>
             <q-input outlined type="text" autogrow v-model="courseForm.facility" lazy-rules label="Fasilitas *"
               :error="v$.facility.$error" :error-message="v$.facility.$errors.map((e) => e.$message).join()"
@@ -141,6 +141,16 @@
             <q-input outlined type="text" v-model="courseForm.duration" lazy-rules label="Durasi *"
               :error="v$.duration.$error" :error-message="v$.duration.$errors.map((e) => e.$message).join()"
               @input="v$.duration.$touch" @blur="v$.duration.$touch" />
+            <!-- Add new file inputs -->
+            <q-file :filter="checkFileSize10Mb" hint="ukuran max 10mb" outlined v-model="courseForm.syllabus"
+              accept=".pdf" counter use-chips label="Upload Syllabus" @rejected="onRejected">
+              <template v-slot:default>
+                <q-btn v-if="syllabusUrl" :href="syllabusUrl" target="_blank" color="primary" size="sm" dense
+                  class="q-mb-sm">
+                  Lihat Syllabus
+                </q-btn>
+              </template>
+            </q-file>
             <q-file :filter="checkFileSize" hint="ukuran max 2mb" outlined v-model="courseForm.image"
               accept=".jpg, image/*" counter use-chips label="Upload gambar" @rejected="onRejected">
               <template v-slot:default v-if="imageUrl.length !== 0 && !courseForm.image">
@@ -154,8 +164,28 @@
                   dokumen</q-btn>
               </template>
             </q-file>
-            <q-select filled v-model="courseForm.trainer_selected" use-input hide-selected fill-input input-debounce="0"
-              label="Trainer untuk kelas ini" :options="courseForm.trainerSelect" @filter="filterFnAutoselect">
+            <q-file :filter="checkFileSize10Mb" hint="ukuran max 10mb" outlined v-model="courseForm.certificate_example"
+              accept=".pdf,.jpg,.png" counter use-chips label="Upload Certificate Example" @rejected="onRejected">
+              <template v-slot:default>
+                <q-btn v-if="certificateExampleUrl" :href="certificateExampleUrl" target="_blank" color="primary"
+                  size="sm" dense class="q-mb-sm">
+                  Lihat Certificate Example
+                </q-btn>
+              </template>
+            </q-file>
+
+            <q-file :filter="checkFileSize10Mb" hint="ukuran max 10mb" outlined v-model="courseForm.schedule"
+              accept=".pdf" counter use-chips label="Upload Schedule" @rejected="onRejected">
+              <template v-slot:default>
+                <q-btn v-if="scheduleUrl" :href="scheduleUrl" target="_blank" color="primary" size="sm" dense
+                  class="q-mb-sm">
+                  Lihat Schedule
+                </q-btn>
+              </template>
+            </q-file>
+            <q-select filled v-model="courseForm.trainer_selected" use-chips multiple clearable use-input stack-label
+              fill-input input-debounce="0" label="Trainer untuk kelas ini" :options="courseForm.trainerSelect"
+              @filter="filterFnAutoselect">
               <template v-slot:no-option>
                 <q-item>
                   <q-item-section class="text-grey">
@@ -173,8 +203,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { CreateCourseForm } from 'src/models/course'
+import { ref, onMounted, reactive } from 'vue';
+import { UpdateCourseForm } from 'src/models/course'
 import useVuelidate from '@vuelidate/core';
 import { useName, useRequired, useDecimal, useNumeric } from 'src/composables/validators';
 import { QRejectedEntry, QSelect, useQuasar } from 'quasar';
@@ -183,6 +213,7 @@ import { useMetaTitle } from 'src/composables/meta';
 import { useCourseStore } from 'src/stores/course';
 import { useTrainerStore } from 'src/stores/trainer';
 import { storageBaseUrl } from 'src/boot/axios';
+import { Trainer } from 'src/models/trainer';
 
 useMetaTitle('Edit Kelas - Admin')
 const { push: routerPush } = useRouter();
@@ -191,25 +222,31 @@ const { updateCourse, showCourse } = useCourseStore();
 const { getTrainers, $state } = useTrainerStore();
 const { params: routeParam } = useRoute();
 
-const courseForm = ref<CreateCourseForm>({
+const courseForm = reactive<UpdateCourseForm>({
   name: '',
   description: '',
+  key_concepts: '',
   facility: '',
   price: 0,
   image: null,
-  operational_start: '2023/10/20',
-  operational_end: '2023/1025',
+  operational_start: '',
+  operational_end: '',
   place: '',
   duration: '',
   benefit: '',
   guidelines: null,
+  syllabus: null,
+  certificate_example: null,
+  schedule: null,
   trainerSelect: [],
-  trainer_id: 0,
-  trainer_selected: {
-    label: '',
-    value: 0
-  }
+  trainer_ids: [],
+  trainer_selected: []
 })
+
+// Add refs for new file URLs
+const syllabusUrl = ref('');
+const certificateExampleUrl = ref('');
+const scheduleUrl = ref('');
 
 const rules = {
   name: { required: useRequired(), validName: useName() },
@@ -219,6 +256,7 @@ const rules = {
   place: { required: useRequired() },
   duration: { required: useRequired() },
   benefit: { required: useRequired() },
+
 }
 const checkFileSize = (files: readonly unknown[] | FileList): readonly unknown[] => {
   const fileList = Array.from(files);
@@ -239,37 +277,59 @@ const onRejected = (rejectedEntries: QRejectedEntry[]) => {
   })
 }
 
-const v$ = useVuelidate(rules, courseForm.value)
+const v$ = useVuelidate(rules, courseForm)
 const onSubmit = async () => {
+  // Use $touch instead of touch
+  v$.value.$touch();
+  console.log(v$.value);
+  console.log(courseForm);
+  // Check validation state
+  if (v$.value.$invalid) {
+    notify({
+      type: 'negative',
+      message: 'Please check the form for errors'
+    });
+    return;
+  }
 
-  if (!v$.value.$invalid) {
-    try {
-      loadingCreate.value = true;
-      if (courseForm.value.trainer_selected.value !== undefined) {
-        await updateCourse(routeParam.id, { ...courseForm.value, trainer_id: courseForm.value.trainer_selected.value, _method: 'PATCH' })
-      }
-      routerPush({ name: 'AdminCoursePage' })
-    } catch (error) {
-      throw error;
-    } finally {
-      loadingCreate.value = false;
-    }
-  } else {
-    v$.value.$touch();
+  try {
+    loadingCreate.value = true;
+    const trainerIds = courseForm.trainer_selected.map(trainer => trainer.value);
+
+    await updateCourse(routeParam.id, {
+      ...courseForm,
+      trainer_ids: trainerIds,
+      _method: 'PATCH'
+    });
+
+    notify({
+      type: 'positive',
+      message: 'Course updated successfully'
+    });
+
+    routerPush({ name: 'AdminCoursePage' });
+  } catch (error) {
+    notify({
+      type: 'negative',
+      message: 'Error updating course'
+    });
+    throw error;
+  } finally {
+    loadingCreate.value = false;
   }
 }
 type DoneFunction = (callbackFn: () => void, afterFn?: ((ref: QSelect) => void) | undefined) => void;
 const filterFnAutoselect = async (val: string, update: DoneFunction) => {
-  if (courseForm.value.trainerSelect.length === 0) {
+  if (courseForm.trainerSelect.length === 0) {
     if ($state.trainers.length === 0) {
       await getTrainers();
       $state.trainers.map((trainer) => {
-        courseForm.value.trainerSelect.push({ label: trainer.name, value: trainer.id })
+        courseForm.trainerSelect.push({ label: trainer.name, value: trainer.id })
       })
       update(() => { return })
     } else {
       $state.trainers.map((trainer) => {
-        courseForm.value.trainerSelect.push({ label: trainer.name, value: trainer.id })
+        courseForm.trainerSelect.push({ label: trainer.name, value: trainer.id })
       })
       update(() => { return })
     }
@@ -286,34 +346,60 @@ onMounted(async () => {
   try {
     loading.value = true;
     await getTrainers();
-    $state.trainers.map((trainer) => {
-      courseForm.value.trainerSelect.push({ label: trainer.name, value: trainer.id })
-    })
+
+    // Clear and populate trainerSelect
+    courseForm.trainerSelect = $state.trainers
+      .filter(trainer => trainer.id)
+      .map(trainer => ({
+        label: trainer.name,
+        value: trainer.id
+      }));
+
     const response = await showCourse(routeParam.id);
-    courseForm.value.name = response.data.name;
-    courseForm.value.benefit = response.data.benefit;
-    courseForm.value.description = response.data.description;
-    courseForm.value.duration = response.data.duration;
-    courseForm.value.facility = response.data.facility;
-    courseForm.value.operational_end = response.data.operational_end;
-    courseForm.value.operational_start = response.data.operational_start;
-    courseForm.value.place = response.data.place;
-    courseForm.value.price = response.data.price;
-    courseForm.value.trainer_id = response.data.trainer_id;
-    courseForm.value.trainer_selected = {
-      value: response.data.trainer.id,
-      label: response.data.trainer.name,
-    }
-    imageUrl.value = storageBaseUrl + 'courses/' + response.data.image;
-    guidelinesUrl.value = storageBaseUrl + 'courses/guideline/' + response.data.guidelines;
+    const data = response.data;
+
+    // Update form values
+    Object.assign(courseForm, {
+      name: data.name || '',
+      description: data.description || '',
+      key_concepts: data.key_concepts || '',
+      facility: data.facility || '',
+      price: Number(data.price) || 0,
+      place: data.place || '',
+      duration: data.duration || '',
+      benefit: data.benefit || '',
+      operational_start: data.operational_start || '',
+      operational_end: data.operational_end || '',
+      trainer_selected: data.trainers?.map((trainer: Trainer) => ({
+        label: trainer.name,
+        value: trainer.id
+      })) || []
+    });
+
+    // Set file URLs
+    imageUrl.value = data.image ? `${storageBaseUrl}courses/${data.image}` : '';
+    guidelinesUrl.value = data.guidelines ? `${storageBaseUrl}courses/guideline/${data.guidelines}` : '';
+    syllabusUrl.value = data.syllabus_path ? `${storageBaseUrl}courses/syllabus/${data.syllabus_path}` : '';
+    certificateExampleUrl.value = data.certificate_example_path ? `${storageBaseUrl}courses/certificates/${data.certificate_example_path}` : '';
+    scheduleUrl.value = data.schedule_path ? `${storageBaseUrl}courses/schedules/${data.schedule_path}` : '';
+
+    // Reset validation state
+    await v$.value.$reset();
+
   } catch (error) {
+    notify({
+      type: 'negative',
+      message: 'Error loading course data'
+    });
     throw error;
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-
-})
-
+});
+const checkFileSize10Mb = (files: readonly unknown[] | FileList): readonly unknown[] => {
+  const fileList = Array.from(files);
+  return fileList.filter(file => (file instanceof File) && file.size < 10e+6);
+};
 
 </script>
 

@@ -2,18 +2,25 @@ import { Trainer } from './trainer';
 export interface CreateCourseForm {
   name: string;
   description: string;
+  key_concepts: string;
   facility: string;
   price: number;
+  image: File | null;
+  operational_start: string;
+  operational_end: string;
   place: string;
   duration: string;
-  image: File | null;
   benefit: string;
   guidelines: File | null;
-  operational_start: string | null | undefined;
-  operational_end: string | null | undefined;
-  trainerSelect: TrainerSelect[];
-  trainer_id: number;
-  trainer_selected: TrainerSelect;
+  syllabus?: File | null;
+  certificate_example?: File | null;
+  schedule?: File | null;
+  trainerSelect: Array<{ label: string; value: number }>;
+  trainer_ids: number[];
+  trainer_selected: {
+    label: string;
+    value: number;
+  }[];
 }
 
 export interface TrainerSelect {
@@ -25,21 +32,29 @@ export interface Courses {
   id: number;
   name: string;
   description: string;
+  key_concepts: string;
   facility: string;
-  price: number;
+  price: string | number;
   place: string;
-  time: string;
-  image: File | null;
+  duration: string;
+  image: string | null;
   operational_start: string;
   operational_end: string;
-  created_at?: Date;
-  updated_at?: Date;
-  trainer?: Trainer;
-  status?: string;
+  status: string;
+  benefit: string;
+  guidelines: string | null;
+  syllabus_path: string | null;
+  certificate_example_path: string | null;
+  certificate_template_path: string | null;
+  schedule_path: string | null;
+  created_at?: string;
+  updated_at?: string;
+  trainers?: Trainer[];
 }
 export interface UpdateCourseForm {
   name: string;
   description: string;
+  key_concepts: string;
   facility: string;
   price: number;
   place: string;
@@ -47,11 +62,14 @@ export interface UpdateCourseForm {
   image: File | null;
   benefit: string;
   guidelines: File | null;
-  operational_start: string | null | undefined;
-  operational_end: string | null | undefined;
-  trainerSelect: TrainerSelect[];
-  trainer_id: number;
-  trainer_selected: TrainerSelect;
+  syllabus?: File | null;
+  certificate_example?: File | null;
+  schedule?: File | null;
+  operational_start: string;
+  operational_end: string;
+  trainerSelect: Array<{ label: string; value: number }>;
+  trainer_ids: number[];
+  trainer_selected: Array<{ label: string; value: number }>;
   _method?: string;
 }
 
@@ -74,7 +92,6 @@ export interface CreateRegisterForm {
   email: string;
   price: number;
   bank: null | string;
-  proofOfPayment: null;
   priceRupiah: number;
 }
 

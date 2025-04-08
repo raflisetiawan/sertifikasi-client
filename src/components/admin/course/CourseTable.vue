@@ -73,6 +73,7 @@
     <DeleteZoomDialog @getCourses="() => getCourses()" />
     <EditStatusDialog @getCourses="() => getCourses()" />
     <UploadCertificateTemplateDialog @getCourses="() => getCourses()" />
+    <AddModuleDialog @refreshData="getCourses" />
   </div>
 </template>
 
@@ -94,6 +95,7 @@ import EditZoomDialog from 'src/components/admin/course/EditZoomDialog.vue';
 import DeleteZoomDialog from 'src/components/admin/course/DeleteZoomDialog.vue';
 import EditStatusDialog from './EditStatusDialog.vue';
 import UploadCertificateTemplateDialog from './UploadCertificateTemplateDialog.vue';
+import AddModuleDialog from './AddModuleDialog.vue';
 
 useMetaTitle('Manage Kelas - Admin')
 const { $state } = useMaterialStore();

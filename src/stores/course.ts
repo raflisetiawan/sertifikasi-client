@@ -16,6 +16,7 @@ export const useCourseStore = defineStore('course', {
     editedStatusDialog: 0,
     showUploadCertificateTemplateDialog: false,
     uploadedCerticiateTemplateDialogId: 0,
+    addModuleDialog: false,
   }),
   getters: {
     getCourses: (state) => state.courses,
@@ -36,6 +37,7 @@ export const useCourseStore = defineStore('course', {
     },
     async showCourse(id: string | string[] | number): Promise<AxiosResponse> {
       const response = await api.get(`course/${id}`);
+      console.log(response.data);
       return response.data;
     },
 
@@ -70,6 +72,14 @@ export const useCourseStore = defineStore('course', {
       });
 
       return response.data.data;
+    },
+    async createModule(courseId: number, moduleData: FormData) {
+      try {
+        // TODO: Implement API call to create module
+        this.addModuleDialog = false;
+      } catch (error) {
+        throw error;
+      }
     },
   },
 });

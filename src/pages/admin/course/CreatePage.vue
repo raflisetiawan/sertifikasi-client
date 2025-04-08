@@ -8,8 +8,8 @@
             <q-input outlined type="text" v-model="courseForm.name" lazy-rules label="Nama kelas *"
               :error="v$.name.$error" :error-message="v$.name.$errors.map((e) => e.$message).join()"
               @input="v$.name.$touch" @blur="v$.name.$touch" />
-            <div class="text-body1">Deskripsi:</div>
-            <q-editor v-model="courseForm.description" :dense="$q.screen.lt.md" :toolbar="[
+            <div class="text-body1">Konsep Utama:</div>
+            <q-editor v-model="courseForm.key_concepts" :dense="$q.screen.lt.md" :toolbar="[
               [
                 {
                   label: $q.lang.editor.align,
@@ -84,16 +84,19 @@
               ['undo', 'redo'],
               ['viewsource']
             ]" :fonts="{
-  arial: 'Arial',
-  arial_black: 'Arial Black',
-  comic_sans: 'Comic Sans MS',
-  courier_new: 'Courier New',
-  impact: 'Impact',
-  lucida_grande: 'Lucida Grande',
-  times_new_roman: 'Times New Roman',
-  verdana: 'Verdana'
-}">
+              arial: 'Arial',
+              arial_black: 'Arial Black',
+              comic_sans: 'Comic Sans MS',
+              courier_new: 'Courier New',
+              impact: 'Impact',
+              lucida_grande: 'Lucida Grande',
+              times_new_roman: 'Times New Roman',
+              verdana: 'Verdana'
+            }">
             </q-editor>
+            <q-input outlined type="text" autogrow v-model="courseForm.description" lazy-rules label="Deskripsi *"
+              :error="v$.description.$error" :error-message="v$.description.$errors.map((e) => e.$message).join()"
+              @input="v$.description.$touch" @blur="v$.description.$touch" />
             <q-input outlined type="text" autogrow v-model="courseForm.facility" lazy-rules label="Fasilitas *"
               :error="v$.facility.$error" :error-message="v$.facility.$errors.map((e) => e.$message).join()"
               @input="v$.facility.$touch" @blur="v$.facility.$touch" />
@@ -145,8 +148,8 @@
               accept=".jpg, image/*" counter use-chips label="Upload gambar" @rejected="onRejected" />
             <q-file :filter="checkFileSize20Mb" hint="ukuran max 20mb" outlined v-model="courseForm.guidelines"
               accept=".pdf" counter use-chips label="Upload Pedoman / handbook" @rejected="onRejected" />
-            <q-select filled v-model="courseForm.trainer_selected" clearable use-input hide-selected fill-input
-              input-debounce="0" label="Trainer untuk kelas ini" :options="courseForm.trainerSelect"
+            <q-select filled v-model="courseForm.trainer_selected" use-chips multiple clearable use-input stack-label
+              fill-input input-debounce="0" label="Trainer untuk kelas ini" :options="courseForm.trainerSelect"
               @filter="filterFnAutoselect">
               <template v-slot:no-option>
                 <q-item>
@@ -156,6 +159,12 @@
                 </q-item>
               </template>
             </q-select>
+            <q-file :filter="checkFileSize10Mb" hint="ukuran max 10mb" outlined v-model="courseForm.syllabus"
+              accept=".pdf" counter use-chips label="Upload Syllabus" @rejected="onRejected" />
+            <q-file :filter="checkFileSize10Mb" hint="ukuran max 10mb" outlined v-model="courseForm.certificate_example"
+              accept=".pdf,.jpg,.png" counter use-chips label="Upload Certificate Example" @rejected="onRejected" />
+            <q-file :filter="checkFileSize10Mb" hint="ukuran max 10mb" outlined v-model="courseForm.schedule"
+              accept=".pdf" counter use-chips label="Upload Schedule" @rejected="onRejected" />
             <q-btn color="primary" type="submit" :loading="loadingCreate">Create</q-btn>
           </q-form>
         </div>
@@ -184,22 +193,24 @@ const { getTrainers, $state } = useTrainerStore();
 const courseForm = ref<CreateCourseForm>({
   name: '',
   description: '',
+  key_concepts: '',
   facility: '',
   price: 0,
   image: null,
   operational_start: '2023/10/20',
-  operational_end: '2023/1025',
+  operational_end: '2023/10/25',
   place: '',
   duration: '',
   benefit: '',
   guidelines: null,
+  syllabus: null,
+  certificate_example: null,
+  schedule: null,
   trainerSelect: [],
-  trainer_id: 0,
-  trainer_selected: {
-    label: '',
-    value: 0
-  }
+  trainer_ids: [],
+  trainer_selected: []
 })
+
 
 const rules = {
   name: { required: useRequired(), validName: useName() },
@@ -234,9 +245,11 @@ const onSubmit = async () => {
   if (!v$.value.$invalid) {
     try {
       loadingCreate.value = true;
-      if (courseForm.value.trainer_selected.value !== undefined) {
-        await storeCourse({ ...courseForm.value, trainer_id: courseForm.value.trainer_selected.value })
-      }
+      const trainerIds = courseForm.value.trainer_selected.map(trainer => trainer.value);
+      await storeCourse({
+        ...courseForm.value,
+        trainer_ids: trainerIds
+      });
       routerPush({ name: 'AdminCoursePage' })
     } catch (error) {
       throw error;
@@ -249,24 +262,37 @@ const onSubmit = async () => {
 }
 type DoneFunction = (callbackFn: () => void, afterFn?: ((ref: QSelect) => void) | undefined) => void;
 const filterFnAutoselect = async (val: string, update: DoneFunction) => {
+  console.log(courseForm.value.trainer_selected);
   if (courseForm.value.trainerSelect.length === 0) {
     if ($state.trainers.length === 0) {
       await getTrainers();
-      $state.trainers.map((trainer) => {
-        courseForm.value.trainerSelect.push({ label: trainer.name, value: trainer.id })
-      })
-      update(() => { return })
+      $state.trainers.forEach((trainer) => {
+        if (trainer.id) { // Check if id exists
+          courseForm.value.trainerSelect.push({
+            label: trainer.name,
+            value: trainer.id
+          });
+        }
+      });
+      update(() => { return });
     } else {
-      $state.trainers.map((trainer) => {
-        courseForm.value.trainerSelect.push({ label: trainer.name, value: trainer.id })
-      })
-      update(() => { return })
+      $state.trainers.forEach((trainer) => {
+        if (trainer.id) { // Check if id exists
+          courseForm.value.trainerSelect.push({
+            label: trainer.name,
+            value: trainer.id
+          });
+        }
+      });
+      update(() => { return });
     }
   }
-  update(() => { return })
+  update(() => { return });
 };
-
-
+const checkFileSize10Mb = (files: readonly unknown[] | FileList): readonly unknown[] => {
+  const fileList = Array.from(files);
+  return fileList.filter(file => (file instanceof File) && file.size < 10e+6);
+};
 </script>
 
 <style scoped></style>

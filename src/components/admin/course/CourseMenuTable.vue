@@ -1,6 +1,18 @@
 <template>
   <q-menu anchor="center right" self="center left" :touch-position="props.touchPosition"
     :context-menu="props.contextMenu">
+    <q-item clickable v-ripple @click="showAddModuleDialog(props.propsData.row.id)">
+      <q-item-section avatar>
+        <q-icon name="fa solid fa-square-plus" color="blue"></q-icon>
+      </q-item-section>
+      <q-item-section>Tambah Module</q-item-section>
+    </q-item>
+    <q-item clickable v-ripple :to="{ name: 'ModuleAdminIndexPage', params: { id: props.propsData.row.id } }">
+      <q-item-section avatar>
+        <q-icon name="fa solid fa-list" color="blue"></q-icon>
+      </q-item-section>
+      <q-item-section>Lihat Module</q-item-section>
+    </q-item>
     <q-item clickable v-ripple @click="$emit('handleRowClick', props.propsData.row.id)">
       <q-item-section avatar>
         <q-icon name="info" color="blue"></q-icon>
@@ -68,10 +80,12 @@
 <script setup lang="ts">
 import { useCourseStore } from 'src/stores/course';
 import { useZoomLinkStore } from 'src/stores/zoomLink';
+import { useModuleStore } from 'src/stores/module';
 
 const props = defineProps(['propsData', 'touchPosition', 'contextMenu'])
 const { $state: zoomLinkState } = useZoomLinkStore()
 const { $state: courseState } = useCourseStore();
+const { $state: moduleStore } = useModuleStore()
 
 
 const showAddZoomDialog = (courseId: number) => {
@@ -90,6 +104,11 @@ const showDeleteZoomDialog = (courseId: number, linkName: string, zoomLinkId: nu
   zoomLinkState.zoomLinkData.link = linkName;
   zoomLinkState.zoomLinkData.id = zoomLinkId;
   zoomLinkState.zoomLinkData.courseId = courseId;
+}
+
+const showAddModuleDialog = (courseId: number) => {
+  moduleStore.addModuleDialog = true;
+  moduleStore.courseId = courseId;
 }
 
 
