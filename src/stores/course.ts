@@ -5,6 +5,7 @@ import {
   Courses,
   CreateCourseForm,
   CourseTable,
+  CourseDetail,
 } from 'src/models/course';
 import { qCookies } from 'src/boot/cookies';
 import { AxiosResponse } from 'axios';
@@ -37,7 +38,6 @@ export const useCourseStore = defineStore('course', {
     },
     async showCourse(id: string | string[] | number): Promise<AxiosResponse> {
       const response = await api.get(`course/${id}`);
-      console.log(response.data);
       return response.data;
     },
 
@@ -73,10 +73,10 @@ export const useCourseStore = defineStore('course', {
 
       return response.data.data;
     },
-    async createModule(courseId: number, moduleData: FormData) {
+    async getCourseWithModules(id: number): Promise<CourseDetail> {
       try {
-        // TODO: Implement API call to create module
-        this.addModuleDialog = false;
+        const response = await api.get(`course/${id}/with-modules`);
+        return response.data.data;
       } catch (error) {
         throw error;
       }

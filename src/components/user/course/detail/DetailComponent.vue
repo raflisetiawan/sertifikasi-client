@@ -32,6 +32,10 @@
         </div>
       </div>
 
+      <ModuleExpansionItem :modules="courseModules" />
+      <!-- Benefit Section -->
+      <!-- <CertifiacateExampleImage :modules="module" /> -->
+
       <!-- Trainers Section -->
       <div class="full-width q-pa-md" style="background-color: rgb(255, 208, 216);">
         <div class="row justify-center">
@@ -115,6 +119,9 @@ import { useRoute } from 'vue-router';
 import CourseCardSkeleton from '../CourseCardSkeleton.vue';
 import FooterCom from '../../home/FooterCom.vue';
 import toRupiah from '@develoka/angka-rupiah-js';
+import ModuleExpansionItem from './ModuleExpansionItem.vue';
+import { CourseDetail } from 'src/models/course';
+import CertifiacateExampleImage from './CertifiacateExampleImage.vue';
 
 const RelatedCourseComponent = defineAsyncComponent(() => import('components/user/course/detail/RelatedCourseComponent.vue'));
 const { params: routeParams } = useRoute();
@@ -136,7 +143,6 @@ const course = ref<Courses>({
   guidelines: null,
   syllabus_path: null,
   certificate_example_path: null,
-  certificate_template_path: null,
   schedule_path: null,
   trainers: []
 })
@@ -147,11 +153,23 @@ course.value = response.data;
 const getTrainerImage = (image: string | File | undefined | null) => {
   return storageBaseUrl + image;
 }
+const courseModules = ref<CourseDetail['modules']>([]);
+
+// Add this after the initial course data fetch
+const loadModules = async () => {
+  try {
+    const response = await useCourseStore().getCourseWithModules(Number(routeParams.id));
+    courseModules.value = response.modules;
+  } catch (error) {
+    console.error('Failed to load modules:', error);
+  }
+};
 
 watchEffect(async () => {
 
   const response = await showCourse(routeParams.id)
   course.value = response.data;
+  await loadModules();
 })
 
 const listenRefreshCourseDetail = async (id: number) => {
@@ -159,6 +177,7 @@ const listenRefreshCourseDetail = async (id: number) => {
 
   course.value = response.data;
 }
+await loadModules();
 </script>
 
 <style scoped>

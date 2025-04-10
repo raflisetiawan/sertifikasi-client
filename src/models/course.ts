@@ -45,7 +45,6 @@ export interface Courses {
   guidelines: string | null;
   syllabus_path: string | null;
   certificate_example_path: string | null;
-  certificate_template_path: string | null;
   schedule_path: string | null;
   created_at?: string;
   updated_at?: string;
@@ -177,4 +176,36 @@ export interface MyProfileDetailCourse {
     courseId: number;
     link: string;
   };
+}
+export interface CourseDetail {
+  id: number;
+  name: string;
+  description: string;
+  status: string;
+  modules: Module[];
+}
+
+export interface Module {
+  id: number;
+  title: string;
+  subtitle: string;
+  description: string;
+  type: 'prework' | 'module' | 'final';
+  order: number;
+  estimated_time_min: number;
+  thumbnail_url: string;
+  concepts: Concept[];
+  exercises: Exercise[];
+}
+
+export interface Concept {
+  id: number;
+  title: string;
+  order: number;
+}
+
+export interface Exercise {
+  id: number;
+  description: string;
+  order: number;
 }

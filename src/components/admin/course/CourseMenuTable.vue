@@ -1,6 +1,12 @@
 <template>
   <q-menu anchor="center right" self="center left" :touch-position="props.touchPosition"
     :context-menu="props.contextMenu">
+    <q-item clickable v-ripple :to="{ name: 'CourseBenefitIndexPage', params: { courseId: props.propsData.row.id } }">
+      <q-item-section avatar>
+        <q-icon name="loyalty" color="blue"></q-icon>
+      </q-item-section>
+      <q-item-section>Lihat Benefit</q-item-section>
+    </q-item>
     <q-item clickable v-ripple @click="showAddModuleDialog(props.propsData.row.id)">
       <q-item-section avatar>
         <q-icon name="fa solid fa-square-plus" color="blue"></q-icon>
