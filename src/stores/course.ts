@@ -9,6 +9,7 @@ import {
 } from 'src/models/course';
 import { qCookies } from 'src/boot/cookies';
 import { AxiosResponse } from 'axios';
+import { CourseBenefitExample } from 'src/models/course-benefit';
 
 export const useCourseStore = defineStore('course', {
   state: () => ({
@@ -80,6 +81,13 @@ export const useCourseStore = defineStore('course', {
       } catch (error) {
         throw error;
       }
+    },
+    async getCourseBenefitByCourseId(
+      id: string | string[] | number
+    ): Promise<CourseBenefitExample[]> {
+      const response = await api.get(`course/${id}/course_benefits`);
+      console.log(response.data.data);
+      return response.data.data;
     },
   },
 });

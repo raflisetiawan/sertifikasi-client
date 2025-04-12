@@ -15,9 +15,13 @@ export function useRemoveDecimal(number: number, decimalCount: number): string {
 }
 
 export function useFormatDateRange(
-  operationalStart: string,
-  operationalEnd: string
+  operationalStart: string | null,
+  operationalEnd: string | null
 ): string {
+  if (!operationalStart || !operationalEnd) {
+    return ''; // Atau pesan default seperti 'Invalid date range'
+  }
+
   const start = new Date(operationalStart);
   const end = new Date(operationalEnd);
 

@@ -2,8 +2,8 @@
   <div class="q-pa-md">
     <div class="text-h6 text-center q-mb-md">Modul Pembelajaran</div>
     <q-list bordered separator>
-      <q-expansion-item v-for="module in modules" :key="module.id" :icon="getModuleIcon(module.type)" expand-separator
-        group="modules" class="module-item">
+      <q-expansion-item v-for="module in courseModules" :key="module.id" :icon="getModuleIcon(module.type)"
+        expand-separator group="modules" class="module-item">
         <template v-slot:header>
           <!-- Thumbnail Section -->
           <q-item-section side>
@@ -71,12 +71,32 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { Module } from 'src/models/course';
+<script setup lang="ts" async>
+import { CourseDetail } from 'src/models/course';
+import { ref, watchEffect } from 'vue';
+import { useCourseStore } from 'src/stores/course';
+import { useRoute } from 'vue-router';
 
-const props = defineProps<{
-  modules: Module[];
-}>();
+const { params: routeParams } = useRoute();
+
+const courseModules = ref<CourseDetail['modules']>([]);
+
+// Add this after the initial course data fetch
+const loadModules = async () => {
+  try {
+    const response = await useCourseStore().getCourseWithModules(Number(routeParams.id));
+    courseModules.value = response.modules;
+  } catch (error) {
+    console.error('Failed to load modules:', error);
+  }
+};
+
+await loadModules();
+
+watchEffect(async () => {
+  await loadModules();
+})
+
 
 const getModuleIcon = (type: string) => {
   switch (type) {
