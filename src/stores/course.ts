@@ -86,7 +86,6 @@ export const useCourseStore = defineStore('course', {
       id: string | string[] | number
     ): Promise<CourseBenefitExample[]> {
       const response = await api.get(`course/${id}/course_benefits`);
-      console.log(response.data.data);
       return response.data.data;
     },
   },

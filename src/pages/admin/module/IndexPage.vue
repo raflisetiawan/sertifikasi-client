@@ -46,6 +46,10 @@
                 </q-td>
                 <q-td key="actions" :props="props">
                   <q-btn-group flat>
+                    <q-btn flat round color="success" icon="description" size="sm"
+                      :to="`/admin/course/${route.params.id}/modules/${props.row.id}/contents`">
+                      <q-tooltip>Kelola Konten</q-tooltip>
+                    </q-btn>
                     <q-btn flat round color="info" icon="visibility" size="sm" @click="showDetailDialog(props.row)">
                       <q-tooltip>Lihat Detail</q-tooltip>
                     </q-btn>

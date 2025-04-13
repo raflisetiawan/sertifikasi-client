@@ -8,6 +8,19 @@
       <DetailComponent :course="course" />
       <KeyConceptSection :course="course" />
     </template>
+
+    <!-- course benefit -->
+    <Suspense>
+      <CertifiacateExampleImage />
+      <template #fallback>
+        Loading...
+      </template>
+    </Suspense>
+
+    <!-- Course File -->
+    <CourseFilesSection :course="course" />
+
+    <!-- module -->
     <Suspense>
       <ModuleExpansionItem />
       <template #fallback>
@@ -15,15 +28,13 @@
       </template>
     </Suspense>
 
-    <!-- course benefit -->
-    <div>
-      <Suspense>
-        <CertifiacateExampleImage />
-        <template #fallback>
-          Loading...
-        </template>
-      </Suspense>
-    </div>
+    <!-- trainers -->
+    <template v-if="!isLoading">
+      <TrainerSection :course="course" />
+    </template>
+    <template v-else>
+      Loading...
+    </template>
 
     <!-- related courses -->
     <div class="q-pa-md">
@@ -55,6 +66,8 @@ import CourseCardSkeleton from 'src/components/user/course/CourseCardSkeleton.vu
 import DetailComponentSkeleton from 'src/components/user/course/detail/DetailComponentSkeleton.vue';
 import KeyConceptSectionSkeleton from 'src/components/user/course/detail/KeyConceptSectionSkeleton.vue';
 import ModuleExpansionItemSkeleton from 'src/components/user/course/detail/ModuleExpansionItemSkeleton.vue';
+import TrainerSection from 'src/components/user/course/detail/TrainerSection.vue';
+import CourseFilesSection from 'src/components/user/course/detail/CourseFilesSection.vue';
 
 const CertifiacateExampleImage = defineAsyncComponent(() => import('components/user/course/detail/CertifiacateExampleImage.vue'));
 const RelatedCourseComponent = defineAsyncComponent(() => import('components/user/course/detail/RelatedCourseComponent.vue'));

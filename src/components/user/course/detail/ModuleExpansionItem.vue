@@ -12,8 +12,11 @@
 
           <!-- Content Section -->
           <q-item-section>
-            <div class="text-h6">{{ module.title }}</div>
-            <div class="text-subtitle2">{{ module.subtitle }}</div>
+            <div class="text-subtitle2">{{ module.title }}</div>
+            <div class="text-h6">{{ module.subtitle }}</div>
+            <div class="text-body2">
+              <div v-html="module.description"></div>
+            </div>
             <div class="row items-center q-gutter-x-md q-mt-sm">
               <q-chip :color="getModuleTypeColor(module.type)" text-color="white" class="text-caption">
                 {{ getModuleTypeLabel(module.type) }}
