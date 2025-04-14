@@ -38,7 +38,6 @@ export interface BaseContent {
   content: TextContent | QuizContent;
 }
 
-// Add this interface
 export interface AssignmentContent {
   module_id: number;
   title: string;
@@ -48,6 +47,30 @@ export interface AssignmentContent {
   due_date: string;
   max_file_size_mb: number;
   allowed_file_types: string;
+  order: number;
+  is_required: boolean;
+}
+
+export interface VideoContent {
+  module_id: number;
+  title: string;
+  description?: string;
+  video_url: string;
+  provider: 'youtube' | 'vimeo';
+  video_id: string;
+  duration_seconds: number;
+  thumbnail_url?: string;
+  is_downloadable: boolean;
+  captions?: string[];
+  order: number;
+  is_required: boolean;
+}
+
+export interface FileContent {
+  module_id: number;
+  title: string;
+  description?: string;
+  file: File;
   order: number;
   is_required: boolean;
 }

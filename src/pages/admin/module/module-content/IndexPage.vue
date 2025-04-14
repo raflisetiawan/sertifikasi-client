@@ -17,6 +17,9 @@
             <q-btn color="warning" icon="quiz" label="Tambah Kuis" @click="showAddQuizDialog" class="q-ml-sm" />
             <q-btn color="green" icon="assignment" label="Tambah Tugas" @click="showAddAssignmentDialog"
               class="q-ml-sm" />
+            <q-btn color="purple" icon="play_circle" label="Tambah Video" @click="showAddVideoDialog" class="q-ml-sm" />
+            <q-btn color="info" icon="upload_file" label="Tambah File" @click="showAddFileDialog" class="q-ml-sm" />
+
           </q-card-section>
 
           <q-table :rows="moduleContentStore.contents" :columns="columns" row-key="id"
@@ -55,6 +58,9 @@
     <AddQuizContentDialog ref="addQuizDialog" :module-id="Number(route.params.moduleId)" @refresh="fetchContents" />
     <AddAssignmentDialog ref="addAssignmentDialog" :module-id="Number(route.params.moduleId)"
       @refresh="fetchContents" />
+    <AddVideoDialog ref="addVideoDialog" :module-id="Number(route.params.moduleId)" @refresh="fetchContents" />
+    <AddFileDialog ref="addFileDialog" :module-id="Number(route.params.moduleId)" @refresh="fetchContents" />
+
   </div>
 </template>
 
@@ -67,6 +73,8 @@ import AddTextContentDialog from 'src/components/admin/module/module-content/Add
 import AddQuizContentDialog from 'src/components/admin/module/module-content/AddQuizContentDialog.vue';
 import AddAssignmentDialog from 'src/components/admin/module/module-content/AddAssignmentDialog.vue';
 import { BaseContent } from 'src/models/module-content';
+import AddVideoDialog from 'src/components/admin/module/module-content/AddVideoDialog.vue';
+import AddFileDialog from 'src/components/admin/module/module-content/AddFileDialog.vue';
 
 const $q = useQuasar();
 const route = useRoute();
@@ -160,6 +168,18 @@ const addAssignmentDialog = ref();
 
 const showAddAssignmentDialog = () => {
   addAssignmentDialog.value.show();
+};
+
+const addVideoDialog = ref();
+
+const showAddVideoDialog = () => {
+  addVideoDialog.value.show();
+};
+
+const addFileDialog = ref();
+
+const showAddFileDialog = () => {
+  addFileDialog.value.show();
 };
 
 const confirmDelete = (content: BaseContent) => {

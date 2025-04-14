@@ -6,6 +6,7 @@ import type {
   TextContent,
   QuizContent,
   AssignmentContent,
+  VideoContent,
 } from 'src/models/module-content';
 
 export const useModuleContentStore = defineStore('moduleContent', {
@@ -114,6 +115,45 @@ export const useModuleContentStore = defineStore('moduleContent', {
           throw new Error(error.message);
         }
         throw new Error('Failed to delete content');
+      }
+    },
+    async createVideoContent(data: VideoContent) {
+      try {
+        const response = await api.post<{ data: BaseContent }>(
+          '/admin/videos',
+          data,
+          {
+            headers: {
+              Authorization: `Bearer ${qCookies.get('token')}`,
+            },
+          }
+        );
+        return response.data;
+      } catch (error) {
+        if (error instanceof Error) {
+          throw new Error(error.message);
+        }
+        throw new Error('Failed to create video content');
+      }
+    },
+    async createFileContent(data: FormData) {
+      try {
+        const response = await api.post<{ data: BaseContent }>(
+          '/admin/files',
+          data,
+          {
+            headers: {
+              Authorization: `Bearer ${qCookies.get('token')}`,
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        );
+        return response.data;
+      } catch (error) {
+        if (error instanceof Error) {
+          throw new Error(error.message);
+        }
+        throw new Error('Failed to create file content');
       }
     },
   },
