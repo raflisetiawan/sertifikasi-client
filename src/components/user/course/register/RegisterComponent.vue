@@ -122,7 +122,7 @@
   </div>
 </template>
 <script setup lang="ts" async>
-import { Courses, CreateRegisterForm } from 'src/models/course';
+import { CreateRegisterForm } from 'src/models/course';
 import { useCourseStore } from 'src/stores/course';
 import { onMounted, ref, onUnmounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -130,16 +130,37 @@ import { useVuelidate } from '@vuelidate/core'
 import { useEmail, useRequired, useName, usePhoneNumber } from 'src/composables/validators';
 import { useUserStore } from 'src/stores/user';
 import { useMetaTitle } from 'src/composables/meta';
-import { api } from 'src/boot/axios';
-import { useQuasar } from 'quasar';
-import { AxiosError } from 'axios';
 import { useNotify } from 'src/composables/notifications';
 import toRupiah from '@develoka/angka-rupiah-js';
-import { getMidtransErrorMessage, MidtransResult } from 'src/models/midtrans';
+import { getMidtransErrorMessage } from 'src/models/midtrans';
+import { useRegistrationStore } from 'src/stores/registration';
+import type { PaymentResult, PaymentError } from 'src/models/payment';
+interface SnapOptions {
+  embedId: string;
+  onSuccess: (result: PaymentResult) => void;
+  onPending: () => void;
+  onError: (error: PaymentError) => void;
+  onClose: () => void;
+}
+
+interface Course {
+  id: number;
+  name: string;
+  description: string;
+  facility: string;
+  image: string | null;
+  operational_end: string;
+  operational_start: string;
+  place: string;
+  price: number;
+  time: string;
+}
 
 declare global {
   interface Window {
-    snap: any;
+    snap: {
+      embed: (token: string, options: SnapOptions) => void;
+    };
   }
 }
 
@@ -147,13 +168,14 @@ useMetaTitle('Pendaftaran')
 const showConfirmDialog = ref(false)
 const { name: userName, email: userEmail, phone_number: userPhone } = useUserStore()
 const bar = ref();
-const { $state: userState } = useUserStore()
-const { cookies: qCookies } = useQuasar();
+const registrationStore = useRegistrationStore();
+const courseStore = useCourseStore();
 const route = useRoute();
 const router = useRouter();
 const step = ref(parseInt(route.query.step as string) || 1);
 const loading = ref<boolean>(false);
-const course = ref<Courses>({
+const course = ref<Course>({
+  id: 0,
   name: '',
   description: '',
   facility: '',
@@ -162,9 +184,9 @@ const course = ref<Courses>({
   operational_start: '2023/02/02',
   place: '',
   price: 0,
-  time: '',
-  id: 0
-})
+  time: ''
+});
+
 const showPayment = ref(false);
 const snapToken = ref('');
 
@@ -176,8 +198,6 @@ const registerCourseForm = ref<CreateRegisterForm>({
   price: 0,
   priceRupiah: 0,
 })
-
-const { showCourse } = useCourseStore()
 
 const { params: routeParams } = useRoute();
 
@@ -198,73 +218,66 @@ const confirmSubmit = () => {
 }
 
 const onSubmit = async () => {
-  if (!v$.value.$invalid) {
-    try {
-      loading.value = true;
-      const registrationResponse = await api.post('registration', { user_id: userState.id, course_id: routeParams.id }, {
-        headers: {
-          Authorization: `Bearer ${qCookies.get('token')}`,
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+  try {
+    loading.value = true;
+    // Create registration
+    const registration = await registrationStore.registerForCourse(
+      Number(route.params.id)
+    );
 
-      const priceWithoutCurrency = course.value.price.toString().replace(/[^\d]/g, '');
-      const amount = parseInt(priceWithoutCurrency);
-      const paymentResponse = await api.post('payments/create', {
-        course_id: routeParams.id,
-        amount: amount,
-        registration_id: registrationResponse.data.registration_id
-      }, {
-        headers: {
-          Authorization: `Bearer ${qCookies.get('token')}`
-        }
-      });
-      handlePayment(paymentResponse.data.token);
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        if (error.response?.status == 422) {
-          useNotify(error.response?.data.message, 'negative');
-        } else {
-          useNotify(error.message, 'red');
-        }
-      } else {
-        useNotify('Terjadi masalah', 'red');
-      }
-    } finally {
-      loading.value = false;
-    }
 
-  } else {
-    v$.value.$touch();
+    // Create payment
+    const priceWithoutCurrency = course.value.price.toString().replace(/[^\d]/g, '');
+    const amount = parseInt(priceWithoutCurrency);
+    const payment = await registrationStore.createPayment(
+      registration.id,
+      amount
+    );
+
+    // Handle payment
+    handlePayment(payment.snap_token);
+  } catch (error) {
+    handleError(error);
+  } finally {
+    loading.value = false;
   }
-}
+};
 
-const handlePayment = (token: string) => {
+const handlePayment = (token: string | null) => {
+  if (!token) {
+    useNotify('Token pembayaran tidak valid', 'negative');
+    return;
+  }
+
   showConfirmDialog.value = false;
   step.value = 2;
 
-  // Clear existing snap container if any
   const existingContainer = document.getElementById('snap-container');
   if (existingContainer) {
     existingContainer.innerHTML = '';
   }
-
-  // Show loading state
   showPayment.value = true;
   snapToken.value = token;
   localStorage.setItem('paymentToken', token);
 
-  // Add delay to ensure DOM is updated
   setTimeout(() => {
     initializeSnapPayment(token);
   }, 500);
 }
 
+const handleError = (error: unknown) => {
+  if (error instanceof Error) {
+    useNotify(error.message, 'negative');
+  } else {
+    useNotify('Terjadi kesalahan', 'negative');
+  }
+};
 
 
-const handlePaymentSuccess = async (result: MidtransResult) => {
+
+const handlePaymentSuccess = async (result: PaymentResult) => {
   try {
-    const response = await api.post('payments/update-status', {
+    await registrationStore.updatePaymentStatus({
       order_id: result.order_id,
       status_code: result.status_code,
       transaction_id: result.transaction_id,
@@ -272,53 +285,43 @@ const handlePaymentSuccess = async (result: MidtransResult) => {
       transaction_time: result.transaction_time,
       payment_type: result.payment_type,
       gross_amount: result.gross_amount,
-      fraud_status: result.fraud_status
-    }, {
-      headers: {
-        Authorization: `Bearer ${qCookies.get('token')}`
-      }
+      fraud_status: result.fraud_status,
+      status_message: result.status_message,  // Add this
+      finish_redirect_url: result.finish_redirect_url  // Add this
     });
 
-    if (response.data.success) {
-      useNotify('Pembayaran berhasil diverifikasi!', 'positive');
-      // Move to success step
-      step.value = 3;
-      // Clean up payment data
-      localStorage.removeItem('paymentToken');
-    }
+    useNotify('Pembayaran berhasil diverifikasi!', 'positive');
+    step.value = 3;
+    localStorage.removeItem('paymentToken');
   } catch (error) {
-    console.error('Error updating payment status:', error);
     useNotify('Gagal memperbarui status pembayaran', 'negative');
   }
 };
 
-// Add new function to handle snap payment initialization
 const initializeSnapPayment = (token: string) => {
   try {
     if (window.snap && !document.querySelector('.snap-iframe')) {
       window.snap.embed(token, {
         embedId: 'snap-container',
-        onSuccess: async function (result: MidtransResult) {
+        onSuccess: async (result: PaymentResult) => {
           useNotify('Pembayaran berhasil!', 'positive');
           showPayment.value = false;
           await handlePaymentSuccess(result);
-          // Clear stored token after successful payment
           localStorage.removeItem('paymentToken');
         },
-        onPending: function () {
+        onPending: () => {
           useNotify('Menunggu pembayaran', 'warning');
         },
-        onError: function (result: MidtransResult) {
-          if (result.status_code === '300' && result.finish_redirect_url) {
-            window.location.href = result.finish_redirect_url;
+        onError: (error: PaymentError) => {
+          if (error.status_code === '300' && error.finish_redirect_url) {
+            window.location.href = error.finish_redirect_url;
           }
-          const errorMessage = getMidtransErrorMessage(result.status_code);
+          const errorMessage = getMidtransErrorMessage(error.status_code);
           useNotify(`Pembayaran gagal: ${errorMessage}`, 'negative');
           showPayment.value = false;
-          // Clear stored token on error
           localStorage.removeItem('paymentToken');
         },
-        onClose: function () {
+        onClose: () => {
           showPayment.value = false;
           const container = document.getElementById('snap-container');
           if (container) {
@@ -335,13 +338,12 @@ const initializeSnapPayment = (token: string) => {
     useNotify('Gagal memuat form pembayaran', 'negative');
     showPayment.value = false;
   }
-}
-
+};
 
 onMounted(async () => {
   try {
     bar.value.start()
-    const response = await showCourse(routeParams.id)
+    const response = await courseStore.showCourse(routeParams.id)
     course.value = { ...response.data, priceRupiah: toRupiah(response.data.price) }
     registerCourseForm.value.priceRupiah = toRupiah(course.value.price);
     const storedToken = localStorage.getItem('paymentToken');
@@ -360,8 +362,6 @@ onMounted(async () => {
   }
 
 })
-
-
 
 onUnmounted(() => {
   showPayment.value = false;

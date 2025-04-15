@@ -70,7 +70,7 @@ export interface FileContent {
   module_id: number;
   title: string;
   description?: string;
-  file: File;
+  file: File | null;
   order: number;
   is_required: boolean;
 }

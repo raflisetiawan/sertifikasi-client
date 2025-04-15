@@ -1,36 +1,39 @@
 import { boot } from 'quasar/wrappers';
 import axios, { AxiosInstance } from 'axios';
+import config from 'src/config/env.config';
 
-declare module '@vue/runtime-core' {
-  interface ComponentCustomProperties {
-    $axios: AxiosInstance;
+declare module '@quasar/app-vite' {
+  interface QSsrContext {
+    api: AxiosInstance;
   }
 }
 
-// Be careful when using SSR for cross-request state pollution
-// due to creating a Singleton instance here;
-// If any client changes this (global) instance, it might be a
-// good idea to move this instance creation inside of the
-// "export default () => {}" function below (which runs individually
-// for each client)
-// const api = axios.create({ baseURL: 'http://127.0.0.1:8000/api/' });
-const api = axios.create({
-  // baseURL: 'https://api.uisikelasonline.com:8443/api/',
-  baseURL: 'http://127.0.0.1:8000/api/',
-});
-// const storageBaseUrl = 'https://api.uisikelasonline.com:8443/storage/';
-const storageBaseUrl = 'http://127.0.0.1:8000/storage/';
+// Create api instance with proper config
+const createAxiosInstance = () => {
+  const instance = axios.create({
+    baseURL: config.apiBaseUrl,
+    headers: process.env.DEV
+      ? {
+          'ngrok-skip-browser-warning': 'true',
+        }
+      : undefined,
+  });
 
-export default boot(({ app }) => {
-  // for use inside Vue files (Options API) through this.$axios and this.$api
+  return instance;
+};
+
+const api = createAxiosInstance();
+
+export default boot(({ app, ssrContext }) => {
+  const apiInstance = createAxiosInstance();
 
   app.config.globalProperties.$axios = axios;
-  // ^ ^ ^ this will allow you to use this.$axios (for Vue Options API form)
-  //       so you won't necessarily have to import axios in each vue file
+  app.config.globalProperties.$api = apiInstance;
 
-  app.config.globalProperties.$api = api;
-  // ^ ^ ^ this will allow you to use this.$api (for Vue Options API form)
-  //       so you can easily perform requests against your app's API
+  if (ssrContext) {
+    ssrContext.api = apiInstance;
+  }
 });
 
-export { api, storageBaseUrl };
+export const storageBaseUrl = config.storageBaseUrl;
+export { api };

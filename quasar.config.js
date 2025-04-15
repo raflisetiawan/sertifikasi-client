@@ -70,7 +70,14 @@ module.exports = configure(function (/* ctx */) {
 
       // publicPath: '/',
       // analyze: true,
-      // env: {},
+      env: {
+        API_URL: ctx.dev
+          ? JSON.stringify(process.env.API_URL)
+          : JSON.stringify(process.env.API_URL),
+        STORAGE_URL: ctx.dev
+          ? JSON.stringify(process.env.STORAGE_URL)
+          : JSON.stringify(process.env.STORAGE_URL),
+      },
       // rawDefine: {}
       // ignorePublicFolder: true,
       // minify: false,
@@ -132,18 +139,22 @@ module.exports = configure(function (/* ctx */) {
 
       // extendSSRWebserverConf (esbuildConf) {},
       // extendPackageJson (json) {},
-
-      pwa: false,
-
+      pwa: true,
       // manualStoreHydration: true,
       // manualPostHydrationTrigger: true,
+      maxAge: process.env.PROD ? 1000 * 60 * 60 * 24 * 30 : 0,
 
-      prodPort: 3000, // The default port that the production server should use
+      prodPort: process.env.PORT || 3000, // The default port that the production server should use
       // (gets superseded if process.env.PORT is specified at runtime)
 
       middlewares: [
         'render', // keep this as last one
       ],
+      prodNodeOpts: {
+        env: {
+          NODE_ENV: 'production',
+        },
+      },
     },
 
     // https://v2.quasar.dev/quasar-cli-vite/developing-pwa/configuring-pwa

@@ -10,7 +10,11 @@
     "format": "prettier --write \"**/*.{js,ts,vue,scss,html,md,json}\" --ignore-path .gitignore",
     "test": "echo \"No test specified\" && exit 0",
     "dev": "quasar dev",
-    "build": "quasar build"
+    "build:prod": "cross-env NODE_ENV=production quasar build -m ssr",
+    "start": "node dist/ssr/index.js",
+    "preview": "quasar serve dist/ssr --history --port 3000",
+    "pm2:start": "pm2 start dist/ssr/index.js --name uisi-online",
+    "pm2:reload": "pm2 reload uisi-online"
   },
   "dependencies": {
     "@develoka/angka-rupiah-js": "^1.0.3",
