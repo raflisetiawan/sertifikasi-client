@@ -3,7 +3,7 @@
     <div class="row justify-around">
       <div class="col-md-3 col-sm-4 col-xs-10 q-px-md" v-for="course in courseState.courses" :key="course.id">
         <q-card class="my-card q-ma-md cursor-pointer" bordered
-          @click="$router.push({ name: 'DetailCourseUserPage', params: { id: course.id } })">
+          @click="$router.push({ name: 'courses.show', params: { id: course.id } })">
           <q-img :src="`${storageBaseUrl}courses/${course.image}`" fit="cover" :ratio="4 / 3" />
 
           <q-card-section>

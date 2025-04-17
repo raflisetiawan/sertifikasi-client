@@ -48,7 +48,7 @@
                     Daftar untuk mengakses materi pembelajaran
                   </div>
                 </div>
-                <q-btn color="primary" :to="{ name: 'RegisterCourseUserPage', params: { id: props.course.id } }"
+                <q-btn color="primary" :to="{ name: 'courses.register', params: { id: props.course.id } }"
                   class="q-px-xl" size="lg" icon-right="arrow_forward" unelevated>
                   Daftar
                 </q-btn>

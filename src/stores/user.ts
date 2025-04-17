@@ -51,7 +51,7 @@ export const useUserStore = defineStore('user', {
           Cookies.remove('token');
           Cookies.remove('signedIn');
           useNotify('Berhasil logout', 'green');
-          this.router.push({ name: 'SignInPage' });
+          this.router.push({ name: 'auth.login' });
         } else {
           useNotify('Berhasil logout', 'green');
         }

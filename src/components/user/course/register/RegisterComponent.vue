@@ -95,7 +95,7 @@
             Detail pembayaran telah dikirim ke email Anda
           </div>
           <q-btn color="primary" label="Lihat Kelas" class="q-mt-lg"
-            @click="router.push({ name: 'MyProfileDetailCoursePage', params: { id: route.params.id } })" />
+            @click="router.push({ name: 'dashboard.courses.show', params: { id: route.params.id } })" />
         </div>
       </q-step>
     </q-stepper>
@@ -225,10 +225,8 @@ const onSubmit = async () => {
       Number(route.params.id)
     );
 
-
     // Create payment
-    const priceWithoutCurrency = course.value.price.toString().replace(/[^\d]/g, '');
-    const amount = parseInt(priceWithoutCurrency);
+    const amount = course.value.price; // Use the original price directly
     const payment = await registrationStore.createPayment(
       registration.id,
       amount

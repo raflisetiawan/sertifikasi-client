@@ -142,10 +142,6 @@ const onSubmit = async () => {
       formData.append('thumbnail', moduleForm.thumbnail);
     }
 
-    // Log formData contents for debugging
-    for (const pair of formData.entries()) {
-      console.log(pair[0], pair[1]);
-    }
 
     await moudleStore.createModule(moudleStore.courseId, formData);
 
