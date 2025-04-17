@@ -9,20 +9,20 @@
           <q-avatar rounded @click="$router.push({ name: 'HomePage' })" style="cursor: pointer;">
             <img src="icons/favicon-128x128.png">
           </q-avatar>
-          <span v-show="$q.screen.gt.xs" class="q-ml-sm" @click="$router.push({ name: 'HomePage' })"
+          <span v-show="$q.screen.gt.xs" class="q-ml-sm" @click="$router.push({ name: 'home' })"
             style="cursor: pointer;">Digiclass</span>
         </q-toolbar-title>
         <q-space></q-space>
         <q-tabs v-show="$q.screen.gt.sm" v-model="tab" shrink>
-          <q-route-tab :to="{ name: 'HomePage' }" name="Home" label="Home" />
-          <q-route-tab :to="{ name: 'CoursePage' }" name="Kelas" label="Kelas" />
-          <q-route-tab :to="{ name: 'AboutPage' }" name="Tentang Kami" label="Tentang Kami" />
-          <q-route-tab :to="{ name: 'ContactPage' }" name="Kontak" label="Kontak" />
-          <q-route-tab :to="{ name: 'FaqIndexPage' }" name="Faq" label="FAQ" />
+          <q-route-tab :to="{ name: 'home' }" name="Home" label="Home" />
+          <q-route-tab :to="{ name: 'courses.index' }" name="Kelas" label="Kelas" />
+          <q-route-tab :to="{ name: 'about' }" name="Tentang Kami" label="Tentang Kami" />
+          <q-route-tab :to="{ name: 'contact' }" name="Kontak" label="Kontak" />
+          <q-route-tab :to="{ name: 'faq' }" name="Faq" label="FAQ" />
         </q-tabs>
         <div class="q-mx-md" v-if="!isAuthenticated()">
-          <q-btn flat class="text-black" :to="{ name: 'SignInPage' }">Login</q-btn>
-          <q-btn flat class="text-black" :to="{ name: 'SignUpPage' }">Daftar</q-btn>
+          <q-btn flat class="text-black" :to="{ name: 'auth.login' }">Login</q-btn>
+          <q-btn flat class="text-black" :to="{ name: 'auth.register' }">Daftar</q-btn>
         </div>
         <div class="q-mx-md" v-else>
 
@@ -36,7 +36,7 @@
               </q-item>
               <q-item v-else>
                 <q-item-section>
-                  <q-btn dense class="full-width" flat @click="$router.push({ name: 'MyProfileIndexPage' })">Profile
+                  <q-btn dense class="full-width" flat @click="$router.push({ name: 'dashboard' })">Profile
                     Saya</q-btn>
                 </q-item-section>
               </q-item>
@@ -100,7 +100,7 @@
           </q-item>
           <div v-if="!isAuthenticated()">
             <q-separator></q-separator>
-            <q-item clickable v-ripple @click="$router.push({ name: 'SignInPage' })">
+            <q-item clickable v-ripple @click="$router.push({ name: 'auth.login' })">
               <q-item-section avatar>
                 <q-icon name="fa-solid fa-right-to-bracket"></q-icon>
               </q-item-section>
@@ -109,7 +109,7 @@
                 Login
               </q-item-section>
             </q-item>
-            <q-item clickable v-ripple @click="$router.push({ name: 'SignUpPage' })">
+            <q-item clickable v-ripple @click="$router.push({ name: 'auth.register' })">
               <q-item-section avatar>
                 <q-icon name="fa-solid fa-user-plus"></q-icon>
               </q-item-section>

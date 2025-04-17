@@ -117,7 +117,7 @@ const onSubmit = async () => {
       const response = await api.post('signin', signInForm.value);
       qCookies.set('token', response.data.token);
       if (response.data.user.role_id === 1) router.push({ name: 'AdminPage' })
-      else router.push({ name: 'HomePage' })
+      else router.push({ name: 'home' })
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         if (error.response.status === 401) {

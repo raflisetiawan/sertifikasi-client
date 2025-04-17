@@ -73,7 +73,7 @@
                   </q-card-actions>
                 </q-form>
                 <div class="text-center">
-                  <div class="text-caption">Sudah punya akun ?<q-btn dense :to="{ name: 'SignInPage' }" color="primary"
+                  <div class="text-caption">Sudah punya akun ?<q-btn dense :to="{ name: 'auth.login' }" color="primary"
                       flat>
                       Login</q-btn></div>
 

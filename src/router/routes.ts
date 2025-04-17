@@ -8,95 +8,125 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: '',
+        name: 'home',
         component: () => import('pages/user/IndexPage.vue'),
-        name: 'HomePage',
       },
       {
         path: 'about',
+        name: 'about',
         component: () => import('pages/user/AboutPage.vue'),
-        name: 'AboutPage',
       },
       {
         path: 'contact',
+        name: 'contact',
         component: () => import('pages/user/ContactPage.vue'),
-        name: 'ContactPage',
       },
       {
-        path: 'course',
-        component: () => import('pages/course/IndexPage.vue'),
-        name: 'CoursePage',
-      },
-      {
-        path: 'course/:id',
-        component: () => import('pages/course/DetailPage.vue'),
-        name: 'DetailCourseUserPage',
-      },
-      {
-        path: 'course/:id/register',
-        component: () => import('pages/course/RegisterPage.vue'),
-        name: 'RegisterCourseUserPage',
-        meta: { requiresAuth: true },
+        path: 'courses',
+        children: [
+          {
+            path: '',
+            name: 'courses.index',
+            component: () => import('pages/course/IndexPage.vue'),
+          },
+          {
+            path: ':id',
+            name: 'courses.show',
+            component: () => import('pages/course/DetailPage.vue'),
+          },
+          {
+            path: ':id/register',
+            name: 'courses.register',
+            component: () => import('pages/course/RegisterPage.vue'),
+            meta: { requiresAuth: true },
+          },
+        ],
       },
       {
         path: 'faq',
+        name: 'faq',
         component: () => import('pages/faq/IndexPage.vue'),
-        name: 'FaqIndexPage',
       },
       {
-        path: 'trainer/:id',
+        path: 'trainers/:id',
+        name: 'trainers.show',
         component: () => import('pages/trainer/IndexPage.vue'),
-        name: 'TrainerIndexPage',
       },
     ],
   },
   {
-    path: '/signin',
+    path: '/auth',
     component: () => import('layouts/AuthLayout.vue'),
+    meta: { requiresGuest: true },
+    children: [
+      {
+        path: 'login',
+        name: 'auth.login',
+        component: () => import('pages/auth/SignInPage.vue'),
+      },
+      {
+        path: 'register',
+        name: 'auth.register',
+        component: () => import('pages/auth/SignupPage.vue'),
+      },
+    ],
+  },
+  {
+    path: '/dashboard',
+    component: () => import('layouts/UserLayout.vue'),
+    meta: { requiresAuth: true },
     children: [
       {
         path: '',
-        component: () => import('pages/auth/SignInPage.vue'),
-        name: 'SignInPage',
-        meta: { requiresGuest: true },
+        name: 'dashboard',
+        component: () => import('pages/user/DashboardPage.vue'),
       },
       {
-        path: '/signup',
-        component: () => import('pages/auth/SignupPage.vue'),
-        name: 'SignUpPage',
-        meta: { requiresGuest: true },
+        path: 'profile',
+        name: 'user.profile',
+        component: () => import('pages/user/ProfilePage.vue'),
+      },
+      {
+        path: 'courses',
+        children: [
+          {
+            path: '',
+            name: 'dashboard.courses.index',
+            component: () => import('pages/user/courses/IndexPage.vue'),
+          },
+          {
+            path: ':id',
+            name: 'dashboard.courses.show',
+            component: () => import('pages/user/courses/DetailPage.vue'),
+          },
+        ],
+      },
+      {
+        path: 'payments',
+        name: 'dashboard.payments',
+        component: () => import('pages/user/PaymentHistoryPage.vue'),
       },
     ],
   },
   adminRoutes,
   {
-    path: '/my-profile',
-    component: () => import('layouts/UserLayout.vue'),
+    path: '/email/verify',
     children: [
       {
-        path: '',
-        component: () => import('pages/my-profile/IndexPage.vue'),
-        name: 'MyProfileIndexPage',
-      },
-      {
-        path: 'course/:id',
-        component: () => import('pages/my-profile/DetailCoursePage.vue'),
-        name: 'MyProfileDetailCoursePage',
+        path: 'success',
+        name: 'email.verify.success',
+        component: () => import('pages/auth/AlreadyVerifiedPage.vue'),
       },
     ],
-    meta: { requiresAuth: true },
-  },
-  {
-    path: '/email/verify/already-success',
-    component: () => import('pages/auth/AlreadyVerifiedPage.vue'),
-    name: 'AlreadyVerifiedPage',
   },
   {
     path: '/unauthorized',
+    name: 'unauthorized',
     component: () => import('pages/UnauthorizedPage.vue'),
-    name: 'UnauthorizedPage',
   },
   {
     path: '/:catchAll(.*)*',
+    name: 'error.404',
     component: () => import('pages/ErrorNotFound.vue'),
   },
 ];
