@@ -99,7 +99,7 @@
           <template v-else-if="dashboardData?.active_courses?.length">
             <div v-for="course in dashboardData.active_courses" :key="course.id" class="col-12 col-md-4">
               <q-card>
-                <q-img :src="course.course.image || 'default-course.jpg'" height="200px">
+                <q-img :src="storageBaseUrl + 'courses/' + course.course.image || 'default-course.jpg'" height="200px">
                   <div class="absolute-bottom bg-transparent">
                     <div class="text-h6">{{ course.course.name }}</div>
                   </div>
@@ -152,7 +152,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { api } from 'src/boot/axios';
+import { api, storageBaseUrl } from 'src/boot/axios';
 import { qCookies } from 'src/boot/cookies';
 import { QTableColumn, useQuasar } from 'quasar';
 import { date } from 'quasar';

@@ -2,8 +2,8 @@ import { Trainer } from './trainer';
 export interface CreateCourseForm {
   name: string;
   description: string;
-  key_concepts: string;
-  facility: string;
+  key_concepts: string[]; // Change to string array
+  facility: string[]; // Change to string array
   price: number;
   image: File | null;
   operational_start: string;
@@ -12,15 +12,12 @@ export interface CreateCourseForm {
   duration: string;
   benefit: string;
   guidelines: File | null;
-  syllabus?: File | null;
-  certificate_example?: File | null;
-  schedule?: File | null;
+  syllabus: File | null;
+  certificate_example: File | null;
+  schedule: File | null;
   trainerSelect: Array<{ label: string; value: number }>;
   trainer_ids: number[];
-  trainer_selected: {
-    label: string;
-    value: number;
-  }[];
+  trainer_selected: Array<{ label: string; value: number }>;
 }
 
 export interface TrainerSelect {
@@ -53,23 +50,22 @@ export interface Courses {
 export interface UpdateCourseForm {
   name: string;
   description: string;
-  key_concepts: string;
-  facility: string;
+  key_concepts: string[]; // Change to array
+  facility: string[]; // Change to array
   price: number;
-  place: string;
-  duration: string;
   image: File | null;
-  benefit: string;
-  guidelines: File | null;
-  syllabus?: File | null;
-  certificate_example?: File | null;
-  schedule?: File | null;
   operational_start: string;
   operational_end: string;
+  place: string;
+  duration: string;
+  benefit: string;
+  guidelines: File | null;
+  syllabus: File | null;
+  certificate_example: File | null;
+  schedule: File | null;
   trainerSelect: Array<{ label: string; value: number }>;
   trainer_ids: number[];
   trainer_selected: Array<{ label: string; value: number }>;
-  _method?: string;
 }
 
 export interface DetailCourse {

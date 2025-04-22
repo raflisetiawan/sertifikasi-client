@@ -8,95 +8,17 @@
             <q-input outlined type="text" v-model="courseForm.name" lazy-rules label="Nama kelas *"
               :error="v$.name.$error" :error-message="v$.name.$errors.map((e) => e.$message).join()"
               @input="v$.name.$touch" @blur="v$.name.$touch" />
-            <div class="text-body1">Konsep Utama: </div>
-            <q-editor v-model="courseForm.key_concepts" :dense="$q.screen.lt.md" :toolbar="[
-              [
-                {
-                  label: $q.lang.editor.align,
-                  icon: $q.iconSet.editor.align,
-                  fixedLabel: true,
-                  list: 'only-icons',
-                  options: ['left', 'center', 'right', 'justify']
-                },
-                {
-                  label: $q.lang.editor.align,
-                  icon: $q.iconSet.editor.align,
-                  fixedLabel: true,
-                  options: ['left', 'center', 'right', 'justify']
-                }
-              ],
-              ['bold', 'italic', 'strike', 'underline', 'subscript', 'superscript'],
-              ['token', 'hr', 'link', 'custom_btn'],
-              ['print', 'fullscreen'],
-              [
-                {
-                  label: $q.lang.editor.formatting,
-                  icon: $q.iconSet.editor.formatting,
-                  list: 'no-icons',
-                  options: [
-                    'p',
-                    'h1',
-                    'h2',
-                    'h3',
-                    'h4',
-                    'h5',
-                    'h6',
-                    'code'
-                  ]
-                },
-                {
-                  label: $q.lang.editor.fontSize,
-                  icon: $q.iconSet.editor.fontSize,
-                  fixedLabel: true,
-                  fixedIcon: true,
-                  list: 'no-icons',
-                  options: [
-                    'size-1',
-                    'size-2',
-                    'size-3',
-                    'size-4',
-                    'size-5',
-                    'size-6',
-                    'size-7'
-                  ]
-                },
-                {
-                  label: $q.lang.editor.defaultFont,
-                  icon: $q.iconSet.editor.font,
-                  fixedIcon: true,
-                  list: 'no-icons',
-                  options: [
-                    'default_font',
-                    'arial',
-                    'arial_black',
-                    'comic_sans',
-                    'courier_new',
-                    'impact',
-                    'lucida_grande',
-                    'times_new_roman',
-                    'verdana'
-                  ]
-                },
-                'removeFormat'
-              ],
-              ['quote', 'unordered', 'ordered', 'outdent', 'indent'],
-
-              ['undo', 'redo'],
-              ['viewsource']
-            ]" :fonts="{
-              arial: 'Arial',
-              arial_black: 'Arial Black',
-              comic_sans: 'Comic Sans MS',
-              courier_new: 'Courier New',
-              impact: 'Impact',
-              lucida_grande: 'Lucida Grande',
-              times_new_roman: 'Times New Roman',
-              verdana: 'Verdana'
-            }">
-            </q-editor>
-            <q-input outlined type="text" autogrow v-model="courseForm.facility" lazy-rules label="Fasilitas *"
-              :error="v$.facility.$error" :error-message="v$.facility.$errors.map((e) => e.$message).join()"
-              @input="v$.facility.$touch" @blur="v$.facility.$touch" />
+            <q-input outlined type="text" autogrow v-model="courseForm.description" lazy-rules label="Deskripsi *"
+              :error="v$.description.$error" :error-message="v$.description.$errors.map((e) => e.$message).join()"
+              @input="v$.description.$touch" @blur="v$.description.$touch" />
+            <div class="text-body1 q-mb-sm">Konsep Utama:</div>
+            <q-select v-model="courseForm.key_concepts" label="Konsep Utama *" filled use-input use-chips multiple
+              hide-dropdown-icon input-debounce="0" new-value-mode="add-unique" :error="v$.key_concepts.$error"
+              :error-message="v$.key_concepts.$errors.map((e) => e.$message).join()" @blur="v$.key_concepts.$touch" />
+            <div class="text-body1 q-mb-sm">Fasilitas:</div>
+            <q-select v-model="courseForm.facility" label="Fasilitas *" filled use-input use-chips multiple
+              hide-dropdown-icon input-debounce="0" new-value-mode="add-unique" :error="v$.facility.$error"
+              :error-message="v$.facility.$errors.map((e) => e.$message).join()" @blur="v$.facility.$touch" />
             <q-input outlined type="text" autogrow v-model="courseForm.benefit" lazy-rules label="Benefit *"
               :error="v$.benefit.$error" :error-message="v$.benefit.$errors.map((e) => e.$message).join()"
               @input="v$.benefit.$touch" @blur="v$.benefit.$touch" />
@@ -225,8 +147,8 @@ const { params: routeParam } = useRoute();
 const courseForm = reactive<UpdateCourseForm>({
   name: '',
   description: '',
-  key_concepts: '',
-  facility: '',
+  key_concepts: [], // Change to array
+  facility: [], // Change to array
   price: 0,
   image: null,
   operational_start: '',
@@ -241,7 +163,7 @@ const courseForm = reactive<UpdateCourseForm>({
   trainerSelect: [],
   trainer_ids: [],
   trainer_selected: []
-})
+});
 
 // Add refs for new file URLs
 const syllabusUrl = ref('');
@@ -251,13 +173,20 @@ const scheduleUrl = ref('');
 const rules = {
   name: { required: useRequired(), validName: useName() },
   description: { required: useRequired() },
-  facility: { required: useRequired() },
+  key_concepts: {
+    required: useRequired(),
+    minLength: (value: string[]) => value.length > 0
+  },
+  facility: {
+    required: useRequired(),
+    minLength: (value: string[]) => value.length > 0
+  },
   price: { required: useRequired(), numeric: useNumeric(), decimal: useDecimal() },
   place: { required: useRequired() },
   duration: { required: useRequired() },
   benefit: { required: useRequired() },
+};
 
-}
 const checkFileSize = (files: readonly unknown[] | FileList): readonly unknown[] => {
   const fileList = Array.from(files);
   return fileList.filter(file => (file instanceof File) && file.size < 2e+6);
@@ -279,11 +208,7 @@ const onRejected = (rejectedEntries: QRejectedEntry[]) => {
 
 const v$ = useVuelidate(rules, courseForm)
 const onSubmit = async () => {
-  // Use $touch instead of touch
   v$.value.$touch();
-  console.log(v$.value);
-  console.log(courseForm);
-  // Check validation state
   if (v$.value.$invalid) {
     notify({
       type: 'negative',
@@ -295,12 +220,15 @@ const onSubmit = async () => {
   try {
     loadingCreate.value = true;
     const trainerIds = courseForm.trainer_selected.map(trainer => trainer.value);
-
-    await updateCourse(routeParam.id, {
+    const formData = {
       ...courseForm,
+      key_concepts: courseForm.key_concepts, // Remove JSON.stringify
+      facility: courseForm.facility, // Remove JSON.stringify
       trainer_ids: trainerIds,
       _method: 'PATCH'
-    });
+    };
+
+    await updateCourse(routeParam.id, formData);
 
     notify({
       type: 'positive',
@@ -313,11 +241,10 @@ const onSubmit = async () => {
       type: 'negative',
       message: 'Error updating course'
     });
-    throw error;
   } finally {
     loadingCreate.value = false;
   }
-}
+};
 type DoneFunction = (callbackFn: () => void, afterFn?: ((ref: QSelect) => void) | undefined) => void;
 const filterFnAutoselect = async (val: string, update: DoneFunction) => {
   if (courseForm.trainerSelect.length === 0) {
@@ -347,7 +274,6 @@ onMounted(async () => {
     loading.value = true;
     await getTrainers();
 
-    // Clear and populate trainerSelect
     courseForm.trainerSelect = $state.trainers
       .filter(trainer => trainer.id)
       .map(trainer => ({
@@ -358,12 +284,25 @@ onMounted(async () => {
     const response = await showCourse(routeParam.id);
     const data = response.data;
 
+    // Parse arrays from JSON strings if needed
+    const keyConcepts = Array.isArray(data.key_concepts)
+      ? data.key_concepts
+      : (typeof data.key_concepts === 'string'
+        ? JSON.parse(data.key_concepts)
+        : []);
+
+    const facilities = Array.isArray(data.facility)
+      ? data.facility
+      : (typeof data.facility === 'string'
+        ? JSON.parse(data.facility)
+        : []);
+
     // Update form values
     Object.assign(courseForm, {
       name: data.name || '',
       description: data.description || '',
-      key_concepts: data.key_concepts || '',
-      facility: data.facility || '',
+      key_concepts: keyConcepts,
+      facility: facilities,
       price: Number(data.price) || 0,
       place: data.place || '',
       duration: data.duration || '',
@@ -380,18 +319,16 @@ onMounted(async () => {
     imageUrl.value = data.image ? `${storageBaseUrl}courses/${data.image}` : '';
     guidelinesUrl.value = data.guidelines ? `${storageBaseUrl}courses/guideline/${data.guidelines}` : '';
     syllabusUrl.value = data.syllabus_path ? `${storageBaseUrl}courses/syllabus/${data.syllabus_path}` : '';
-    certificateExampleUrl.value = data.certificate_example_path ? `${storageBaseUrl}courses/certificates/${data.certificate_example_path}` : '';
+    certificateExampleUrl.value = data.certificate_example_path ?
+      `${storageBaseUrl}courses/certificates/${data.certificate_example_path}` : '';
     scheduleUrl.value = data.schedule_path ? `${storageBaseUrl}courses/schedules/${data.schedule_path}` : '';
 
-    // Reset validation state
     await v$.value.$reset();
-
   } catch (error) {
     notify({
       type: 'negative',
       message: 'Error loading course data'
     });
-    throw error;
   } finally {
     loading.value = false;
   }

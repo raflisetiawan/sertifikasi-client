@@ -7,6 +7,7 @@
     <template v-else>
       <DetailComponent :course="course" />
       <KeyConceptSection :course="course" />
+      <FacilitySection :course="course" />
     </template>
 
     <!-- course benefit -->
@@ -68,6 +69,7 @@ import KeyConceptSectionSkeleton from 'src/components/user/course/detail/KeyConc
 import ModuleExpansionItemSkeleton from 'src/components/user/course/detail/ModuleExpansionItemSkeleton.vue';
 import TrainerSection from 'src/components/user/course/detail/TrainerSection.vue';
 import CourseFilesSection from 'src/components/user/course/detail/CourseFilesSection.vue';
+import FacilitySection from 'src/components/user/course/detail/FacilitySection.vue';
 
 const CertifiacateExampleImage = defineAsyncComponent(() => import('components/user/course/detail/CertifiacateExampleImage.vue'));
 const RelatedCourseComponent = defineAsyncComponent(() => import('components/user/course/detail/RelatedCourseComponent.vue'));
@@ -91,6 +93,7 @@ const listenRefreshCourseDetail = async (id: number) => {
 watchEffect(async () => {
   isLoading.value = true;
   const response = await showCourse(routeParams.id);
+  console.log(response.data);
   course.value = response.data;
   isLoading.value = false;
 });

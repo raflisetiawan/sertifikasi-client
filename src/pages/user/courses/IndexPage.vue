@@ -34,7 +34,7 @@
     <!-- Course List -->
     <div v-else class="row q-col-gutter-md">
       <div v-for="course in sortedCourses" :key="course.id" class="col-12 col-sm-6 col-md-4">
-        <q-card class="course-card" @click="goToCourseDetail(course.id)">
+        <q-card class="course-card" @click="goToCourseDetail(course.course.id)">
           <!-- Course Image -->
           <q-img :src="course.course.image || 'default-course.jpg'" :ratio="16 / 9" spinner-color="primary"
             spinner-size="82px">
@@ -170,7 +170,6 @@ const getProgressStatus = (status: string) => {
 };
 
 const goToCourseDetail = (courseId: number) => {
-  console.log(courseId)
   router.push({ name: 'dashboard.courses.show', params: { 'id': courseId } });
 };
 
@@ -188,7 +187,6 @@ const fetchCourses = async () => {
         sort: sortBy.value
       }
     });
-
     courses.value = response.data.data;
   } catch (err) {
     error.value = 'Gagal memuat data kelas';

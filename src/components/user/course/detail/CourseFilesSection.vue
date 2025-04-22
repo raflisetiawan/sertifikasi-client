@@ -4,8 +4,8 @@
     <div class="row q-mt-lg justify-around">
       <div class="col-12">
         <div class="row q-gutter-md justify-center">
-          <q-btn v-if="props.course.syllabus_path" color="primary" icon="picture_as_pdf"
-            :href="`${storageBaseUrl}courses/syllabus/${props.course.syllabus_path}`" target="_blank">
+          <q-btn v-if="props.course?.syllabus_path" color="primary" icon="picture_as_pdf"
+            :href="`${storageBaseUrl}courses/syllabus/${props.course?.syllabus_path}`" target="_blank">
             Download Syllabus PDF
           </q-btn>
         </div>

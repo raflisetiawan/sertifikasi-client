@@ -42,3 +42,52 @@ export interface DashboardResponse {
     }>;
   };
 }
+
+export interface CourseProgress {
+  status: 'not_started' | 'in_progress' | 'completed';
+  percentage: number;
+  started_at: string | null;
+  completed_at: string | null;
+}
+
+export interface CourseModule {
+  id: number;
+  course_id: number;
+  order: number;
+  type: 'module' | 'prework' | 'final';
+  estimated_time_min: number;
+  title: string;
+  subtitle: string | null;
+  description: string;
+  thumbnail: string | null;
+  thumbnail_url?: string;
+  progress: CourseProgress;
+}
+
+export interface CourseDetail {
+  course: {
+    id: number;
+    name: string;
+    description: string;
+    key_concepts: string[];
+    facility: string[];
+    start_date: string;
+    end_date: string;
+    status: string;
+  };
+  modules: CourseModule[];
+  enrollment?: {
+    status: string;
+    progress_percentage: number;
+    started_at: string;
+    completed_at: string | null;
+  };
+  payment?: {
+    status: string;
+    amount: string;
+    date: string;
+  };
+  registered_at: string;
+  verification: boolean;
+  verified_at: string | null;
+}
