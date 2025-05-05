@@ -99,12 +99,29 @@ const routes: RouteRecordRaw[] = [
             name: 'dashboard.courses.show',
             component: () => import('pages/user/courses/DetailPage.vue'),
           },
+          {
+            path: ':courseId/modules/:moduleId/learn/:enrollmentId',
+            name: 'dashboard.courses.module.learn',
+            component: () =>
+              import('pages/user/courses/learning/IndexPage.vue'),
+            meta: { requiresAuth: true },
+          },
         ],
+      },
+      {
+        path: '/quiz-result/:courseId/:enrollmentId/:moduleId/:contentId',
+        component: () => import('pages/user/courses/quiz/QuizResultPage.vue'),
+        meta: { requiresAuth: true },
       },
       {
         path: 'payments',
         name: 'dashboard.payments',
         component: () => import('pages/user/PaymentHistoryPage.vue'),
+      },
+      {
+        path: '/quiz/:courseId/:enrollmentId/:moduleId/:contentId',
+        component: () => import('pages/user/courses/quiz/QuizPage.vue'),
+        meta: { requiresAuth: true },
       },
     ],
   },

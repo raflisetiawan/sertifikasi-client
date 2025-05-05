@@ -76,7 +76,8 @@ export interface CourseDetail {
     status: string;
   };
   modules: CourseModule[];
-  enrollment?: {
+  enrollment: {
+    id: number;
     status: string;
     progress_percentage: number;
     started_at: string;

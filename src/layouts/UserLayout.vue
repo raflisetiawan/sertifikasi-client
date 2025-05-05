@@ -1,86 +1,93 @@
 <template>
-  <q-layout view="hHh LpR fFf">
-    <!-- Header -->
-    <q-header elevated class="bg-primary text-white">
-      <q-toolbar>
-        <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
+  <q-no-ssr>
+    <q-layout view="hHh LpR fFf">
+      <!-- Header -->
+      <q-header elevated class="bg-primary text-white">
+        <q-toolbar>
+          <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
 
-        <q-toolbar-title>
-          UISI Online Learning
-        </q-toolbar-title>
+          <q-toolbar-title>
+            UISI Online Learning
+          </q-toolbar-title>
 
-        <q-space />
+          <q-space />
 
-        <!-- User Menu -->
-        <q-btn flat round>
-          <q-avatar size="26px">
-            <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
-          </q-avatar>
-          <q-menu>
-            <q-list style="min-width: 150px">
-              <q-item-label header>{{ userName }}</q-item-label>
-              <q-separator />
-              <q-item clickable v-close-popup :to="{ name: 'dashboard' }">
+          <!-- User Menu -->
+          <q-btn flat round>
+            <q-avatar size="26px">
+              <template v-if="userProfileStore.profile?.image">
+                <img :src="userProfileStore.profile?.image" />
+              </template>
+              <template v-else>
+                <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
+              </template>
+            </q-avatar>
+            <q-menu>
+              <q-list style="min-width: 150px">
+                <q-item-label header>{{ userName }}</q-item-label>
+                <q-separator />
+                <q-item clickable v-close-popup :to="{ name: 'dashboard' }">
+                  <q-item-section avatar>
+                    <q-icon name="person" />
+                  </q-item-section>
+                  <q-item-section>Profil</q-item-section>
+                </q-item>
+                <q-separator />
+                <q-item clickable v-close-popup @click="handleLogout">
+                  <q-item-section avatar>
+                    <q-icon name="logout" />
+                  </q-item-section>
+                  <q-item-section>Keluar</q-item-section>
+                </q-item>
+              </q-list>
+            </q-menu>
+          </q-btn>
+        </q-toolbar>
+      </q-header>
+
+      <!-- Drawer -->
+      <q-drawer v-model="leftDrawerOpen" :mini="miniState" :width="240" :breakpoint="768" bordered
+        :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-3'">
+        <q-scroll-area class="fit">
+          <q-list padding>
+            <template v-for="(menuItem, index) in menuList" :key="index">
+              <!-- Navigation Links -->
+              <q-item :to="menuItem.to" v-ripple clickable :active="route.name === menuItem.to.name"
+                active-class="text-primary q-item--active">
                 <q-item-section avatar>
-                  <q-icon name="person" />
+                  <q-icon :name="menuItem.icon" />
                 </q-item-section>
-                <q-item-section>Profil</q-item-section>
-              </q-item>
-              <q-separator />
-              <q-item clickable v-close-popup @click="handleLogout">
-                <q-item-section avatar>
-                  <q-icon name="logout" />
+                <q-item-section>
+                  {{ menuItem.label }}
                 </q-item-section>
-                <q-item-section>Keluar</q-item-section>
+                <q-item-section v-if="menuItem.badge" side>
+                  <q-badge color="red" floating>
+                    {{ menuItem.badge }}
+                  </q-badge>
+                </q-item-section>
               </q-item>
-            </q-list>
-          </q-menu>
-        </q-btn>
-      </q-toolbar>
-    </q-header>
+              <q-separator v-if="menuItem.separator" class="q-my-sm" />
+            </template>
+          </q-list>
+        </q-scroll-area>
 
-    <!-- Drawer -->
-    <q-drawer v-model="leftDrawerOpen" :mini="miniState" :width="240" :breakpoint="768" bordered
-      :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-3'">
-      <q-scroll-area class="fit">
-        <q-list padding>
-          <template v-for="(menuItem, index) in menuList" :key="index">
-            <!-- Navigation Links -->
-            <q-item :to="menuItem.to" v-ripple clickable :active="route.name === menuItem.to.name"
-              active-class="text-primary q-item--active">
-              <q-item-section avatar>
-                <q-icon :name="menuItem.icon" />
-              </q-item-section>
-              <q-item-section>
-                {{ menuItem.label }}
-              </q-item-section>
-              <q-item-section v-if="menuItem.badge" side>
-                <q-badge color="red" floating>
-                  {{ menuItem.badge }}
-                </q-badge>
-              </q-item-section>
-            </q-item>
-            <q-separator v-if="menuItem.separator" class="q-my-sm" />
-          </template>
-        </q-list>
-      </q-scroll-area>
+        <!-- Drawer Footer -->
+        <q-item clickable v-ripple class="absolute-bottom" @click="miniState = !miniState">
+          <q-item-section avatar>
+            <q-icon :name="miniState ? 'chevron_right' : 'chevron_left'" />
+          </q-item-section>
+          <q-item-section>
+            {{ miniState ? '' : 'Tutup Menu' }}
+          </q-item-section>
+        </q-item>
+      </q-drawer>
 
-      <!-- Drawer Footer -->
-      <q-item clickable v-ripple class="absolute-bottom" @click="miniState = !miniState">
-        <q-item-section avatar>
-          <q-icon :name="miniState ? 'chevron_right' : 'chevron_left'" />
-        </q-item-section>
-        <q-item-section>
-          {{ miniState ? '' : 'Tutup Menu' }}
-        </q-item-section>
-      </q-item>
-    </q-drawer>
-
-    <!-- Page Container -->
-    <q-page-container>
-      <router-view />
-    </q-page-container>
-  </q-layout>
+      <!-- Page Container -->
+      <q-page-container>
+        <router-view />
+      </q-page-container>
+    </q-layout>
+  </q-no-ssr>
 </template>
 
 <script setup lang="ts">
@@ -89,11 +96,13 @@ import { useRouter, useRoute } from 'vue-router';
 import { useQuasar } from 'quasar';
 import { qCookies } from 'src/boot/cookies';
 import { useUserStore } from 'src/stores/user';
+import { useUserProfileStore } from 'src/stores/user-proflie-store';
 
 const $q = useQuasar();
 const router = useRouter();
 const route = useRoute();
 const userStore = useUserStore();
+const userProfileStore = useUserProfileStore();
 
 // State
 const leftDrawerOpen = ref(true);

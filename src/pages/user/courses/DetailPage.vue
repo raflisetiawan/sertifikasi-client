@@ -122,7 +122,7 @@
             <q-card v-if="courseDetail.enrollment">
               <q-card-section>
                 <div class="text-subtitle1">Progress Kelas</div>
-                <q-linear-progress :value="(courseDetail.enrollment?.progress_percentage || 0) / 100"
+                <q-linear-progress class="q-py-md" :value="(courseDetail.enrollment?.progress_percentage || 0) / 100"
                   :color="getProgressColor(courseDetail.enrollment?.status)">
                   <div class="absolute-full flex flex-center">
                     <q-badge color="white" text-color="black"
@@ -146,7 +146,8 @@
           <div class="text-h5 q-mb-md">Modul Pembelajaran</div>
           <div class="row q-col-gutter-md">
             <div v-for="module in courseDetail.modules" :key="module.id" class="col-12">
-              <q-card>
+              <q-card @click="handleModuleClick(module.id, courseDetail.enrollment.id)"
+                class="module-card cursor-pointer" v-ripple>
                 <q-card-section>
                   <div class="row items-center">
                     <div class="col">
@@ -193,7 +194,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { date } from 'quasar';
 import { api } from 'src/boot/axios';
 import { qCookies } from 'src/boot/cookies';
@@ -203,6 +204,7 @@ import FacilitySection from 'src/components/user/course/dashboard/FacilitySectio
 import { CourseDetail } from 'src/models/dashboard';
 
 const route = useRoute();
+const router = useRouter();
 const loading = ref(true);
 const error = ref<string | null>(null);
 const courseDetail = ref<CourseDetail | null>(null);
@@ -281,6 +283,14 @@ const getModuleTypeLabel = (type: string) => {
   return labels[type] || type;
 };
 
+const handleModuleClick = (moduleId: number, enrollmentId: number | undefined) => {
+  // Navigate to the module detail page
+  router.push({
+    name: 'dashboard.courses.module.learn',
+    params: { courseId: route.params.id, moduleId, enrollmentId }
+  });
+};
+
 const fetchCourseDetail = async () => {
   try {
     loading.value = true;
@@ -316,5 +326,67 @@ onMounted(() => {
   text-align: center;
   font-size: 12px;
   color: white;
+}
+
+.module-card {
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-color: $primary;
+
+    // Optional: Change background on hover
+    background: linear-gradient(to right, rgba(25, 118, 210, 0.05), transparent);
+  }
+
+  // Optional: Add active state
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  // Add cursor indicator
+  &::after {
+    content: '';
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 24px;
+    height: 24px;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%231976d2"><path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/></svg>');
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  &:hover::after {
+    opacity: 1;
+  }
+}
+
+// Add focus styles for accessibility
+.module-card:focus {
+  outline: none;
+  border-color: $primary;
+  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
+}
+
+// Progress bar enhancements
+.q-linear-progress {
+  transition: all 0.3s ease;
+
+  .module-card:hover & {
+    height: 24px !important;
+  }
+}
+
+// Optional: Enhance chip animation
+.q-chip {
+  transition: transform 0.3s ease;
+
+  .module-card:hover & {
+    transform: scale(1.05);
+  }
 }
 </style>

@@ -36,8 +36,8 @@
       <div v-for="course in sortedCourses" :key="course.id" class="col-12 col-sm-6 col-md-4">
         <q-card class="course-card" @click="goToCourseDetail(course.course.id)">
           <!-- Course Image -->
-          <q-img :src="course.course.image || 'default-course.jpg'" :ratio="16 / 9" spinner-color="primary"
-            spinner-size="82px">
+          <q-img :src="storageBaseUrl + 'courses/' + course.course.image || 'default-course.jpg'" :ratio="16 / 9"
+            spinner-color="primary" spinner-size="82px">
             <!-- Payment Status Badge -->
             <div class="absolute-top-right q-pa-sm">
               <q-chip :color="getPaymentStatusColor(course.payment_status)" text-color="white">
@@ -93,7 +93,7 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { date } from 'quasar';
-import { api } from 'src/boot/axios';
+import { api, storageBaseUrl } from 'src/boot/axios';
 import { qCookies } from 'src/boot/cookies';
 
 interface Progress {
@@ -187,6 +187,7 @@ const fetchCourses = async () => {
         sort: sortBy.value
       }
     });
+    console.log(response.data.data);
     courses.value = response.data.data;
   } catch (err) {
     error.value = 'Gagal memuat data kelas';

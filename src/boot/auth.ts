@@ -3,7 +3,6 @@ import { Cookies } from 'quasar';
 import { isAdmin, isAuthenticated } from 'src/composables/auth';
 import { useUserStore } from 'src/stores/user';
 import { useUser } from 'src/composables/auth/user';
-
 // "async" is optional;
 // more info on params: https://v2.quasar.dev/quasar-cli/boot-files
 export default boot(async ({ ssrContext, router }) => {
