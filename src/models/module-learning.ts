@@ -1,7 +1,9 @@
+import { PracticeContent } from './practice';
+
 export interface BaseContent {
   id: number;
   title: string;
-  type: 'text' | 'video' | 'quiz' | 'assignment' | 'file';
+  type: 'text' | 'video' | 'quiz' | 'assignment' | 'file' | 'practice';
   order: number;
   is_required: boolean;
   minimum_duration_seconds: number | null;
@@ -10,7 +12,8 @@ export interface BaseContent {
     | VideoContent
     | QuizContent
     | AssignmentContent
-    | FileContent;
+    | FileContent
+    | PracticeContent;
   progress: ContentProgress | null;
 }
 
@@ -37,6 +40,12 @@ export interface QuizContent {
   time_limit_minutes: number;
   passing_score: number;
   max_attempts: number;
+  progress: {
+    status: 'not_started' | 'in_progress' | 'completed';
+    score: number | null;
+    completed_at: string | null;
+    last_accessed_at: string | null;
+  };
 }
 
 export interface AssignmentContent {

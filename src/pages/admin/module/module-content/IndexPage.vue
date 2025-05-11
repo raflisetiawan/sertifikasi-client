@@ -19,7 +19,8 @@
               class="q-ml-sm" />
             <q-btn color="purple" icon="play_circle" label="Tambah Video" @click="showAddVideoDialog" class="q-ml-sm" />
             <q-btn color="info" icon="upload_file" label="Tambah File" @click="showAddFileDialog" class="q-ml-sm" />
-
+            <q-btn color="deep-orange" icon="assignment_turned_in" label="Tambah Latihan" @click="showAddPracticeDialog"
+              class="q-ml-sm" />
           </q-card-section>
 
           <q-table :rows="moduleContentStore.contents" :columns="columns" row-key="id"
@@ -60,7 +61,7 @@
       @refresh="fetchContents" />
     <AddVideoDialog ref="addVideoDialog" :module-id="Number(route.params.moduleId)" @refresh="fetchContents" />
     <AddFileDialog ref="addFileDialog" :module-id="Number(route.params.moduleId)" @refresh="fetchContents" />
-
+    <AddPracticeDialog ref="addPracticeDialog" :module-id="Number(route.params.moduleId)" @refresh="fetchContents" />
   </div>
 </template>
 
@@ -75,10 +76,13 @@ import AddAssignmentDialog from 'src/components/admin/module/module-content/AddA
 import { BaseContent } from 'src/models/module-content';
 import AddVideoDialog from 'src/components/admin/module/module-content/AddVideoDialog.vue';
 import AddFileDialog from 'src/components/admin/module/module-content/AddFileDialog.vue';
+import { usePracticeStore } from 'src/stores/practice';
+import AddPracticeDialog from 'src/components/admin/module/module-content/AddPracticeDialog.vue';
 
 const $q = useQuasar();
 const route = useRoute();
 const moduleContentStore = useModuleContentStore();
+const practiceStore = usePracticeStore();
 
 const columns: QTableColumn[] = [
   {
@@ -180,6 +184,13 @@ const addFileDialog = ref();
 
 const showAddFileDialog = () => {
   addFileDialog.value.show();
+};
+
+const addPracticeDialog = ref();
+
+// Add method
+const showAddPracticeDialog = () => {
+  addPracticeDialog.value.show();
 };
 
 const confirmDelete = (content: BaseContent) => {

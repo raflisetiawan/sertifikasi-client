@@ -4,6 +4,7 @@ const useNotify = (message: string, color: string) => {
   Notify.create({
     message,
     color,
+    position: 'top-right',
   });
 };
 

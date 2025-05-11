@@ -301,6 +301,7 @@ const fetchCourseDetail = async () => {
       }
     });
     courseDetail.value = response.data.data;
+    console.log(response.data.data)
   } catch (err) {
     error.value = 'Gagal memuat detail kelas';
     console.error('Error fetching course detail:', err);
@@ -308,6 +309,7 @@ const fetchCourseDetail = async () => {
     loading.value = false;
   }
 };
+
 
 
 onMounted(() => {

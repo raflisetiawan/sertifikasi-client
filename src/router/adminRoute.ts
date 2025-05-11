@@ -85,6 +85,11 @@ const adminRoutes: RouteRecordRaw = {
         import('pages/admin/module/module-content/IndexPage.vue'),
       name: 'AdminModuleContentIndexPage',
     },
+    {
+      path: 'course/:courseId/modules/:moduleId/contents/:contentId/practices',
+      component: () => import('pages/admin/module/practice/IndexPage.vue'),
+      name: 'AdminPracticeIndexPage',
+    },
   ],
   meta: { requiresAuth: true, requiresAdmin: true },
 };

@@ -12,12 +12,32 @@ declare module '@quasar/app-vite' {
 const createAxiosInstance = () => {
   const instance = axios.create({
     baseURL: config.apiBaseUrl,
-    headers: process.env.DEV
-      ? {
-          'ngrok-skip-browser-warning': 'true',
-        }
-      : undefined,
+    withCredentials: true, // Enable credentials
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      ...(process.env.DEV && {
+        'ngrok-skip-browser-warning': 'true',
+      }),
+    },
   });
+
+  // Add request interceptor
+  instance.interceptors.request.use((config) => {
+    // You can add CSRF token here if needed
+    return config;
+  });
+
+  // Add response interceptor
+  instance.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      if (error.response?.status === 401) {
+        // Handle unauthorized access
+      }
+      return Promise.reject(error);
+    }
+  );
 
   return instance;
 };
