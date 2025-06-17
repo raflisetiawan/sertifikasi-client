@@ -36,6 +36,68 @@
             <q-editor v-model="moduleForm.description" :error="v$.description.$error" min-height="5rem"
               class="q-mb-md" />
 
+            <q-toggle v-model="moduleForm.is_access_restricted" label="Batasi Akses Modul" />
+            <template v-if="moduleForm.is_access_restricted">
+              <div class="col-12 col-md-6">
+                <q-input v-model="moduleForm.access_start_at" label="Waktu Mulai Akses *" outlined
+                  :error="v$.access_start_at.$error"
+                  :error-message="v$.access_start_at.$errors.map((e) => e.$message).join()"
+                  @update:model-value="v$.access_start_at.$touch">
+                  <template v-slot:append>
+                    <q-icon name="event" class="cursor-pointer">
+                      <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                        <q-date v-model="moduleForm.access_start_at" mask="YYYY-MM-DD HH:mm"
+                          @update:model-value="v$.access_start_at.$touch">
+                          <div class="row items-center justify-end">
+                            <q-btn v-close-popup label="Close" color="primary" flat />
+                          </div>
+                        </q-date>
+                      </q-popup-proxy>
+                    </q-icon>
+                    <q-icon name="access_time" class="cursor-pointer">
+                      <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                        <q-time v-model="moduleForm.access_start_at" mask="YYYY-MM-DD HH:mm" format24h
+                          @update:model-value="v$.access_start_at.$touch">
+                          <div class="row items-center justify-end">
+                            <q-btn v-close-popup label="Close" color="primary" flat />
+                          </div>
+                        </q-time>
+                      </q-popup-proxy>
+                    </q-icon>
+                  </template>
+                </q-input>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <q-input v-model="moduleForm.access_end_at" label="Waktu Akhir Akses *" outlined
+                  :error="v$.access_end_at.$error"
+                  :error-message="v$.access_end_at.$errors.map((e) => e.$message).join()"
+                  @update:model-value="v$.access_end_at.$touch">
+                  <template v-slot:append>
+                    <q-icon name="event" class="cursor-pointer">
+                      <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                        <q-date v-model="moduleForm.access_end_at" mask="YYYY-MM-DD HH:mm"
+                          :min="moduleForm.access_start_at" @update:model-value="v$.access_end_at.$touch">
+                          <div class="row items-center justify-end">
+                            <q-btn v-close-popup label="Close" color="primary" flat />
+                          </div>
+                        </q-date>
+                      </q-popup-proxy>
+                    </q-icon>
+                    <q-icon name="access_time" class="cursor-pointer">
+                      <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                        <q-time v-model="moduleForm.access_end_at" mask="YYYY-MM-DD HH:mm" format24h
+                          @update:model-value="v$.access_end_at.$touch">
+                          <div class="row items-center justify-end">
+                            <q-btn v-close-popup label="Close" color="primary" flat />
+                          </div>
+                        </q-time>
+                      </q-popup-proxy>
+                    </q-icon>
+                  </template>
+                </q-input>
+              </div>
+            </template>
             <!-- Thumbnail Upload -->
             <q-file v-model="moduleForm.thumbnail" outlined label="Thumbnail" accept=".jpg,.png,.jpeg"
               :filter="checkFileSize" @rejected="onRejected">
@@ -60,8 +122,10 @@ import { useVuelidate } from '@vuelidate/core';
 import { useRequired, useNumeric } from 'src/composables/validators';
 import { ref, reactive } from 'vue';
 import { useNotify } from 'src/composables/notifications';
-import { QRejectedEntry } from 'quasar';
+import { QRejectedEntry, date } from 'quasar';
 import { useModuleStore } from 'src/stores/module';
+import dayjs from 'dayjs';
+import { AxiosError } from 'axios';
 
 interface ModuleForm {
   order: number;
@@ -71,6 +135,9 @@ interface ModuleForm {
   subtitle: string;
   description: string;
   thumbnail: File | null;
+  is_access_restricted: boolean;
+  access_start_at: string | null;
+  access_end_at: string | null;
 }
 declare global {
   interface FormData {
@@ -91,7 +158,10 @@ const moduleForm = reactive<ModuleForm>({
   title: '',
   subtitle: '',
   description: '',
-  thumbnail: null
+  thumbnail: null,
+  is_access_restricted: false,
+  access_start_at: null,
+  access_end_at: null
 });
 
 // Validation rules
@@ -100,7 +170,17 @@ const rules = {
   type: { required: useRequired() },
   estimated_time_min: { required: useRequired(), numeric: useNumeric() },
   title: { required: useRequired() },
-  description: { required: useRequired() }
+  description: { required: useRequired() },
+  access_start_at: {
+    required: (value: string | null) => !moduleForm.is_access_restricted || !!value || 'Waktu mulai akses wajib diisi',
+  },
+  access_end_at: {
+    required: (value: string | null) => !moduleForm.is_access_restricted || !!value || 'Waktu akhir akses wajib diisi',
+    validEndDate: (value: string | null) => {
+      if (!moduleForm.is_access_restricted || !value || !moduleForm.access_start_at) return true;
+      return dayjs(value).isAfter(dayjs(moduleForm.access_start_at)) || 'Waktu akhir harus setelah waktu mulai';
+    }
+  }
 };
 
 const v$ = useVuelidate(rules, moduleForm);
@@ -136,12 +216,16 @@ const onSubmit = async () => {
     formData.append('title', moduleForm.title);
     formData.append('subtitle', moduleForm.subtitle || ''); // Handle empty subtitle
     formData.append('description', moduleForm.description);
+    formData.append('is_access_restricted', moduleForm.is_access_restricted ? '1' : '0');
 
+    if (moduleForm.is_access_restricted) {
+      formData.append('access_start_at', moduleForm.access_start_at || '');
+      formData.append('access_end_at', moduleForm.access_end_at || '');
+    }
     // Only append thumbnail if it exists
     if (moduleForm.thumbnail instanceof File) {
       formData.append('thumbnail', moduleForm.thumbnail);
     }
-
 
     await moudleStore.createModule(moudleStore.courseId, formData);
 
@@ -157,15 +241,32 @@ const onSubmit = async () => {
       title: '',
       subtitle: '',
       description: '',
-      thumbnail: null
+      thumbnail: null,
+      is_access_restricted: false,
+      access_start_at: null,
+      access_end_at: null
     });
 
     // Reset validation
     v$.value.$reset();
 
   } catch (error) {
-    console.error('Error creating module:', error);
-    useNotify('Terjadi kesalahan saat membuat module', 'negative');
+    if (error instanceof AxiosError) {
+      const errors = error.response?.data;
+      // Convert validation errors to readable messages
+      const errorMessages = Object.entries(errors)
+        .map(([field, messages]) => {
+          // Handle array of messages
+          const messageList = Array.isArray(messages) ? messages : [messages];
+          return messageList.join(', ');
+        })
+        .join('\n');
+
+      useNotify(errorMessages, 'negative');
+    } else {
+      console.error('Error creating module:', error);
+      useNotify('Terjadi kesalahan saat membuat module', 'negative');
+    }
   } finally {
     loading.value = false;
   }

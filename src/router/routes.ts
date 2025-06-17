@@ -69,6 +69,16 @@ const routes: RouteRecordRaw[] = [
         name: 'auth.register',
         component: () => import('pages/auth/SignupPage.vue'),
       },
+      {
+        path: 'google/callback',
+        name: 'auth.google.callback',
+        component: () => import('pages/auth/GoogleCallbackPage.vue'),
+      },
+      {
+        path: 'error',
+        name: 'auth.error',
+        component: () => import('pages/auth/AuthErrorPage.vue'),
+      },
     ],
   },
   {

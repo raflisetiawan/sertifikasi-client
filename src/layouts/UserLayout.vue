@@ -183,7 +183,7 @@ const handleLogout = async () => {
     userStore.$reset();
 
     // Redirect to login
-    await router.push('/signin');
+    await router.push({ name: 'auth.login' });
 
     $q.notify({
       type: 'positive',
@@ -204,7 +204,7 @@ onMounted(() => {
   // Check auth on mount
   const token = qCookies.get('token');
   if (!token) {
-    router.push('/signin');
+    router.push({ name: 'auth.login' });
     return;
   }
 

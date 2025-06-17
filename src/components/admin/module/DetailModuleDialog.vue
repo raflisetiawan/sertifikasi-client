@@ -47,6 +47,48 @@
                   </div>
                 </q-item-section>
               </q-item>
+              <!-- Access Restriction Info -->
+              <q-item>
+                <q-item-section>
+                  <q-item-label caption>Status Akses</q-item-label>
+                  <q-item-label>
+                    <q-chip :color="selectedModule.is_access_restricted ? 'warning' : 'positive'" text-color="white">
+                      {{ selectedModule.is_access_restricted ? 'Terbatas' : 'Bebas' }}
+                    </q-chip>
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
+
+              <template v-if="selectedModule.is_access_restricted">
+                <q-item>
+                  <q-item-section>
+                    <q-item-label caption>Waktu Mulai Akses</q-item-label>
+                    <q-item-label>
+                      {{ formatDate(selectedModule.access_start_at) }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-item>
+                  <q-item-section>
+                    <q-item-label caption>Waktu Akhir Akses</q-item-label>
+                    <q-item-label>
+                      {{ formatDate(selectedModule.access_end_at) }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-item>
+                  <q-item-section>
+                    <q-item-label caption>Status Ketersediaan</q-item-label>
+                    <q-item-label>
+                      <q-chip :color="getAccessStatus(selectedModule).color" text-color="white">
+                        {{ getAccessStatus(selectedModule).label }}
+                      </q-chip>
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+              </template>
               <q-item>
                 <q-item-section>
                   <q-item-label caption>Dibuat pada</q-item-label>
@@ -78,6 +120,7 @@ import { useModuleStore } from 'src/stores/module';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { ref, watch } from 'vue';
+import dayjs from 'dayjs';
 
 const moduleStore = useModuleStore();
 const descriptionRef = ref<HTMLElement | null>(null);
@@ -86,7 +129,25 @@ const props = defineProps<{
   selectedModule: Module | null;
 }>();
 
+const getAccessStatus = (module: Module) => {
+  if (!module.is_access_restricted) {
+    return { color: 'positive', label: 'Selalu Tersedia' };
+  }
 
+  const now = dayjs();
+  const startDate = dayjs(module.access_start_at);
+  const endDate = dayjs(module.access_end_at);
+
+  if (now.isBefore(startDate)) {
+    return { color: 'warning', label: 'Belum Tersedia' };
+  }
+
+  if (now.isAfter(endDate)) {
+    return { color: 'negative', label: 'Sudah Berakhir' };
+  }
+
+  return { color: 'positive', label: 'Tersedia' };
+};
 
 const getTypeColor = (type: string) => {
   switch (type) {
@@ -114,7 +175,7 @@ const getTypeLabel = (type: string) => {
   }
 };
 
-const formatDate = (date?: string) => {
+const formatDate = (date: string | null | undefined): string => {
   if (!date) return '-';
   return format(new Date(date), 'dd MMMM yyyy HH:mm', { locale: id });
 };

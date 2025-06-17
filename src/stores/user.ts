@@ -5,7 +5,6 @@ import { useNotify } from 'src/composables/notifications';
 import { UserEditForm } from 'src/models/user';
 import { qCookies } from 'src/boot/cookies';
 import { useUser } from 'src/composables/auth/user';
-import { Cookies } from 'quasar';
 
 export const useUserStore = defineStore('user', {
   state: (): User => ({
@@ -17,6 +16,10 @@ export const useUserStore = defineStore('user', {
     phone_number: 0,
     image: '',
   }),
+  persistedState: {
+    includePaths: ['name', 'email'],
+    storage: process.env.CLIENT ? localStorage : undefined,
+  },
   getters: {
     getUser: (state) => (state = state),
   },
@@ -39,17 +42,24 @@ export const useUserStore = defineStore('user', {
       this.$state.created_at = '';
       this.$state.role = '';
       this.$state.email_verified_at = null;
-
-      // qCookies.remove('token');
-      // qCookies.remove('signedIn');
     },
     async logout() {
       try {
-        const response = await api.post('signout');
+        const response = await api.post(
+          'signout',
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${qCookies.get('token')}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
         if (response.data.success) {
           this.resetUser();
-          Cookies.remove('token');
-          Cookies.remove('signedIn');
+          qCookies.remove('token', { path: '/' });
+          qCookies.remove('signedIn', { path: '/' });
+          qCookies.remove('expires_at', { path: '/' });
           useNotify('Berhasil logout', 'green');
           this.router.push({ name: 'auth.login' });
         } else {

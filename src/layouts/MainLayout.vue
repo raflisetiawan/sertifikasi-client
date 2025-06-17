@@ -157,18 +157,27 @@
 import { isAdmin, isAuthenticated } from 'src/composables/auth';
 import { ref } from 'vue';
 import { useUserStore } from 'src/stores/user';
+import { useQuasar } from 'quasar';
 const tab = ref();
 
 const { getUser, logout, $state } = useUserStore();
 const leftDrawer = ref(false);
 const logoutLoading = ref(false);
+const $q = useQuasar();
 
+// filepath: d:\sertifikasi-client\src\layouts\MainLayout.vue
 const handleLogout = async () => {
   try {
     logoutLoading.value = true;
     await logout();
   } catch (error) {
-    throw error;
+    console.error('Logout error:', error);
+    // Add a notification for the user
+    $q.notify({
+      type: 'negative',
+      message: 'Failed to logout. Please try again.',
+      position: 'top'
+    });
   } finally {
     logoutLoading.value = false;
   }

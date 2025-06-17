@@ -203,7 +203,7 @@ const { params: routeParams } = useRoute();
 
 const rules = {
   name: { required: useRequired(), validName: useName() },
-  phone: { required: useRequired(), phone: usePhoneNumber() },
+  phone: { phone: usePhoneNumber() },
   email: { required: useRequired(), email: useEmail() },
 }
 

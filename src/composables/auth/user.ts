@@ -1,3 +1,4 @@
+import { AxiosError } from 'axios';
 import { api } from 'src/boot/axios';
 
 const useUser = async (token: null | string) => {
@@ -11,6 +12,9 @@ const useUser = async (token: null | string) => {
 
     return response;
   } catch (error) {
+    if (error instanceof AxiosError) {
+      throw error;
+    }
     throw new Error('An error occurred.');
   }
 };

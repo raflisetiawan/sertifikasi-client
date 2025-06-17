@@ -146,12 +146,21 @@
           <div class="text-h5 q-mb-md">Modul Pembelajaran</div>
           <div class="row q-col-gutter-md">
             <div v-for="module in courseDetail.modules" :key="module.id" class="col-12">
-              <q-card @click="handleModuleClick(module.id, courseDetail.enrollment.id)"
-                class="module-card cursor-pointer" v-ripple>
+              <q-card @click="!module.is_locked && handleModuleClick(module.id, courseDetail.enrollment.id)" :class="[
+                'module-card',
+                { 'cursor-pointer': !module.is_locked, 'disabled': module.is_locked }
+              ]" v-ripple>
                 <q-card-section>
                   <div class="row items-center">
                     <div class="col">
-                      <div class="text-h6">{{ module.title }}</div>
+                      <div class="text-h6">
+                        {{ module.title }}
+                        <q-chip v-if="module.is_locked" :color="getModuleAccessStatus(module).color" text-color="white"
+                          size="sm" class="q-ml-sm">
+                          <q-icon :name="getModuleAccessStatus(module).icon" left />
+                          {{ getModuleAccessStatus(module).label }}
+                        </q-chip>
+                      </div>
                       <div class="text-grey-8 q-mt-sm" v-html="module.description"></div>
                     </div>
                     <div class="col-auto">
@@ -161,26 +170,34 @@
                     </div>
                   </div>
 
-                  <div v-if="module.progress" class="q-mt-md">
-                    <q-linear-progress :value="(module.progress.percentage || 0) / 100"
-                      :color="getProgressColor(module.progress.status)" size="22px">
-                      <div class="absolute-full flex flex-center">
-                        <q-badge color="white" text-color="black" :label="`${module.progress.percentage}%`" />
+                  <!-- Progress Section -->
+                  <div v-if="!module.is_locked" class="q-mt-md">
+                    <template v-if="module.progress">
+                      <q-linear-progress :value="(module.progress.percentage || 0) / 100"
+                        :color="getProgressColor(module.progress.status)" size="22px">
+                        <div class="absolute-full flex flex-center">
+                          <q-badge color="white" text-color="black" :label="`${module.progress.percentage}%`" />
+                        </div>
+                      </q-linear-progress>
+                      <div class="row justify-between q-mt-sm">
+                        <div class="text-caption">
+                          {{ getProgressStatusLabel(module.progress.status) }}
+                        </div>
+                        <div class="text-caption">
+                          <template v-if="module.progress.completed_at">
+                            Selesai: {{ formatDate(module.progress.completed_at) }}
+                          </template>
+                          <template v-else-if="module.progress.started_at">
+                            Mulai: {{ formatDate(module.progress.started_at) }}
+                          </template>
+                        </div>
                       </div>
-                    </q-linear-progress>
-                    <div class="row justify-between q-mt-sm">
-                      <div class="text-caption">
-                        {{ getProgressStatusLabel(module.progress.status) }}
+                    </template>
+                    <template v-else>
+                      <div class="text-grey q-mt-sm">
+                        <q-icon name="schedule" /> Belum dimulai
                       </div>
-                      <div class="text-caption">
-                        <template v-if="module.progress.completed_at">
-                          Selesai: {{ formatDate(module.progress.completed_at) }}
-                        </template>
-                        <template v-else-if="module.progress.started_at">
-                          Mulai: {{ formatDate(module.progress.started_at) }}
-                        </template>
-                      </div>
-                    </div>
+                    </template>
                   </div>
                 </q-card-section>
               </q-card>
@@ -239,6 +256,31 @@ const getPaymentStatusLabel = (status: string | undefined): string => {
     cancel: 'Dibatalkan'
   };
   return labels[status] || status;
+};
+const getModuleAccessStatus = (module: any) => {
+  if (!module.is_locked) return { color: 'positive', icon: 'lock_open', label: 'Tersedia' };
+
+  if (module.access_restriction?.status === 'upcoming') {
+    return {
+      color: 'warning',
+      icon: 'schedule',
+      label: `Tersedia ${formatDate(module.access_restriction.start_at)}`
+    };
+  }
+
+  if (module.access_restriction?.status === 'expired') {
+    return {
+      color: 'negative',
+      icon: 'block',
+      label: 'Akses Berakhir'
+    };
+  }
+
+  return {
+    color: 'grey',
+    icon: 'lock',
+    label: 'Terkunci'
+  };
 };
 
 const getProgressColor = (status: string | undefined): string => {

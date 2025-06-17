@@ -9,6 +9,9 @@ export interface Module {
   description: string;
   thumbnail: string | null;
   thumbnail_url: string | undefined;
+  is_access_restricted: boolean;
+  access_start_at: string | null;
+  access_end_at: string | null;
   created_at?: string;
   updated_at?: string;
 }
