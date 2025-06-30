@@ -9,6 +9,16 @@ import type {
   VideoContent,
 } from 'src/models/module-content';
 
+interface TextContentPayload {
+  module_id: number;
+  title: string;
+  content: string;
+  format: 'markdown' | 'html';
+  order: number;
+  is_required: boolean;
+  minimum_duration_seconds?: number;
+}
+
 export const useModuleContentStore = defineStore('moduleContent', {
   state: () => ({
     contents: [] as BaseContent[],
@@ -58,6 +68,45 @@ export const useModuleContentStore = defineStore('moduleContent', {
           throw new Error(error.message);
         }
         throw new Error('Failed to create text content');
+      }
+    },
+
+    async updateTextContent(contentId: number, data: TextContentPayload) {
+      try {
+        await api.put(
+          `/admin/modules/${data.module_id}/contents/${contentId}`,
+          data,
+          {
+            headers: {
+              Authorization: `Bearer ${qCookies.get('token')}`,
+            },
+          }
+        );
+      } catch (error) {
+        if (error instanceof Error) {
+          throw new Error(error.message);
+        }
+        throw new Error('Failed to update text content');
+      }
+    },
+
+    async fetchContentDetails(moduleId: number, contentId: number) {
+      try {
+        const response = await api.get<{ data: BaseContent }>(
+          `/admin/modules/${moduleId}/contents/${contentId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${qCookies.get('token')}`,
+            },
+          }
+        );
+        return response.data.data;
+      } catch (error) {
+        if (error instanceof Error) {
+          this.error = error.message;
+        }
+        console.error('Gagal mengambil detail konten:', error);
+        throw new Error('Gagal mengambil detail konten');
       }
     },
 

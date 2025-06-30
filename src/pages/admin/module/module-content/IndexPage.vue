@@ -44,6 +44,9 @@
                 </q-td>
                 <q-td key="actions" :props="props">
                   <q-btn-group flat>
+                    <q-btn flat round color="green" icon="edit" size="sm" @click="handleEdit(props.row)">
+                      <q-tooltip>Edit</q-tooltip>
+                    </q-btn>
                     <q-btn flat round color="negative" icon="delete" size="sm" @click="confirmDelete(props.row)">
                       <q-tooltip>Hapus</q-tooltip>
                     </q-btn>
@@ -55,7 +58,7 @@
         </q-card>
       </div>
     </div>
-    <AddTextContentDialog ref="addTextDialog" :module-id="Number(route.params.moduleId)" @refresh="fetchContents" />
+    <TextContentFormDialog ref="textDialog" :module-id="Number(route.params.moduleId)" @refresh="fetchContents" />
     <AddQuizContentDialog ref="addQuizDialog" :module-id="Number(route.params.moduleId)" @refresh="fetchContents" />
     <AddAssignmentDialog ref="addAssignmentDialog" :module-id="Number(route.params.moduleId)"
       @refresh="fetchContents" />
@@ -70,19 +73,17 @@ import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { useQuasar, QTableColumn } from 'quasar';
 import { useModuleContentStore } from 'src/stores/module-content';
-import AddTextContentDialog from 'src/components/admin/module/module-content/AddTextContentDialog.vue';
 import AddQuizContentDialog from 'src/components/admin/module/module-content/AddQuizContentDialog.vue';
 import AddAssignmentDialog from 'src/components/admin/module/module-content/AddAssignmentDialog.vue';
 import { BaseContent } from 'src/models/module-content';
 import AddVideoDialog from 'src/components/admin/module/module-content/AddVideoDialog.vue';
 import AddFileDialog from 'src/components/admin/module/module-content/AddFileDialog.vue';
-import { usePracticeStore } from 'src/stores/practice';
 import AddPracticeDialog from 'src/components/admin/module/module-content/AddPracticeDialog.vue';
+import TextContentFormDialog from 'src/components/admin/module/module-content/TextContentFormDialog.vue';
 
 const $q = useQuasar();
 const route = useRoute();
 const moduleContentStore = useModuleContentStore();
-const practiceStore = usePracticeStore();
 
 const columns: QTableColumn[] = [
   {
@@ -131,6 +132,44 @@ const columns: QTableColumn[] = [
   }
 ];
 
+const textDialog = ref();
+
+const handleEdit = async (content: BaseContent) => {
+  switch (content.content_type) {
+    case 'text':
+      try {
+        $q.loading.show({ message: 'Memuat data...' });
+        const fullContent = await moduleContentStore.fetchContentDetails(Number(route.params.moduleId), content.id);
+        textDialog.value.show(fullContent);
+      } catch (error) {
+        $q.notify({ type: 'negative', message: 'Gagal memuat detail konten untuk diedit.' });
+      } finally {
+        $q.loading.hide();
+      }
+      break;
+    case 'quiz':
+      addQuizDialog.value.show(content);
+      break;
+    case 'assignment':
+      addAssignmentDialog.value.show(content);
+      break;
+    case 'video':
+      addVideoDialog.value.show(content);
+      break;
+    case 'file':
+      addFileDialog.value.show(content);
+      break;
+    case 'practice':
+      addPracticeDialog.value.show(content);
+      break;
+    default:
+      $q.notify({
+        type: 'negative',
+        message: 'Tipe konten tidak dikenali'
+      });
+  }
+}
+
 const getContentTypeColor = (type: string) => {
   const colors: Record<string, string> = {
     video: 'purple',
@@ -156,10 +195,8 @@ const formatDuration = (seconds: number) => {
   return `${minutes} menit`;
 };
 
-const addTextDialog = ref();
-
 const showAddTextDialog = () => {
-  addTextDialog.value.show();
+  textDialog.value.show();
 };
 
 const addQuizDialog = ref();

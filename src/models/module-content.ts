@@ -30,7 +30,7 @@ export interface TextContent {
 export interface BaseContent {
   id: number;
   title: string;
-  content_type: 'text' | 'quiz' | 'video' | 'assignment';
+  content_type: 'text' | 'quiz' | 'video' | 'assignment' | 'file' | 'practice';
   order: number;
   is_required: boolean;
   minimum_duration_seconds: number;
