@@ -8,54 +8,59 @@
             <div class="text-h5">{{ moduleData?.module.title }}</div>
             <div class="text-subtitle2">{{ moduleData?.module.subtitle }}</div>
           </q-card-section>
-          <q-stepper v-model="step" ref="stepper" color="primary" :contracted="$q.screen.lt.md" class="no-shadow"
-            :style="{ opacity: loading ? 0.5 : 1 }">
-            <!-- Generate steps from module contents -->
-            <q-step v-for="(content, index) in moduleData?.contents" :key="content.id" :name="index + 1"
-              :title="content.title" :caption="getContentTypeLabel(content.type)" :done="isStepComplete(content)"
-              :prefix="getPrefixForContent(content)">
 
-              <!-- Content Display -->
-              <div class="content-container q-pa-md">
-                <!-- Video Content -->
-                <VideoContentPartial v-if="content.type === 'video' && isVideoContent(content.content)"
-                  :content="content.content" />
+          <div :style="{ opacity: loading ? 0.5 : 1 }" class="q-pa-md">
+            <template v-for="(content, index) in moduleData?.contents" :key="content.id">
+              <div v-if="step === index + 1">
+                <!-- Content Display -->
+                <div class="content-container q-pa-md">
+                  <!-- Video Content -->
+                  <VideoContentPartial v-if="content.type === 'video' && isVideoContent(content.content)"
+                    :content="content.content" />
 
-                <!-- Text Content -->
-                <TextContentPartial v-else-if="content.type === 'text' && isTextContent(content.content)"
-                  :content="content.content" />
-                <!-- Quiz Content -->
+                  <!-- Text Content -->
+                  <TextContentPartial v-else-if="content.type === 'text' && isTextContent(content.content)"
+                    :content="content.content" />
 
-                <QuizContentPartial v-if="content.type === 'quiz' && isQuizContent(content.content)"
-                  :content="content.content" :content-id="content.id"
-                  :is-completed="content.progress?.status === 'completed'" @start-quiz="startQuiz" />
+                  <!-- Quiz Content -->
+                  <QuizContentPartial v-else-if="content.type === 'quiz' && isQuizContent(content.content)"
+                    :content="content.content" :content-id="content.id"
+                    :is-completed="content.progress?.status === 'completed'" @start-quiz="startQuiz" />
 
-                <!-- Assignment Content -->
-                <AssignmentContentPartial
-                  v-else-if="content.type === 'assignment' && isAssignmentContent(content.content)"
-                  :content="content.content" :content-id="content.id"
-                  @submit-success="updateContentProgress(content.id)" />
+                  <!-- Assignment Content -->
+                  <AssignmentContentPartial
+                    v-else-if="content.type === 'assignment' && isAssignmentContent(content.content)"
+                    :content="content.content" :content-id="content.id"
+                    @submit-success="updateContentProgress(content.id)" />
 
-                <!-- Practice Content -->
-                <PracticeContentPartial v-else-if="content.type === 'practice' && isPracticeContent(content.content)"
-                  :content="content.content" :content-id="content.id"
-                  :is-completed="content.progress?.status === 'completed'"
-                  @submit-success="updateContentProgress(content.id)" />
+                  <!-- Practice Content -->
+                  <PracticeContentPartial v-else-if="content.type === 'practice' && isPracticeContent(content.content)"
+                    :content="content.content" :content-id="content.id"
+                    :is-completed="content.progress?.status === 'completed'"
+                    @submit-success="updateContentProgress(content.id)" />
 
-              </div>
-              <!-- Step Navigation -->
-              <q-stepper-navigation>
-                <div class="row justify-between">
-                  <q-btn v-if="index > 0" flat color="primary" label="Sebelumnya" @click="prevStep" />
+                  <!-- File Content -->
+                  <FileContentPartial v-else-if="content.type === 'file' && isFileContent(content.content)"
+                    :content="content.content" :title="content.title" />
+                </div>
+
+                <!-- Navigation -->
+                <div class="row justify-between q-mt-md">
+                  <q-btn v-if="step > 1" flat color="primary" label="Sebelumnya" @click="prevStep" />
                   <q-space />
                   <template v-if="moduleData?.progress.status !== 'completed'">
-                    <q-btn :loading="progressLoading" color="primary" :label="isLastStep(index) ? 'Selesai' : 'Lanjut'"
-                      @click="nextStep(content)" />
+                    <q-btn :loading="progressLoading" color="primary"
+                      :label="isLastContent ? 'Selesai' : 'Lanjut'" @click="nextStep(content)"
+                      :disable="isLastContent && !allRequiredCompleted" />
                   </template>
                 </div>
-              </q-stepper-navigation>
-            </q-step>
-          </q-stepper>
+                <div v-if="isLastContent && !allRequiredCompleted" class="text-caption text-negative q-mt-sm">
+                  Selesaikan semua konten yang wajib untuk menyelesaikan modul ini.
+                </div>
+              </div>
+            </template>
+          </div>
+
           <q-inner-loading :showing="loading">
             <q-spinner-dots size="50px" color="primary" />
           </q-inner-loading>
@@ -84,6 +89,7 @@ import TextContentPartial from './partials/TextContent.vue';
 import QuizContentPartial from './partials/QuizContent.vue';
 import AssignmentContentPartial from './partials/AssignmentContent.vue';
 import PracticeContentPartial from './partials/PracticeContent.vue';
+import FileContentPartial from './partials/FileContent.vue';
 import ProgressSidebar from './partials/ProgressSidebar.vue';
 
 const $q = useQuasar();
@@ -128,35 +134,32 @@ const isPracticeContent = (content: VideoContent | TextContent | QuizContent | A
   return 'questions' in content && Array.isArray(content.questions);
 };
 
-// Content Type Helpers
-const getContentTypeLabel = (type: string) => {
-  const labels: Record<string, string> = {
-    video: 'Video',
-    text: 'Teks',
-    quiz: 'Kuis',
-    assignment: 'Tugas',
-    file: 'File'
-  };
-  return labels[type] || type;
+const isFileContent = (content: VideoContent | TextContent | QuizContent | AssignmentContent | FileContent | PracticeContent): content is FileContent => {
+  return 'file_url' in content;
 };
 
-const getPrefixForContent = (content: BaseContent) => {
-  if (content.progress?.status === 'completed') return '✓';
-  return content.order.toString();
-};
+const isLastContent = computed(() => {
+  return step.value === maxStep.value;
+});
 
-const isStepComplete = (content: BaseContent): boolean => {
-  return content.progress?.status === 'completed';
-};
-
-const isLastStep = (index: number) => {
-  return !moduleData.value?.contents || index === moduleData.value.contents.length - 1;
-};
+const allRequiredCompleted = computed(() => {
+  if (!moduleData.value?.contents) return false;
+  return moduleData.value.contents
+    .filter(c => c.is_required)
+    .every(c => c.progress?.status === 'completed');
+});
 
 const nextStep = async (content: BaseContent) => {
   await updateContentProgress(content.id);
-  if (isLastStep(step.value - 1)) {
-    await completeModule();
+  if (isLastContent.value) {
+    if (allRequiredCompleted.value) {
+      await completeModule();
+    } else {
+      $q.notify({
+        type: 'negative',
+        message: 'Please complete all required content before finishing the module.'
+      });
+    }
   } else {
     const nextStepValue = step.value + 1;
     if (nextStepValue <= maxStep.value) {
@@ -164,6 +167,14 @@ const nextStep = async (content: BaseContent) => {
     }
   }
 };
+
+const prevStep = () => {
+  const prevStepValue = step.value - 1;
+  if (prevStepValue >= 1) {
+    step.value = prevStepValue;
+  }
+};
+
 const handleStepChange = (newStep: number) => {
   step.value = newStep;
 };
@@ -174,7 +185,6 @@ const isModuleCompleted = computed(() => {
 
 const startQuiz = async (contentId: number) => {
   try {
-    // Just navigate to quiz page, actual quiz start happens there
     router.push(`/quiz/${route.params.courseId}/${route.params.enrollmentId}/${route.params.moduleId}/${contentId}`);
   } catch (error) {
     $q.notify({
@@ -184,15 +194,6 @@ const startQuiz = async (contentId: number) => {
   }
 };
 
-
-const prevStep = () => {
-  const prevStepValue = step.value - 1;
-  if (prevStepValue >= 1) {
-    step.value = prevStepValue;
-  }
-};
-
-// API Integration
 const fetchModuleData = async () => {
   try {
     loading.value = true;
@@ -203,7 +204,6 @@ const fetchModuleData = async () => {
           Authorization: `Bearer ${qCookies.get('token')}`
         }
       });
-    console.log(response.data.data)
     moduleData.value = response.data.data;
     if (moduleData.value?.contents) {
       const savedStep = loadStep(
@@ -211,7 +211,6 @@ const fetchModuleData = async () => {
         route.params.moduleId.toString()
       );
 
-      // Validate saved step
       if (savedStep > 0 && savedStep <= moduleData.value.contents.length) {
         step.value = savedStep;
       }
@@ -243,18 +242,15 @@ const updateContentProgress = async (contentId: number) => {
       }
     );
 
-    // Update local state with new progress data
     if (response.data.success) {
       const content = moduleData.value?.contents.find(c => c.id === contentId);
       if (content && response.data.data.content_progress) {
         content.progress = response.data.data.content_progress;
       }
 
-      // Update module progress
       if (moduleData.value?.module && response.data.data.module_progress) {
         moduleData.value.progress = response.data.data.module_progress;
       }
-
     }
   } catch (error) {
     $q.notify({
@@ -265,7 +261,6 @@ const updateContentProgress = async (contentId: number) => {
     progressLoading.value = false;
   }
 };
-
 
 const completeModule = async () => {
   try {
@@ -281,10 +276,7 @@ const completeModule = async () => {
       }
     );
 
-    console.log('Complete Module Response:', response.data);
-
     if (response.data.success) {
-      // Update module progress
       if (moduleData.value?.module && response.data.data.module_progress) {
         moduleData.value.progress = response.data.data.module_progress;
       }
@@ -293,9 +285,6 @@ const completeModule = async () => {
         type: 'positive',
         message: 'Module completed successfully!'
       });
-
-      // Optional: Redirect to next module or course overview
-      // router.push(...);
     }
   } catch (error) {
     $q.notify({
@@ -308,10 +297,10 @@ const completeModule = async () => {
 onMounted(() => {
   fetchModuleData();
 });
+
 watch(step, (newStep) => {
   if (!moduleData.value || !route.params.enrollmentId || !route.params.moduleId) return;
 
-  // Validate step bounds
   if (newStep < 1) {
     step.value = 1;
     return;
@@ -328,7 +317,6 @@ watch(step, (newStep) => {
     route.params.moduleId.toString()
   );
 });
-
 </script>
 
 <style lang="scss" scoped>
@@ -341,3 +329,4 @@ watch(step, (newStep) => {
   white-space: pre-wrap;
 }
 </style>
+

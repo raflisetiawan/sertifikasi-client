@@ -1,10 +1,10 @@
 <template>
   <q-dialog v-model="showDialog" persistent maximized>
-    <q-card>
+    <q-card class="q-pa-md">
       <q-card-section class="row items-center">
-        <div class="text-h6">Tambah Tugas Baru</div>
+        <div class="text-h6">{{ isEditing ? 'Edit' : 'Tambah' }} Tugas</div>
         <q-space />
-        <q-btn icon="close" flat round dense v-close-popup />
+        <q-btn icon="close" flat round dense v-close-popup @click="onClose" />
       </q-card-section>
 
       <q-form @submit="onSubmit">
@@ -101,7 +101,7 @@
         </q-card-section>
 
         <q-card-actions align="right" class="q-pa-md">
-          <q-btn flat label="Batal" color="grey" v-close-popup />
+          <q-btn flat label="Batal" color="grey" @click="onClose" />
           <q-btn type="submit" label="Simpan" color="primary" :loading="loading" />
         </q-card-actions>
       </q-form>
@@ -115,7 +115,7 @@ import { useVuelidate } from '@vuelidate/core';
 import { useRequired, useNumeric } from 'src/composables/validators';
 import { useNotify } from 'src/composables/notifications';
 import { useModuleContentStore } from 'src/stores/module-content';
-import type { AssignmentContent } from 'src/models/module-content';
+import type { AssignmentContent, BaseContent } from 'src/models/module-content';
 
 const props = defineProps<{
   moduleId: number;
@@ -127,17 +127,9 @@ const loading = ref(false);
 const moduleContentStore = useModuleContentStore();
 const selectedDate = ref('');
 const selectedTime = ref('');
+const isEditing = ref(false);
 
-const updateDateTime = () => {
-  if (selectedDate.value && selectedTime.value) {
-    const date = new Date(selectedDate.value);
-    const [hours, minutes] = selectedTime.value.split(':');
-    date.setHours(parseInt(hours), parseInt(minutes));
-    form.due_date = date.toISOString();
-  }
-};
-
-const form = reactive<AssignmentContent>({
+const defaultForm: AssignmentContent = {
   module_id: props.moduleId,
   title: '',
   description: '',
@@ -147,8 +139,19 @@ const form = reactive<AssignmentContent>({
   max_file_size_mb: 10,
   allowed_file_types: 'pdf,doc,docx',
   order: 1,
-  is_required: true
-});
+  is_required: true,
+};
+
+const form = reactive<AssignmentContent>({ ...defaultForm });
+
+const updateDateTime = () => {
+  if (selectedDate.value && selectedTime.value) {
+    const date = new Date(selectedDate.value);
+    const [hours, minutes] = selectedTime.value.split(':');
+    date.setHours(parseInt(hours), parseInt(minutes));
+    form.due_date = date.toISOString();
+  }
+};
 
 const rules = {
   title: { required: useRequired() },
@@ -187,6 +190,18 @@ const removeRequirement = (index: number) => {
   form.submission_requirements.splice(index, 1);
 };
 
+const resetForm = () => {
+  Object.assign(form, defaultForm);
+  selectedDate.value = '';
+  selectedTime.value = '';
+  v$.value.$reset();
+};
+
+const onClose = () => {
+  showDialog.value = false;
+  resetForm();
+};
+
 const onSubmit = async () => {
   const isValid = await v$.value.$validate();
   if (!isValid) {
@@ -196,33 +211,42 @@ const onSubmit = async () => {
 
   try {
     loading.value = true;
-    await moduleContentStore.createAssignmentContent(form);
-    useNotify('Tugas berhasil ditambahkan', 'positive');
+    if (isEditing.value) {
+      if (form.id !== undefined && form.id !== null) {
+        await moduleContentStore.updateAssignmentContent(form.id, form);
+        useNotify('Tugas berhasil diperbarui', 'positive');
+      } else {
+        useNotify('ID tugas tidak ditemukan untuk pembaruan', 'negative');
+        loading.value = false;
+        return;
+      }
+    } else {
+      await moduleContentStore.createAssignmentContent(form);
+      useNotify('Tugas berhasil ditambahkan', 'positive');
+    }
     emit('refresh');
-    showDialog.value = false;
-
-    // Reset form
-    form.title = '';
-    form.description = '';
-    form.instructions = '';
-    form.submission_requirements = [''];
-    form.due_date = '';
-    form.max_file_size_mb = 10;
-    form.allowed_file_types = 'pdf,doc,docx';
-    form.order = 1;
-    form.is_required = true;
-    selectedDate.value = '';
-    selectedTime.value = '';
-    v$.value.$reset();
+    onClose();
   } catch (error) {
-    useNotify('Gagal menambahkan tugas', 'negative');
+    useNotify(`Gagal ${isEditing.value ? 'memperbarui' : 'menambahkan'} tugas`, 'negative');
   } finally {
     loading.value = false;
   }
 };
 
 defineExpose({
-  show: () => {
+  show: (moduleContent?: BaseContent) => {
+    isEditing.value = !!moduleContent?.id;
+    if (isEditing.value && moduleContent && moduleContent.content) {
+      // The form is flat, but the data from API is nested.
+      // Merge the nested `content` object first, then the parent `moduleContent`.
+      // This ensures properties like `id` and `title` from `moduleContent` take precedence.
+      Object.assign(form, moduleContent.content, moduleContent);
+      const dueDate = new Date(form.due_date);
+      selectedDate.value = dueDate.toISOString().split('T')[0];
+      selectedTime.value = `${dueDate.getHours().toString().padStart(2, '0')}:${dueDate.getMinutes().toString().padStart(2, '0')}`;
+    } else {
+      resetForm();
+    }
     showDialog.value = true;
   }
 });

@@ -2,7 +2,7 @@
   <q-dialog v-model="showDialog" persistent maximized>
     <q-card>
       <q-card-section class="row items-center">
-        <div class="text-h6">Tambah Latihan Baru</div>
+        <div class="text-h6">{{ dialogTitle }}</div>
         <q-space />
         <q-btn icon="close" flat round dense v-close-popup />
       </q-card-section>
@@ -118,17 +118,19 @@
 import { ref, reactive, computed } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { useNotify } from 'src/composables/notifications';
-import { usePracticeStore } from 'src/stores/practice';
-import { CreatePracticePayload, PracticeQuestion } from 'src/models/practice';
+import { useModuleContentStore } from 'src/stores/module-content';
+import { PracticeQuestion } from 'src/models/practice';
+import { BaseContent, PracticeContent } from 'src/models/module-content';
 
 const props = defineProps<{
   moduleId: number;
+  content?: BaseContent;
 }>();
 
 const emit = defineEmits(['refresh']);
 const showDialog = ref(false);
 const loading = ref(false);
-const practiceStore = usePracticeStore();
+const moduleContentStore = useModuleContentStore();
 
 const questionTypeOptions = [
   { label: 'Pilihan Ganda', value: 'multiple_choice' },
@@ -136,15 +138,21 @@ const questionTypeOptions = [
   { label: 'Isian Singkat', value: 'short_answer' }
 ];
 
-const form = reactive<CreatePracticePayload>({
+const form = reactive<PracticeContent>({
   module_id: props.moduleId,
   title: '',
   description: '',
   time_limit_minutes: 30,
   order: 1,
   is_required: true,
-  questions: [] // Initialize as empty array
+  questions: []
 });
+
+const isEditing = computed(() => !!props.content);
+
+const dialogTitle = computed(() =>
+  isEditing.value ? 'Edit Latihan' : 'Tambah Latihan Baru'
+);
 const rules = computed(() => ({
   title: {
     required: (val: string) => !!val || 'Judul latihan wajib diisi'
@@ -226,13 +234,18 @@ const onSubmit = async () => {
 
   try {
     loading.value = true;
-    await practiceStore.createPractice(form);
-    useNotify('Latihan berhasil ditambahkan', 'positive');
+    if (isEditing.value && props.content) {
+      await moduleContentStore.updatePracticeContent(props.content.id, form);
+      useNotify('Latihan berhasil diperbarui', 'positive');
+    } else {
+      await moduleContentStore.createPracticeContent(form);
+      useNotify('Latihan berhasil ditambahkan', 'positive');
+    }
     emit('refresh');
     showDialog.value = false;
     resetForm();
   } catch (error) {
-    useNotify('Gagal menambahkan latihan', 'negative');
+    useNotify('Gagal menyimpan latihan', 'negative');
   } finally {
     loading.value = false;
   }
@@ -249,7 +262,24 @@ const resetForm = () => {
 };
 
 defineExpose({
-  show: () => {
+  show: (content?: BaseContent) => {
+    resetForm(); // Always reset form before showing
+    if (content && content.content_type === 'practice') {
+      const practiceContent = content.content as PracticeContent;
+      form.module_id = props.moduleId;
+      form.title = practiceContent.title;
+      form.description = practiceContent.description;
+      form.time_limit_minutes = practiceContent.time_limit_minutes;
+      form.order = practiceContent.order;
+      form.is_required = practiceContent.is_required;
+      form.questions = practiceContent.questions.map(q => ({
+        question: q.question,
+        type: q.type,
+        options: q.options || [],
+        answer_key: q.answer_key,
+        explanation: q.explanation || ''
+      }));
+    }
     showDialog.value = true;
   }
 });

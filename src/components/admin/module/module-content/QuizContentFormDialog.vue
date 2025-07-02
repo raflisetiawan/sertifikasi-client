@@ -1,8 +1,8 @@
 <template>
   <q-dialog v-model="showDialog" persistent maximized>
-    <q-card>
+    <q-card class="q-pa-md">
       <q-card-section class="row items-center">
-        <div class="text-h6">Tambah Kuis Baru</div>
+        <div class="text-h6">{{ dialogTitle }}</div>
         <q-space />
         <q-btn icon="close" flat round dense v-close-popup />
       </q-card-section>
@@ -70,7 +70,7 @@
 
               <div class="col-12 col-md-6">
                 <q-select v-model="question.type" :options="questionTypeOptions" label="Tipe Pertanyaan *" outlined
-                  emit-value map-options />
+                  emit-value map-options @update:model-value="onQuestionTypeChange(question)" />
               </div>
 
               <div class="col-12 col-md-6">
@@ -93,8 +93,9 @@
                 </div>
 
                 <div class="col-12">
-                  <q-select v-model="question.correct_answer" :options="question.options" label="Jawaban Benar *"
-                    outlined />
+                  <q-select v-model="question.correct_answer"
+                    :options="question.options.map((opt, i) => ({ label: opt, value: i }))" label="Jawaban Benar *"
+                    outlined emit-value map-options />
                 </div>
               </template>
 
@@ -113,7 +114,7 @@
 
         <q-card-actions align="right" class="q-pa-md">
           <q-btn flat label="Batal" color="grey" v-close-popup />
-          <q-btn type="submit" label="Simpan" color="primary" :loading="loading" />
+          <q-btn type="submit" :label="submitButtonLabel" color="primary" :loading="loading" />
         </q-card-actions>
       </q-form>
     </q-card>
@@ -126,15 +127,18 @@ import { useVuelidate } from '@vuelidate/core';
 import { useRequired, useNumeric } from 'src/composables/validators';
 import { useNotify } from 'src/composables/notifications';
 import { useModuleContentStore } from 'src/stores/module-content';
+import type { BaseContent, QuizContent } from 'src/models/module-content';
 
-interface Question {
+// Local interface for the form's question structure
+interface FormQuestion {
   question: string;
   type: 'multiple_choice' | 'true_false' | 'essay';
   options: string[];
-  correct_answer: string | boolean | null;
+  correct_answer: string | boolean | number | null; // Allow number for v-model binding
   score: number;
 }
 
+// Local interface for the form state, decoupled from the imported model
 interface QuizForm {
   module_id: number;
   title: string;
@@ -142,7 +146,7 @@ interface QuizForm {
   time_limit_minutes: number;
   passing_score: number;
   max_attempts: number;
-  questions: Question[];
+  questions: FormQuestion[];
   order: number;
   is_required: boolean;
 }
@@ -155,6 +159,12 @@ const emit = defineEmits(['refresh']);
 const showDialog = ref(false);
 const loading = ref(false);
 const moduleContentStore = useModuleContentStore();
+const mode = ref<'add' | 'edit'>('add');
+const contentId = ref<number | null>(null);
+
+// Computed properties for dynamic UI
+const dialogTitle = computed(() => mode.value === 'edit' ? 'Edit Kuis' : 'Tambah Kuis Baru');
+const submitButtonLabel = computed(() => mode.value === 'edit' ? 'Update' : 'Simpan');
 
 const questionTypeOptions = [
   { label: 'Pilihan Ganda', value: 'multiple_choice' },
@@ -162,7 +172,7 @@ const questionTypeOptions = [
   { label: 'Essay', value: 'essay' }
 ];
 
-const form = reactive<QuizForm>({
+const initialFormState: QuizForm = {
   module_id: props.moduleId,
   title: '',
   description: '',
@@ -172,7 +182,9 @@ const form = reactive<QuizForm>({
   questions: [],
   order: 1,
   is_required: true
-});
+};
+
+const form = reactive<QuizForm>({ ...initialFormState });
 
 const rules = computed(() => ({
   title: { required: useRequired() },
@@ -219,7 +231,7 @@ const rules = computed(() => ({
 const v$ = useVuelidate(rules, form);
 
 const addQuestion = () => {
-  const newQuestion: Question = {
+  const newQuestion: FormQuestion = {
     question: '',
     type: 'multiple_choice',
     options: ['', ''],
@@ -245,6 +257,13 @@ const removeOption = (questionIndex: number, optionIndex: number) => {
   form.questions[questionIndex].options.splice(optionIndex, 1);
 };
 
+const onQuestionTypeChange = (question: FormQuestion) => {
+  question.correct_answer = null; // Reset correct answer when type changes
+  if (question.type === 'multiple_choice' && question.options.length < 2) {
+    question.options = ['', ''];
+  }
+};
+
 const onSubmit = async () => {
   const isValid = await v$.value.$validate();
   if (!isValid) {
@@ -252,35 +271,76 @@ const onSubmit = async () => {
     return;
   }
 
+  // Create a deep copy to avoid modifying the original form state directly
+  const formToSubmit = JSON.parse(JSON.stringify(form));
+
+  // Convert correct_answer to the option string before submitting
+  formToSubmit.questions.forEach((question: FormQuestion) => {
+    if (question.type === 'multiple_choice' && typeof question.correct_answer === 'number') {
+      question.correct_answer = question.options[question.correct_answer];
+    }
+  });
+
+
   try {
     loading.value = true;
-    await moduleContentStore.createQuizContent({
-      ...form,
-      module_id: props.moduleId
-    });
-    useNotify('Kuis berhasil ditambahkan', 'positive');
+    if (mode.value === 'edit' && contentId.value) {
+      await moduleContentStore.updateQuizContent(contentId.value, formToSubmit);
+      useNotify('Kuis berhasil diperbarui', 'positive');
+    } else {
+      await moduleContentStore.createQuizContent(formToSubmit);
+      useNotify('Kuis berhasil ditambahkan', 'positive');
+    }
     emit('refresh');
     showDialog.value = false;
-
-    // Reset form
-    form.title = '';
-    form.description = '';
-    form.time_limit_minutes = 30;
-    form.passing_score = 70;
-    form.max_attempts = 1;
-    form.questions = [];
-    form.order = 1;
-    form.is_required = true;
-    v$.value.$reset();
   } catch (error) {
-    useNotify('Gagal menambahkan kuis', 'negative');
+    useNotify(`Gagal ${mode.value === 'edit' ? 'memperbarui' : 'menambahkan'} kuis`, 'negative');
   } finally {
     loading.value = false;
   }
 };
 
+const resetForm = () => {
+  Object.assign(form, { ...initialFormState, questions: [] });
+  form.questions = []; // Ensure questions array is reset
+  v$.value.$reset();
+}
+
 defineExpose({
-  show: () => {
+  show: (contentToEdit: (BaseContent & { content: QuizContent }) | null = null) => {
+    if (contentToEdit) {
+      // Edit Mode
+      mode.value = 'edit';
+      contentId.value = contentToEdit.id;
+
+      // Create a deep copy to avoid modifying the original store data
+      const editableContent = JSON.parse(JSON.stringify(contentToEdit));
+
+      // Map correct_answer from string to index for multiple choice questions
+      if (editableContent.content.questions) {
+        editableContent.content.questions.forEach((question: FormQuestion) => {
+          if (question.type === 'multiple_choice' && typeof question.correct_answer === 'string') {
+            const answerIndex = question.options.indexOf(question.correct_answer);
+            question.correct_answer = answerIndex !== -1 ? answerIndex : null;
+          }
+        });
+      }
+
+      form.title = editableContent.title;
+      form.order = editableContent.order;
+      form.is_required = editableContent.is_required;
+      form.description = editableContent.content.description;
+      form.time_limit_minutes = editableContent.content.time_limit_minutes;
+      form.passing_score = editableContent.content.passing_score;
+      form.max_attempts = editableContent.content.max_attempts;
+      form.questions = editableContent.content.questions || [];
+
+    } else {
+      // Add Mode
+      mode.value = 'add';
+      contentId.value = null;
+      resetForm();
+    }
     showDialog.value = true;
   }
 });

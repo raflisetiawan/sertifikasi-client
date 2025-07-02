@@ -5,7 +5,6 @@
     "types": [
       "node",
       "vite/client",
-      "vue3-marquee-slider"
     ]
   }
 }

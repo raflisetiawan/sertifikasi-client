@@ -2,7 +2,7 @@
   <q-dialog v-model="showDialog" persistent maximized>
     <q-card class="q-pa-md">
       <q-card-section class="row items-center">
-        <div class="text-h6">Tambah Video Baru</div>
+        <div class="text-h6">{{ dialogTitle }}</div>
         <q-space />
         <q-btn icon="close" flat round dense v-close-popup />
       </q-card-section>
@@ -72,7 +72,7 @@
 
         <q-card-actions align="right" class="q-pa-md">
           <q-btn flat label="Batal" color="grey" v-close-popup />
-          <q-btn type="submit" label="Simpan" color="primary" :loading="loading" />
+          <q-btn type="submit" :label="submitButtonLabel" color="primary" :loading="loading" />
         </q-card-actions>
       </q-form>
     </q-card>
@@ -80,12 +80,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
+import { ref, reactive, computed } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { useRequired, useNumeric, useUrl } from 'src/composables/validators';
 import { useNotify } from 'src/composables/notifications';
 import { useModuleContentStore } from 'src/stores/module-content';
-import type { VideoContent } from 'src/models/module-content';
+import type { VideoContent, BaseContent } from 'src/models/module-content';
 
 const props = defineProps<{
   moduleId: number;
@@ -95,13 +95,19 @@ const emit = defineEmits(['refresh']);
 const showDialog = ref(false);
 const loading = ref(false);
 const moduleContentStore = useModuleContentStore();
+const mode = ref<'add' | 'edit'>('add');
+const contentId = ref<number | null>(null);
+
+const isEditMode = computed(() => mode.value === 'edit');
+const dialogTitle = computed(() => isEditMode.value ? 'Edit Video' : 'Tambah Video Baru');
+const submitButtonLabel = computed(() => isEditMode.value ? 'Update' : 'Simpan');
 
 const providerOptions = [
   { label: 'YouTube', value: 'youtube' },
   { label: 'Vimeo', value: 'vimeo' }
 ];
 
-const form = reactive<VideoContent>({
+const initialFormState: VideoContent = {
   module_id: props.moduleId,
   title: '',
   description: '',
@@ -114,7 +120,9 @@ const form = reactive<VideoContent>({
   captions: [],
   order: 1,
   is_required: true
-});
+};
+
+const form = reactive<VideoContent>({ ...initialFormState });
 
 const rules = {
   title: { required: useRequired() },
@@ -131,6 +139,11 @@ const rules = {
 
 const v$ = useVuelidate(rules, form);
 
+const resetForm = () => {
+  Object.assign(form, initialFormState);
+  v$.value.$reset();
+};
+
 const onSubmit = async () => {
   const isValid = await v$.value.$validate();
   if (!isValid) {
@@ -140,33 +153,42 @@ const onSubmit = async () => {
 
   try {
     loading.value = true;
-    await moduleContentStore.createVideoContent(form);
-    useNotify('Video berhasil ditambahkan', 'positive');
+    if (isEditMode.value && contentId.value) {
+      await moduleContentStore.updateVideoContent(contentId.value, form);
+      useNotify('Video berhasil diperbarui', 'positive');
+    } else {
+      await moduleContentStore.createVideoContent(form);
+      useNotify('Video berhasil ditambahkan', 'positive');
+    }
     emit('refresh');
     showDialog.value = false;
-
-    // Reset form
-    form.title = '';
-    form.description = '';
-    form.video_url = '';
-    form.provider = 'youtube';
-    form.video_id = '';
-    form.duration_seconds = 0;
-    form.thumbnail_url = '';
-    form.is_downloadable = false;
-    form.captions = [];
-    form.order = 1;
-    form.is_required = true;
-    v$.value.$reset();
   } catch (error) {
-    useNotify('Gagal menambahkan video', 'negative');
+    useNotify(`Gagal ${isEditMode.value ? 'memperbarui' : 'menambahkan'} video`, 'negative');
   } finally {
     loading.value = false;
   }
 };
 
 defineExpose({
-  show: () => {
+  show: (contentToEdit: (BaseContent & { content: VideoContent }) | null = null) => {
+    if (contentToEdit) {
+      mode.value = 'edit';
+      contentId.value = contentToEdit.id;
+      form.title = contentToEdit.title;
+      form.order = contentToEdit.order;
+      form.is_required = contentToEdit.is_required;
+      form.description = contentToEdit.content.description;
+      form.video_url = contentToEdit.content.video_url;
+      form.provider = contentToEdit.content.provider;
+      form.video_id = contentToEdit.content.video_id;
+      form.duration_seconds = contentToEdit.content.duration_seconds;
+      form.thumbnail_url = contentToEdit.content.thumbnail_url;
+      form.is_downloadable = contentToEdit.content.is_downloadable;
+    } else {
+      mode.value = 'add';
+      contentId.value = null;
+      resetForm();
+    }
     showDialog.value = true;
   }
 });

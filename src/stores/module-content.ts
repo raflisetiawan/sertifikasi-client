@@ -7,6 +7,7 @@ import type {
   QuizContent,
   AssignmentContent,
   VideoContent,
+  PracticeContent,
 } from 'src/models/module-content';
 
 interface TextContentPayload {
@@ -110,6 +111,25 @@ export const useModuleContentStore = defineStore('moduleContent', {
       }
     },
 
+    async updateQuizContent(contentId: number, data: QuizContent) {
+      try {
+        await api.put(
+          `/admin/modules/${data.module_id}/contents/${contentId}`,
+          data,
+          {
+            headers: {
+              Authorization: `Bearer ${qCookies.get('token')}`,
+            },
+          }
+        );
+      } catch (error) {
+        if (error instanceof Error) {
+          throw new Error(error.message);
+        }
+        throw new Error('Failed to update quiz content');
+      }
+    },
+
     async createQuizContent(data: QuizContent) {
       try {
         const response = await api.post<{ data: BaseContent }>(
@@ -148,6 +168,24 @@ export const useModuleContentStore = defineStore('moduleContent', {
         throw new Error('Failed to create assignment content');
       }
     },
+    async updateAssignmentContent(contentId: number, data: AssignmentContent) {
+      try {
+        await api.put(
+          `/admin/modules/${data.module_id}/contents/${contentId}`,
+          data,
+          {
+            headers: {
+              Authorization: `Bearer ${qCookies.get('token')}`,
+            },
+          }
+        );
+      } catch (error) {
+        if (error instanceof Error) {
+          throw new Error(error.message);
+        }
+        throw new Error('Failed to update assignment content');
+      }
+    },
     async deleteContent(moduleId: number, contentId: number) {
       try {
         const response = await api.delete<{
@@ -173,8 +211,8 @@ export const useModuleContentStore = defineStore('moduleContent', {
           data,
           {
             headers: {
-              Authorization: `Bearer ${qCookies.get('token')}`,
-            },
+              Authorization: `Bearer ${qCookies.get('token')}`
+            }
           }
         );
         return response.data;
@@ -183,6 +221,25 @@ export const useModuleContentStore = defineStore('moduleContent', {
           throw new Error(error.message);
         }
         throw new Error('Failed to create video content');
+      }
+    },
+
+    async updateVideoContent(contentId: number, data: VideoContent) {
+      try {
+        await api.put(
+          `/admin/modules/${data.module_id}/contents/${contentId}`,
+          data,
+          {
+            headers: {
+              Authorization: `Bearer ${qCookies.get('token')}`
+            }
+          }
+        );
+      } catch (error) {
+        if (error instanceof Error) {
+          throw new Error(error.message);
+        }
+        throw new Error('Failed to update video content');
       }
     },
     async createFileContent(data: FormData) {
@@ -203,6 +260,45 @@ export const useModuleContentStore = defineStore('moduleContent', {
           throw new Error(error.message);
         }
         throw new Error('Failed to create file content');
+      }
+    },
+
+    async createPracticeContent(data: CreatePracticePayload) {
+      try {
+        const response = await api.post<{ data: BaseContent }>(
+          '/admin/practices',
+          data,
+          {
+            headers: {
+              Authorization: `Bearer ${qCookies.get('token')}`,
+            },
+          }
+        );
+        return response.data;
+      } catch (error) {
+        if (error instanceof Error) {
+          throw new Error(error.message);
+        }
+        throw new Error('Failed to create practice content');
+      }
+    },
+
+    async updatePracticeContent(contentId: number, data: PracticeContent) {
+      try {
+        await api.put(
+          `/admin/modules/${data.module_id}/contents/${contentId}`,
+          data,
+          {
+            headers: {
+              Authorization: `Bearer ${qCookies.get('token')}`,
+            },
+          }
+        );
+      } catch (error) {
+        if (error instanceof Error) {
+          throw new Error(error.message);
+        }
+        throw new Error('Failed to update practice content');
       }
     },
   },

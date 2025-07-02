@@ -59,7 +59,7 @@
       </div>
     </div>
     <TextContentFormDialog ref="textDialog" :module-id="Number(route.params.moduleId)" @refresh="fetchContents" />
-    <AddQuizContentDialog ref="addQuizDialog" :module-id="Number(route.params.moduleId)" @refresh="fetchContents" />
+    <QuizContentFormDialog ref="quizDialog" :module-id="Number(route.params.moduleId)" @refresh="fetchContents" />
     <AddAssignmentDialog ref="addAssignmentDialog" :module-id="Number(route.params.moduleId)"
       @refresh="fetchContents" />
     <AddVideoDialog ref="addVideoDialog" :module-id="Number(route.params.moduleId)" @refresh="fetchContents" />
@@ -73,7 +73,7 @@ import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { useQuasar, QTableColumn } from 'quasar';
 import { useModuleContentStore } from 'src/stores/module-content';
-import AddQuizContentDialog from 'src/components/admin/module/module-content/AddQuizContentDialog.vue';
+import QuizContentFormDialog from 'src/components/admin/module/module-content/QuizContentFormDialog.vue';
 import AddAssignmentDialog from 'src/components/admin/module/module-content/AddAssignmentDialog.vue';
 import { BaseContent } from 'src/models/module-content';
 import AddVideoDialog from 'src/components/admin/module/module-content/AddVideoDialog.vue';
@@ -148,19 +148,44 @@ const handleEdit = async (content: BaseContent) => {
       }
       break;
     case 'quiz':
-      addQuizDialog.value.show(content);
+      try {
+        $q.loading.show({ message: 'Memuat data...' });
+        const fullContent = await moduleContentStore.fetchContentDetails(Number(route.params.moduleId), content.id);
+        quizDialog.value.show(fullContent);
+      } catch (error) {
+        $q.notify({ type: 'negative', message: 'Gagal memuat detail konten untuk diedit.' });
+      } finally {
+        $q.loading.hide();
+      }
       break;
     case 'assignment':
       addAssignmentDialog.value.show(content);
       break;
     case 'video':
-      addVideoDialog.value.show(content);
+      try {
+        $q.loading.show({ message: 'Memuat data...' });
+        const fullContent = await moduleContentStore.fetchContentDetails(Number(route.params.moduleId), content.id);
+        console.log(fullContent);
+        addVideoDialog.value.show(fullContent);
+      } catch (error) {
+        $q.notify({ type: 'negative', message: 'Gagal memuat detail konten untuk diedit.' });
+      } finally {
+        $q.loading.hide();
+      }
       break;
     case 'file':
       addFileDialog.value.show(content);
       break;
     case 'practice':
-      addPracticeDialog.value.show(content);
+      try {
+        $q.loading.show({ message: 'Memuat data...' });
+        const fullContent = await moduleContentStore.fetchContentDetails(Number(route.params.moduleId), content.id);
+        addPracticeDialog.value.show(fullContent);
+      } catch (error) {
+        $q.notify({ type: 'negative', message: 'Gagal memuat detail konten untuk diedit.' });
+      } finally {
+        $q.loading.hide();
+      }
       break;
     default:
       $q.notify({
@@ -199,10 +224,10 @@ const showAddTextDialog = () => {
   textDialog.value.show();
 };
 
-const addQuizDialog = ref();
+const quizDialog = ref();
 
 const showAddQuizDialog = () => {
-  addQuizDialog.value.show();
+  quizDialog.value.show();
 };
 
 const addAssignmentDialog = ref();

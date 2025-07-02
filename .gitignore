@@ -35,3 +35,7 @@ yarn-error.log*
 *.sln
 
 .env
+
+prompt.txt
+test.md
+GEMINI.md

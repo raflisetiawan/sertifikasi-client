@@ -6,6 +6,7 @@ export interface BaseContent {
   type: 'text' | 'video' | 'quiz' | 'assignment' | 'file' | 'practice';
   order: number;
   is_required: boolean;
+  description?: string;
   minimum_duration_seconds: number | null;
   content:
     | TextContent
@@ -59,6 +60,7 @@ export interface FileContent {
   file_url: string;
   file_size: number;
   mime_type: string;
+  description?: string;
 }
 
 export interface ModuleLearning {
