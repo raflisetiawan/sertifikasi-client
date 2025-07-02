@@ -36,6 +36,8 @@ export interface QuizResult {
   passing_score: number;
   passed: boolean;
   attempts_left: number;
+  attempts?: number;
+  max_attempts?: number;
   feedback: Array<{
     question_id: number;
     correct: boolean;

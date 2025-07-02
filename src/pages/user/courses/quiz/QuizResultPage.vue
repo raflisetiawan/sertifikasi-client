@@ -20,7 +20,10 @@
           </div>
 
           <div class="text-caption q-mt-sm" v-if="quizResult.attempts_left > 0">
-            Sisa Percobaan: {{ quizResult.attempts_left }}
+            Sisa Percobaan: {{ quizResult.attempts_left }} dari {{ quizResult.max_attempts }}
+          </div>
+          <div class="text-caption q-mt-sm" v-else>
+            Anda telah menggunakan semua percobaan ({{ quizResult.attempts }} dari {{ quizResult.max_attempts }}).
           </div>
         </div>
       </q-card-section>
@@ -57,6 +60,8 @@ import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 import type { QuizResult } from 'src/models/quiz';
+import { api } from 'src/boot/axios';
+import { qCookies } from 'src/boot/cookies';
 
 const $q = useQuasar();
 const route = useRoute();
@@ -67,14 +72,27 @@ const quizResult = ref<QuizResult>({
   passing_score: 0,
   passed: false,
   attempts_left: 0,
+  attempts: 0,
+  max_attempts: 0,
   feedback: []
 });
 
-onMounted(() => {
+onMounted(async () => {
   try {
     const resultString = route.query.result as string;
+    const response = await api.get(`/enrollments/${route.params.enrollmentId}/contents/${route.params.contentId}/quiz-attempt`, {
+      headers: {
+        Authorization: `Bearer ${qCookies.get('token')}`,
+      },
+    });
     if (resultString) {
-      quizResult.value = JSON.parse(resultString);
+      const parsedResult = JSON.parse(resultString);
+      quizResult.value = {
+        ...parsedResult,
+        attempts: response.data.data.attempts,
+        max_attempts: response.data.data.max_attempts,
+        attempts_left: response.data.data.max_attempts - response.data.data.attempts,
+      };
     } else {
       throw new Error('No quiz result found');
     }
@@ -88,8 +106,8 @@ onMounted(() => {
 });
 
 const retryQuiz = () => {
-  const { enrollmentId, moduleId, contentId } = route.params;
-  router.push(`/quiz/${enrollmentId}/${moduleId}/${contentId}`);
+  const { courseId, enrollmentId, moduleId, contentId } = route.params;
+  router.push(`/quiz/${courseId}/${enrollmentId}/${moduleId}/${contentId}`);
 };
 
 const backToModule = () => {

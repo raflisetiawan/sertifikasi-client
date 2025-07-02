@@ -36,8 +36,7 @@ yarn-error.log*
 
 .env
 
-prompt.txt
 test.md
 GEMINI.md
 
-myprompt.txt
+promptku.txt

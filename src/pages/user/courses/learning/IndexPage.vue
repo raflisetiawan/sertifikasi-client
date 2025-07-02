@@ -49,13 +49,16 @@
                   <q-btn v-if="step > 1" flat color="primary" label="Sebelumnya" @click="prevStep" />
                   <q-space />
                   <template v-if="moduleData?.progress.status !== 'completed'">
-                    <q-btn :loading="progressLoading" color="primary" :label="isLastContent ? 'Selesai' : 'Lanjut'"
-                      @click="nextStep(content)" :disable="isLastContent && !allRequiredCompleted" />
+                    <q-btn v-if="!isLastContent || !allRequiredCompleted" :loading="progressLoading" color="primary" :label="isLastContent ? 'Selesai' : 'Lanjut'"
+                      @click="nextStep(content)" />
                   </template>
                 </div>
                 <div v-if="isLastContent && !allRequiredCompleted" class="text-caption text-negative q-mt-sm">
                   Selesaikan semua konten yang wajib untuk menyelesaikan modul ini.
                 </div>
+                <ModuleCompletionPartial
+                  v-if="isLastContent && allRequiredCompleted && moduleData?.progress.status !== 'completed'"
+                  @complete-module="completeModule" />
               </div>
             </template>
           </div>
@@ -90,6 +93,7 @@ import AssignmentContentPartial from './partials/AssignmentContent.vue';
 import PracticeContentPartial from './partials/PracticeContent.vue';
 import FileContentPartial from './partials/FileContent.vue';
 import ProgressSidebar from './partials/ProgressSidebar.vue';
+import ModuleCompletionPartial from './partials/ModuleCompletionPartial.vue';
 
 const $q = useQuasar();
 const route = useRoute();
@@ -150,16 +154,12 @@ const allRequiredCompleted = computed(() => {
 
 const nextStep = async (content: BaseContent) => {
   await updateContentProgress(content.id);
-  if (isLastContent.value) {
-    if (allRequiredCompleted.value) {
-      await completeModule();
-    } else {
-      $q.notify({
-        type: 'negative',
-        message: 'Please complete all required content before finishing the module.'
-      });
-    }
-  } else {
+  if (isLastContent.value && !allRequiredCompleted.value) {
+    $q.notify({
+      type: 'negative',
+      message: 'Selesaikan semua konten yang wajib untuk menyelesaikan modul ini.'
+    });
+  } else if (!isLastContent.value) {
     const nextStepValue = step.value + 1;
     if (nextStepValue <= maxStep.value) {
       step.value = nextStepValue;
