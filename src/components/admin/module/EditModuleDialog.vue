@@ -257,7 +257,7 @@ const onSubmit = async () => {
       const errors = error.response?.data;
       // Convert validation errors to readable messages
       const errorMessages = Object.entries(errors)
-        .map(([field, messages]) => {
+        .map(([, messages]) => {
           const messageList = Array.isArray(messages) ? messages : [messages];
           return messageList.join(', ');
         })

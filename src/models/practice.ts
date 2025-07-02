@@ -66,7 +66,12 @@ export interface PracticeResult {
     completed_at: string;
     submission_details: {
       answers: PracticeAnswer[];
-      feedback: any[];
+      feedback: {
+        question: string;
+        is_correct: boolean;
+        explanation: string;
+        correct_answer: string;
+      }[];
       submitted_at: string;
     };
   };

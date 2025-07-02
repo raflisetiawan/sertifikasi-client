@@ -4,7 +4,7 @@ export type QuestionType =
   | 'short_answer';
 
 export interface QuizQuestion {
-  id: number;
+  id?: number; // Made optional since backend might not always provide it
   question: string;
   type: QuestionType;
   options?: string[];
@@ -12,7 +12,7 @@ export interface QuizQuestion {
 }
 
 export interface QuizData {
-  course_id: number;
+  course_id?: number; // Made optional
   title: string;
   description: string;
   time_limit_minutes: number;

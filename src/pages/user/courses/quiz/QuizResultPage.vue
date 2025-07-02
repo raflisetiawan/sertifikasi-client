@@ -8,19 +8,19 @@
           </q-avatar>
 
           <div class="text-h4 q-mt-md">
-            {{ quizResult.passed ? 'Quiz Passed!' : 'Quiz Failed' }}
+            {{ quizResult.passed ? 'Kuis Lulus!' : 'Kuis Gagal' }}
           </div>
 
           <div class="text-h6 q-mt-sm">
-            Score: {{ quizResult.score }}%
+            Skor Anda: {{ quizResult.score }}%
           </div>
 
           <div class="text-subtitle1">
-            Passing Score: {{ quizResult.passing_score }}%
+            Skor Kelulusan: {{ quizResult.passing_score }}%
           </div>
 
           <div class="text-caption q-mt-sm" v-if="quizResult.attempts_left > 0">
-            Attempts Left: {{ quizResult.attempts_left }}
+            Sisa Percobaan: {{ quizResult.attempts_left }}
           </div>
         </div>
       </q-card-section>
@@ -28,25 +28,25 @@
       <q-separator />
 
       <!-- Feedback Section -->
-      <!-- <q-card-section>
-        <div class="text-h6">Question Review</div>
+      <q-card-section>
+        <div class="text-h6">Tinjauan Pertanyaan</div>
         <div v-for="feedback in quizResult.feedback" :key="feedback.question_id" class="q-my-md">
           <div class="row items-center q-mb-sm">
             <q-icon :name="feedback.correct ? 'check_circle' : 'cancel'"
               :color="feedback.correct ? 'positive' : 'negative'" size="24px" class="q-mr-sm" />
-            <div class="text-subtitle1">Question {{ feedback.question_id }}</div>
+            <div class="text-subtitle1">Pertanyaan {{ feedback.question_id }}</div>
           </div>
 
           <div v-if="!feedback.correct && feedback.explanation" class="text-body2 q-ml-lg text-negative">
-            Explanation: {{ feedback.explanation }}
+            Penjelasan: {{ feedback.explanation }}
           </div>
         </div>
-      </q-card-section> -->
+      </q-card-section>
 
       <q-card-actions align="center" class="q-pa-md">
-        <q-btn v-if="quizResult.attempts_left > 0 && !quizResult.passed" color="primary" label="Retry Quiz"
+        <q-btn v-if="quizResult.attempts_left > 0 && !quizResult.passed" color="primary" label="Coba Lagi Kuis"
           @click="retryQuiz" class="q-mr-sm" />
-        <q-btn color="primary" label="Back to Module" @click="backToModule" />
+        <q-btn color="primary" label="Kembali ke Modul" @click="backToModule" />
       </q-card-actions>
     </q-card>
   </q-page>

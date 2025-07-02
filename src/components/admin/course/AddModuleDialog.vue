@@ -122,7 +122,7 @@ import { useVuelidate } from '@vuelidate/core';
 import { useRequired, useNumeric } from 'src/composables/validators';
 import { ref, reactive } from 'vue';
 import { useNotify } from 'src/composables/notifications';
-import { QRejectedEntry, date } from 'quasar';
+import { QRejectedEntry } from 'quasar';
 import { useModuleStore } from 'src/stores/module';
 import dayjs from 'dayjs';
 import { AxiosError } from 'axios';
@@ -255,7 +255,7 @@ const onSubmit = async () => {
       const errors = error.response?.data;
       // Convert validation errors to readable messages
       const errorMessages = Object.entries(errors)
-        .map(([field, messages]) => {
+        .map(([, messages]) => {
           // Handle array of messages
           const messageList = Array.isArray(messages) ? messages : [messages];
           return messageList.join(', ');

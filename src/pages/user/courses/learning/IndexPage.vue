@@ -24,7 +24,7 @@
 
                   <!-- Quiz Content -->
                   <QuizContentPartial v-else-if="content.type === 'quiz' && isQuizContent(content.content)"
-                    :content="content.content" :content-id="content.id"
+                    :content="content.content" :content-id="content.id" :quizModuleData="content"
                     :is-completed="content.progress?.status === 'completed'" @start-quiz="startQuiz" />
 
                   <!-- Assignment Content -->
@@ -49,9 +49,8 @@
                   <q-btn v-if="step > 1" flat color="primary" label="Sebelumnya" @click="prevStep" />
                   <q-space />
                   <template v-if="moduleData?.progress.status !== 'completed'">
-                    <q-btn :loading="progressLoading" color="primary"
-                      :label="isLastContent ? 'Selesai' : 'Lanjut'" @click="nextStep(content)"
-                      :disable="isLastContent && !allRequiredCompleted" />
+                    <q-btn :loading="progressLoading" color="primary" :label="isLastContent ? 'Selesai' : 'Lanjut'"
+                      @click="nextStep(content)" :disable="isLastContent && !allRequiredCompleted" />
                   </template>
                 </div>
                 <div v-if="isLastContent && !allRequiredCompleted" class="text-caption text-negative q-mt-sm">
@@ -329,4 +328,3 @@ watch(step, (newStep) => {
   white-space: pre-wrap;
 }
 </style>
-

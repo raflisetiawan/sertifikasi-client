@@ -9,9 +9,19 @@ export interface Module {
   description: string;
   thumbnail: string | null;
   thumbnail_url: string | undefined;
-  is_access_restricted: boolean;
-  access_start_at: string | null;
-  access_end_at: string | null;
+  is_locked: boolean;
+  access_restriction: {
+    is_restricted: boolean;
+    start_at: string | null;
+    end_at: string | null;
+    status: 'available' | 'upcoming' | 'expired';
+  };
+  progress: {
+    status: 'completed' | 'in_progress' | 'not_started';
+    percentage: number;
+    started_at: string | null;
+    completed_at: string | null;
+  };
   created_at?: string;
   updated_at?: string;
 }

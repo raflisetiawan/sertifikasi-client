@@ -74,6 +74,7 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+
     <q-dialog v-model="showTimeUpDialog" persistent>
       <q-card>
         <q-card-section class="row items-center">
@@ -82,21 +83,37 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+
+    <!-- Max Attempts Dialog -->
+    <q-dialog v-model="showMaxAttemptsDialog" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-avatar icon="block" color="negative" text-color="white" />
+          <span class="q-ml-sm">You have reached the maximum number of attempts for this quiz.</span>
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn flat label="Back to Module" color="primary" @click="backToModule" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
+
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
+import { ref, onMounted, computed, onBeforeUnmount } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 import { api } from 'src/boot/axios';
 import { qCookies } from 'src/boot/cookies';
 import type { QuizAnswer, QuizSubmission, QuizResult, QuizData } from 'src/models/quiz';
 import { AxiosError } from 'axios';
-
+import { useQuizTimer } from 'src/composables/useQuizTimer';
+import { useUserStore } from 'src/stores/user';
 
 const $q = useQuasar();
 const route = useRoute();
 const router = useRouter();
+const userStore = useUserStore();
 
 const loading = ref(true);
 const submitting = ref(false);
@@ -104,32 +121,15 @@ const showMaxAttemptsDialog = ref(false);
 const quizData = ref<QuizData | null>(null);
 const answers = ref<Record<number, string>>({});
 const showExitDialog = ref(false);
-const timeRemaining = ref(0);
-let timer: number | null = null;
-const startTime = ref<Date>(new Date());
 const showTimeUpDialog = ref(false);
-const timeSpentSeconds = computed(() => {
-  return Math.floor((new Date().getTime() - startTime.value.getTime()) / 1000);
+
+const { timeRemaining, start, clearTimer, formatTime } = useQuizTimer(() => {
+  showTimeUpDialog.value = true;
+  setTimeout(() => {
+    showTimeUpDialog.value = false;
+    submitQuiz(true);
+  }, 2000);
 });
-
-const startTimer = (minutes: number) => {
-  timeRemaining.value = minutes * 60;
-  startTime.value = new Date();
-  timer = window.setInterval(() => {
-    if (timeRemaining.value > 0) {
-      timeRemaining.value--;
-    } else {
-      handleTimeUp();
-    }
-  }, 1000);
-};
-
-
-const formatTime = (seconds: number): string => {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-};
 
 const isAllAnswered = computed(() => {
   if (!quizData.value) return false;
@@ -153,12 +153,15 @@ const fetchQuizData = async () => {
     if (response.data.success) {
       quizData.value = response.data.data;
       if (quizData.value) {
-        startTimer(quizData.value.time_limit_minutes);
+        const userId = userStore.id ?? 0;
+        const quizId = Number(route.params.contentId);
+        start(userId, quizId, quizData.value.time_limit_minutes);
       }
     }
   } catch (error) {
+    console.error('Error fetching quiz data:', error);
     if (error instanceof AxiosError) {
-      if (error && typeof error === 'object' && 'response' in error && error.response?.status === 403) {
+      if (error.response?.status === 403) {
         showMaxAttemptsDialog.value = true;
       } else {
         $q.notify({
@@ -177,19 +180,25 @@ const handleSubmit = (evt: Event) => {
   evt.preventDefault();
   submitQuiz(false);
 };
+
 const submitQuiz = async (isAutoSubmit = false) => {
   if (submitting.value || (!isAutoSubmit && !isAllAnswered.value)) return;
 
   submitting.value = true;
+
   try {
+    // Clear timer before submitting
+    clearTimer();
+
+    // Format answers - use index as question_id if question doesn't have id
     const formattedAnswers: QuizAnswer[] = Object.entries(answers.value).map(([index, answer]) => ({
-      question_id: parseInt(index),
+      question_id: quizData.value?.questions[Number(index)].id ?? Number(index),
       answer: answer
     }));
 
     const submission: QuizSubmission = {
       answers: formattedAnswers,
-      time_spent_seconds: timeSpentSeconds.value
+      time_spent_seconds: (quizData.value?.time_limit_minutes ?? 0) * 60 - timeRemaining.value
     };
 
     const { enrollmentId, moduleId, contentId, courseId } = route.params;
@@ -198,6 +207,7 @@ const submitQuiz = async (isAutoSubmit = false) => {
       submission,
       { headers: { Authorization: `Bearer ${qCookies.get('token')}` } }
     );
+
     if (response.data.success) {
       router.push({
         path: `/quiz-result/${courseId}/${enrollmentId}/${moduleId}/${contentId}`,
@@ -207,6 +217,7 @@ const submitQuiz = async (isAutoSubmit = false) => {
       });
     }
   } catch (error) {
+    console.error('Error submitting quiz:', error);
     if (error instanceof AxiosError) {
       const errorMessage = error.response?.status === 403 && error.response?.data?.message === 'Time limit exceeded'
         ? 'Time limit exceeded. Quiz auto-submitted.'
@@ -226,12 +237,8 @@ const submitQuiz = async (isAutoSubmit = false) => {
   }
 };
 
-const handleTimeUp = () => {
-  if (timer) clearInterval(timer);
-  submitQuiz(true); // Auto-submit when time is up
-};
-
 const backToModule = () => {
+  clearTimer();
   const { enrollmentId, moduleId, courseId } = route.params;
   router.push({ name: 'dashboard.courses.module.learn', params: { courseId, moduleId, enrollmentId } });
 };
@@ -241,7 +248,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  if (timer) clearInterval(timer);
+  clearTimer();
 });
 </script>
 

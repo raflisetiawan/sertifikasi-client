@@ -7,6 +7,7 @@ export interface Question {
 }
 
 export interface QuizContent {
+  id?: number;
   module_id: number;
   title: string;
   description: string;
@@ -19,6 +20,7 @@ export interface QuizContent {
 }
 
 export interface TextContent {
+  id?: number;
   module_id: number;
   title: string;
   content: string;
@@ -66,6 +68,7 @@ export interface AssignmentContent {
 }
 
 export interface VideoContent {
+  id?: number;
   module_id: number;
   title: string;
   description?: string;
@@ -81,10 +84,12 @@ export interface VideoContent {
 }
 
 export interface FileContent {
+  id?: number;
   module_id: number;
   title: string;
   description?: string;
   file: File | null;
   order: number;
   is_required: boolean;
+  file_url?: string; // Add file_url for existing files
 }

@@ -44,6 +44,9 @@
                 </q-td>
                 <q-td key="actions" :props="props">
                   <q-btn-group flat>
+                    <q-btn flat round color="info" icon="visibility" size="sm" @click="handlePreview(props.row)">
+                      <q-tooltip>Pratinjau</q-tooltip>
+                    </q-btn>
                     <q-btn flat round color="green" icon="edit" size="sm" @click="handleEdit(props.row)">
                       <q-tooltip>Edit</q-tooltip>
                     </q-btn>
@@ -60,11 +63,11 @@
     </div>
     <TextContentFormDialog ref="textDialog" :module-id="Number(route.params.moduleId)" @refresh="fetchContents" />
     <QuizContentFormDialog ref="quizDialog" :module-id="Number(route.params.moduleId)" @refresh="fetchContents" />
-    <AddAssignmentDialog ref="addAssignmentDialog" :module-id="Number(route.params.moduleId)"
-      @refresh="fetchContents" />
-    <AddVideoDialog ref="addVideoDialog" :module-id="Number(route.params.moduleId)" @refresh="fetchContents" />
-    <AddFileDialog ref="addFileDialog" :module-id="Number(route.params.moduleId)" @refresh="fetchContents" />
-    <AddPracticeDialog ref="addPracticeDialog" :module-id="Number(route.params.moduleId)" @refresh="fetchContents" />
+    <AssignmentFormDialog ref="assignmentDialog" :module-id="Number(route.params.moduleId)" @refresh="fetchContents" />
+    <VideoFormDialog ref="videoDialog" :module-id="Number(route.params.moduleId)" @refresh="fetchContents" />
+    <FileFormDialog ref="fileDialog" :module-id="Number(route.params.moduleId)" @refresh="fetchContents" />
+    <PracticeFormDialog ref="practiceDialog" :module-id="Number(route.params.moduleId)" @refresh="fetchContents" />
+    <ContentPreviewDialog ref="previewDialog" />
   </div>
 </template>
 
@@ -73,13 +76,14 @@ import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { useQuasar, QTableColumn } from 'quasar';
 import { useModuleContentStore } from 'src/stores/module-content';
-import QuizContentFormDialog from 'src/components/admin/module/module-content/QuizContentFormDialog.vue';
-import AddAssignmentDialog from 'src/components/admin/module/module-content/AddAssignmentDialog.vue';
 import { BaseContent } from 'src/models/module-content';
-import AddVideoDialog from 'src/components/admin/module/module-content/AddVideoDialog.vue';
-import AddFileDialog from 'src/components/admin/module/module-content/AddFileDialog.vue';
-import AddPracticeDialog from 'src/components/admin/module/module-content/AddPracticeDialog.vue';
 import TextContentFormDialog from 'src/components/admin/module/module-content/TextContentFormDialog.vue';
+import QuizContentFormDialog from 'src/components/admin/module/module-content/QuizContentFormDialog.vue';
+import AssignmentFormDialog from 'src/components/admin/module/module-content/AssignmentFormDialog.vue';
+import VideoFormDialog from 'src/components/admin/module/module-content/VideoFormDialog.vue';
+import FileFormDialog from 'src/components/admin/module/module-content/FileFormDialog.vue';
+import PracticeFormDialog from 'src/components/admin/module/module-content/PracticeFormDialog.vue';
+import ContentPreviewDialog from 'src/components/admin/module/module-content/ContentPreviewDialog.vue';
 
 const $q = useQuasar();
 const route = useRoute();
@@ -133,65 +137,52 @@ const columns: QTableColumn[] = [
 ];
 
 const textDialog = ref();
+const quizDialog = ref();
+const assignmentDialog = ref();
+const videoDialog = ref();
+const fileDialog = ref();
+const practiceDialog = ref();
+const previewDialog = ref();
+
+const handlePreview = async (content: BaseContent) => {
+  try {
+    $q.loading.show({ message: 'Memuat data...' });
+    const fullContent = await moduleContentStore.fetchContentDetails(Number(route.params.moduleId), content.id);
+    previewDialog.value.show(fullContent);
+  } catch (error) {
+    $q.notify({ type: 'negative', message: 'Gagal memuat detail konten untuk pratinjau.' });
+  } finally {
+    $q.loading.hide();
+  }
+};
+
+const dialogRefs = {
+  text: textDialog,
+  quiz: quizDialog,
+  assignment: assignmentDialog,
+  video: videoDialog,
+  file: fileDialog,
+  practice: practiceDialog,
+};
 
 const handleEdit = async (content: BaseContent) => {
-  switch (content.content_type) {
-    case 'text':
-      try {
-        $q.loading.show({ message: 'Memuat data...' });
-        const fullContent = await moduleContentStore.fetchContentDetails(Number(route.params.moduleId), content.id);
-        textDialog.value.show(fullContent);
-      } catch (error) {
-        $q.notify({ type: 'negative', message: 'Gagal memuat detail konten untuk diedit.' });
-      } finally {
-        $q.loading.hide();
-      }
-      break;
-    case 'quiz':
-      try {
-        $q.loading.show({ message: 'Memuat data...' });
-        const fullContent = await moduleContentStore.fetchContentDetails(Number(route.params.moduleId), content.id);
-        quizDialog.value.show(fullContent);
-      } catch (error) {
-        $q.notify({ type: 'negative', message: 'Gagal memuat detail konten untuk diedit.' });
-      } finally {
-        $q.loading.hide();
-      }
-      break;
-    case 'assignment':
-      addAssignmentDialog.value.show(content);
-      break;
-    case 'video':
-      try {
-        $q.loading.show({ message: 'Memuat data...' });
-        const fullContent = await moduleContentStore.fetchContentDetails(Number(route.params.moduleId), content.id);
-        console.log(fullContent);
-        addVideoDialog.value.show(fullContent);
-      } catch (error) {
-        $q.notify({ type: 'negative', message: 'Gagal memuat detail konten untuk diedit.' });
-      } finally {
-        $q.loading.hide();
-      }
-      break;
-    case 'file':
-      addFileDialog.value.show(content);
-      break;
-    case 'practice':
-      try {
-        $q.loading.show({ message: 'Memuat data...' });
-        const fullContent = await moduleContentStore.fetchContentDetails(Number(route.params.moduleId), content.id);
-        addPracticeDialog.value.show(fullContent);
-      } catch (error) {
-        $q.notify({ type: 'negative', message: 'Gagal memuat detail konten untuk diedit.' });
-      } finally {
-        $q.loading.hide();
-      }
-      break;
-    default:
+  try {
+    $q.loading.show({ message: 'Memuat data...' });
+    const fullContent = await moduleContentStore.fetchContentDetails(Number(route.params.moduleId), content.id);
+    const dialogRef = dialogRefs[content.content_type as keyof typeof dialogRefs];
+
+    if (dialogRef && dialogRef.value) {
+      dialogRef.value.show(fullContent);
+    } else {
       $q.notify({
         type: 'negative',
-        message: 'Tipe konten tidak dikenali'
+        message: 'Tipe konten tidak dikenali atau dialog tidak ditemukan.'
       });
+    }
+  } catch (error) {
+    $q.notify({ type: 'negative', message: 'Gagal memuat detail konten untuk diedit.' });
+  } finally {
+    $q.loading.hide();
   }
 }
 
@@ -200,7 +191,9 @@ const getContentTypeColor = (type: string) => {
     video: 'purple',
     text: 'blue',
     quiz: 'orange',
-    assignment: 'green'
+    assignment: 'green',
+    file: 'info',
+    practice: 'deep-orange'
   };
   return colors[type] || 'grey';
 };
@@ -210,12 +203,15 @@ const getContentTypeLabel = (type: string) => {
     video: 'Video',
     text: 'Teks',
     quiz: 'Kuis',
-    assignment: 'Tugas'
+    assignment: 'Tugas',
+    file: 'File',
+    practice: 'Latihan'
   };
   return labels[type] || type;
 };
 
 const formatDuration = (seconds: number) => {
+  if (!seconds) return '-';
   const minutes = Math.floor(seconds / 60);
   return `${minutes} menit`;
 };
@@ -224,35 +220,24 @@ const showAddTextDialog = () => {
   textDialog.value.show();
 };
 
-const quizDialog = ref();
-
 const showAddQuizDialog = () => {
   quizDialog.value.show();
 };
 
-const addAssignmentDialog = ref();
-
 const showAddAssignmentDialog = () => {
-  addAssignmentDialog.value.show();
+  assignmentDialog.value.show();
 };
-
-const addVideoDialog = ref();
 
 const showAddVideoDialog = () => {
-  addVideoDialog.value.show();
+  videoDialog.value.show();
 };
-
-const addFileDialog = ref();
 
 const showAddFileDialog = () => {
-  addFileDialog.value.show();
+  fileDialog.value.show();
 };
 
-const addPracticeDialog = ref();
-
-// Add method
 const showAddPracticeDialog = () => {
-  addPracticeDialog.value.show();
+  practiceDialog.value.show();
 };
 
 const confirmDelete = (content: BaseContent) => {

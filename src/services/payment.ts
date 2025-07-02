@@ -1,11 +1,25 @@
+interface SnapResult {
+  status_code: string;
+  status_message: string;
+  transaction_id: string;
+  order_id: string;
+  gross_amount: string;
+  payment_type: string;
+  transaction_time: string;
+  transaction_status: string;
+  fraud_status: string;
+  pdf_url: string;
+  finish_redirect_url: string;
+}
+
 export class PaymentService {
   static initializeSnap(
     token: string,
     containerId: string,
     callbacks: {
-      onSuccess: (result: any) => void;
+      onSuccess: (result: SnapResult) => void;
       onPending: () => void;
-      onError: (result: any) => void;
+      onError: (result: SnapResult) => void;
       onClose: () => void;
     }
   ) {

@@ -2,37 +2,39 @@
   <div class="quiz-content text-center">
     <!-- Quiz Info -->
     <div class="text-subtitle1 q-mb-md">
-      Time Limit: {{ content.time_limit_minutes }} minutes
+      Batas Waktu: {{ content.time_limit_minutes }} menit
     </div>
     <div class="text-subtitle1 q-mb-md">
-      Passing Score: {{ content.passing_score }}%
+      Skor Kelulusan: {{ content.passing_score }}%
     </div>
     <div class="text-subtitle1 q-mb-lg">
-      Maximum Attempts: {{ content.max_attempts }}
+      Percobaan Maksimal: {{ content.max_attempts }}
     </div>
 
     <!-- Start Button -->
-    <q-btn color="primary" label="Start Quiz" :disable="isCompleted" @click="onStartQuiz" />
+    <q-btn color="primary" label="Mulai Kuis" :disable="isCompleted" @click="onStartQuiz" />
 
     <!-- Quiz Status -->
     <div v-if="isCompleted" class="status-section q-mt-lg">
       <q-chip color="positive" text-color="white">
-        Completed
+        Selesai
       </q-chip>
       <div class="text-subtitle1 q-mt-sm">
-        Your Score: {{ content.progress?.score }}%
+        Skor Anda: {{ quizModuleData.progress?.score !== null ? quizModuleData.progress?.score + '%' : 'Belum Tersedia'
+        }}
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { QuizContent } from 'src/models/module-learning';
+import { BaseContent, QuizContent } from 'src/models/module-learning';
 
 const props = defineProps<{
   content: QuizContent;
   contentId: number;
   isCompleted?: boolean;
+  quizModuleData: BaseContent;
 }>();
 
 const emit = defineEmits<{

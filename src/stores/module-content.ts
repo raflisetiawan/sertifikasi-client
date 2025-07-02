@@ -10,16 +10,6 @@ import type {
   PracticeContent,
 } from 'src/models/module-content';
 
-interface TextContentPayload {
-  module_id: number;
-  title: string;
-  content: string;
-  format: 'markdown' | 'html';
-  order: number;
-  is_required: boolean;
-  minimum_duration_seconds?: number;
-}
-
 export const useModuleContentStore = defineStore('moduleContent', {
   state: () => ({
     contents: [] as BaseContent[],
@@ -72,17 +62,13 @@ export const useModuleContentStore = defineStore('moduleContent', {
       }
     },
 
-    async updateTextContent(contentId: number, data: TextContentPayload) {
+    async updateTextContent(contentId: number, data: TextContent) {
       try {
-        await api.put(
-          `/admin/modules/${data.module_id}/contents/${contentId}`,
-          data,
-          {
-            headers: {
-              Authorization: `Bearer ${qCookies.get('token')}`,
-            },
-          }
-        );
+        await api.put(`/admin/texts/${contentId}`, data, {
+          headers: {
+            Authorization: `Bearer ${qCookies.get('token')}`,
+          },
+        });
       } catch (error) {
         if (error instanceof Error) {
           throw new Error(error.message);
@@ -113,15 +99,11 @@ export const useModuleContentStore = defineStore('moduleContent', {
 
     async updateQuizContent(contentId: number, data: QuizContent) {
       try {
-        await api.put(
-          `/admin/modules/${data.module_id}/contents/${contentId}`,
-          data,
-          {
-            headers: {
-              Authorization: `Bearer ${qCookies.get('token')}`,
-            },
-          }
-        );
+        await api.put(`/admin/quizzes/${data.id}`, data, {
+          headers: {
+            Authorization: `Bearer ${qCookies.get('token')}`,
+          },
+        });
       } catch (error) {
         if (error instanceof Error) {
           throw new Error(error.message);
@@ -170,15 +152,11 @@ export const useModuleContentStore = defineStore('moduleContent', {
     },
     async updateAssignmentContent(contentId: number, data: AssignmentContent) {
       try {
-        await api.put(
-          `/admin/modules/${data.module_id}/contents/${contentId}`,
-          data,
-          {
-            headers: {
-              Authorization: `Bearer ${qCookies.get('token')}`,
-            },
-          }
-        );
+        await api.put(`/admin/assignments/${data.id}`, data, {
+          headers: {
+            Authorization: `Bearer ${qCookies.get('token')}`,
+          },
+        });
       } catch (error) {
         if (error instanceof Error) {
           throw new Error(error.message);
@@ -211,8 +189,8 @@ export const useModuleContentStore = defineStore('moduleContent', {
           data,
           {
             headers: {
-              Authorization: `Bearer ${qCookies.get('token')}`
-            }
+              Authorization: `Bearer ${qCookies.get('token')}`,
+            },
           }
         );
         return response.data;
@@ -226,15 +204,11 @@ export const useModuleContentStore = defineStore('moduleContent', {
 
     async updateVideoContent(contentId: number, data: VideoContent) {
       try {
-        await api.put(
-          `/admin/modules/${data.module_id}/contents/${contentId}`,
-          data,
-          {
-            headers: {
-              Authorization: `Bearer ${qCookies.get('token')}`
-            }
-          }
-        );
+        await api.put(`/admin/videos/${contentId}`, data, {
+          headers: {
+            Authorization: `Bearer ${qCookies.get('token')}`,
+          },
+        });
       } catch (error) {
         if (error instanceof Error) {
           throw new Error(error.message);
@@ -263,7 +237,28 @@ export const useModuleContentStore = defineStore('moduleContent', {
       }
     },
 
-    async createPracticeContent(data: CreatePracticePayload) {
+    async updateFileContent(contentId: number, data: FormData) {
+      try {
+        const response = await api.post<{ data: BaseContent }>(
+          `/admin/files/${contentId}`,
+          data,
+          {
+            headers: {
+              Authorization: `Bearer ${qCookies.get('token')}`,
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        );
+        return response.data;
+      } catch (error) {
+        if (error instanceof Error) {
+          throw new Error(error.message);
+        }
+        throw new Error('Failed to update file content');
+      }
+    },
+
+    async createPracticeContent(data: PracticeContent) {
       try {
         const response = await api.post<{ data: BaseContent }>(
           '/admin/practices',
@@ -285,15 +280,11 @@ export const useModuleContentStore = defineStore('moduleContent', {
 
     async updatePracticeContent(contentId: number, data: PracticeContent) {
       try {
-        await api.put(
-          `/admin/modules/${data.module_id}/contents/${contentId}`,
-          data,
-          {
-            headers: {
-              Authorization: `Bearer ${qCookies.get('token')}`,
-            },
-          }
-        );
+        await api.put(`/admin/practices/${data.id}`, data, {
+          headers: {
+            Authorization: `Bearer ${qCookies.get('token')}`,
+          },
+        });
       } catch (error) {
         if (error instanceof Error) {
           throw new Error(error.message);

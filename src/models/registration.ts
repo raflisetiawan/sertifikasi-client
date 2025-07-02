@@ -24,7 +24,7 @@ export interface Payment {
   fraud_status: string | null;
   snap_token: string | null;
   payment_url: string | null;
-  payment_details: Record<string, any> | null;
+  payment_details: Record<string, unknown> | null;
 }
 
 export interface Enrollment {
