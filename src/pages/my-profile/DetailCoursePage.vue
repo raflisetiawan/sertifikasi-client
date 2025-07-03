@@ -18,14 +18,6 @@
       <div class="text-h4 q-mb-md">Deskripsi Kelas</div>
       <q-list bordered separator>
         <q-item>
-          <q-item-section no-wrap>
-            <q-item-label>Link Zoom: <q-btn :href="course.zoom_link.link" target="_blank" flat color="blue">Buka link
-                Zoom</q-btn></q-item-label>
-          </q-item-section>
-          <q-item-section>
-          </q-item-section>
-        </q-item>
-        <q-item>
           <q-item-section>
             <q-item-label>
               Fasilitas : <span class="text-body-1 ">{{
@@ -65,7 +57,7 @@ import { MyProfileDetailCourse } from 'src/models/course';
 
 const { cookies: qCookies } = useQuasar();
 const route = useRoute();
-const course = ref<MyProfileDetailCourse>({ name: '', description: '', materials: [], duration: '', facility: '', id: 0, zoom_link: { courseId: 0, link: '' } });
+const course = ref<MyProfileDetailCourse>({ name: '', description: '', materials: [], duration: '', facility: '', id: 0 });
 useMeta(() => {
   return {
     title: course.value.name + ' - My Profile - UISI Digiclass'

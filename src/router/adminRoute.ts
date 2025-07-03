@@ -95,6 +95,11 @@ const adminRoutes: RouteRecordRaw = {
       component: () => import('pages/admin/assignment/AssignmentPage.vue'),
       name: 'AdminAssignmentPage',
     },
+    {
+      path: 'enrollment-review',
+      component: () => import('pages/admin/enrollment-review/IndexPage.vue'),
+      name: 'AdminEnrollmentReviewPage',
+    },
   ],
   meta: { requiresAuth: true, requiresAdmin: true },
 };

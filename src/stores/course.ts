@@ -66,7 +66,7 @@ export const useCourseStore = defineStore('course', {
       return response.data.course_name;
     },
     async getCourseForTable(): Promise<CourseTable[]> {
-      const response = await api.get('courses/with-zoom-link', {
+      const response = await api.get('courses', {
         headers: {
           Authorization: 'Bearer ' + qCookies.get('token'),
         },

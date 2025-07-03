@@ -28,8 +28,8 @@
                     @blur="v$.description.$touch" />
                 </div>
                 <div class="col-12 col-md-6">
-                  <q-input v-model.number="form.time_limit_minutes" type="number" label="Batas Waktu (menit) *"
-                    outlined :error="v$.time_limit_minutes.$error"
+                  <q-input v-model.number="form.time_limit_minutes" type="number" label="Batas Waktu (menit) *" outlined
+                    :error="v$.time_limit_minutes.$error"
                     :error-message="v$.time_limit_minutes.$errors[0]?.$message?.toString()"
                     @blur="v$.time_limit_minutes.$touch" />
                 </div>
@@ -92,8 +92,8 @@
                     <q-btn flat color="primary" icon="add" label="Tambah Pilihan" @click="addOption(index)"
                       class="q-mt-sm" />
 
-                    <q-select v-model="question.answer_key" :options="question.options" label="Jawaban Benar *"
-                      outlined class="q-mt-md" />
+                    <q-select v-model="question.answer_key" :options="question.options" label="Jawaban Benar *" outlined
+                      class="q-mt-md" />
                   </template>
 
                   <!-- Answer for True/False -->
@@ -245,8 +245,12 @@ const onSubmit = async () => {
     }
     emit('refresh');
     showDialog.value = false;
-  } catch (error) {
-    useNotify('Gagal menyimpan latihan', 'negative');
+  } catch (error: any) {
+    let errorMessage = `Gagal ${isEditing.value ? 'memperbarui' : 'menambahkan'} latihan`;
+    if (error.message) {
+      errorMessage = error.message;
+    }
+    useNotify(errorMessage, 'negative');
   } finally {
     loading.value = false;
   }

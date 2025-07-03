@@ -142,8 +142,12 @@ const onSubmit = async () => {
     }
     emit('refresh');
     showDialog.value = false;
-  } catch (error) {
-    useNotify(`Gagal ${isEditMode.value ? 'memperbarui' : 'menambahkan'} konten teks`, 'negative');
+  } catch (error: any) {
+    let errorMessage = `Gagal ${isEditMode.value ? 'memperbarui' : 'menambahkan'} konten teks`;
+    if (error.message) {
+      errorMessage = error.message;
+    }
+    useNotify(errorMessage, 'negative');
   } finally {
     loading.value = false;
   }
@@ -164,7 +168,7 @@ defineExpose({
       Object.assign(form, {
         ...textContent,
         title: contentToEdit.title,
-        order: contentToEdit.order,
+        order: contentToEdit.order, // Ensure order is taken from BaseContent
         is_required: contentToEdit.is_required,
       });
 

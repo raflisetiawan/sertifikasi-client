@@ -1,3 +1,4 @@
+import { AxiosError } from 'axios';
 import { defineStore } from 'pinia';
 import { api } from 'src/boot/axios';
 import { qCookies } from 'src/boot/cookies';
@@ -99,7 +100,7 @@ export const useModuleContentStore = defineStore('moduleContent', {
 
     async updateQuizContent(contentId: number, data: QuizContent) {
       try {
-        await api.put(`/admin/quizzes/${data.id}`, data, {
+        await api.put(`/admin/quizzes/${contentId}`, data, {
           headers: {
             Authorization: `Bearer ${qCookies.get('token')}`,
           },
@@ -280,14 +281,21 @@ export const useModuleContentStore = defineStore('moduleContent', {
 
     async updatePracticeContent(contentId: number, data: PracticeContent) {
       try {
-        await api.put(`/admin/practices/${data.id}`, data, {
+        await api.put(`/admin/practices/${contentId}`, data, {
           headers: {
             Authorization: `Bearer ${qCookies.get('token')}`,
           },
         });
       } catch (error) {
-        if (error instanceof Error) {
-          throw new Error(error.message);
+        if (error instanceof AxiosError) {
+          let errorMessage = 'Failed to update practice content';
+          if (error.response && error.response.data && error.response.data.errors) {
+            const errors = error.response.data.errors;
+            errorMessage = Object.values(errors).flat().join(', ');
+          } else if (error.response && error.response.data && error.response.data.message) {
+            errorMessage = error.response.data.message;
+          }
+          throw new Error(errorMessage);
         }
         throw new Error('Failed to update practice content');
       }

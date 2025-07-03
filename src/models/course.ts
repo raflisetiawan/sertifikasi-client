@@ -125,13 +125,6 @@ export interface CourseTable {
   operational_start: string;
   operational_end: string;
   status: string;
-  zoom_link?: ZoomLink;
-}
-
-export interface ZoomLink {
-  id: number;
-  link: string;
-  courseId: number;
 }
 
 export interface CourseRows {
@@ -140,8 +133,6 @@ export interface CourseRows {
   operational_start: string;
   operational_end: string;
   status: string;
-  zoom_link?: string;
-  zoom_link_id?: number;
 }
 
 export interface CourseIdAndNames {
@@ -168,10 +159,6 @@ export interface MyProfileDetailCourse {
   facility: string;
   id: number;
   materials: Material[];
-  zoom_link: {
-    courseId: number;
-    link: string;
-  };
 }
 export interface CourseDetail {
   id: number;

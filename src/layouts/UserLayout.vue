@@ -134,7 +134,7 @@ const menuList = [
   {
     icon: 'workspace_premium',
     label: 'Sertifikat',
-    to: { name: 'dashboard.certificates' },
+    to: { name: 'dashboard.certificates.index' },
     separator: false
   },
   {

@@ -133,6 +133,11 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/user/courses/quiz/QuizPage.vue'),
         meta: { requiresAuth: true },
       },
+      {
+        path: 'certificates',
+        name: 'dashboard.certificates.index',
+        component: () => import('pages/user/certificates/IndexPage.vue'),
+      },
     ],
   },
   adminRoutes,

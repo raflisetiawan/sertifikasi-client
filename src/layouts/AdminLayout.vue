@@ -50,6 +50,17 @@
             </q-item>
           </q-list>
           <q-list padding>
+            <q-item clickable v-ripple @click="$router.push({ name: 'AdminEnrollmentReviewPage' })">
+              <q-item-section avatar>
+                <q-icon name="rate_review"></q-icon>
+              </q-item-section>
+
+              <q-item-section>
+                Review Pendaftaran
+              </q-item-section>
+            </q-item>
+          </q-list>
+          <q-list padding>
             <q-item clickable v-ripple @click="logout">
               <q-item-section avatar>
                 <q-icon name="logout"></q-icon>

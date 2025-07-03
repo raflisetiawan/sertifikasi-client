@@ -54,63 +54,16 @@
       <q-item-section>Upload Template Sertifikat</q-item-section>
     </q-item>
     <q-separator></q-separator>
-    <q-item clickable v-if="!props.propsData?.row.zoom_link" v-ripple
-      @click="showAddZoomDialog(props.propsData.row.id)">
-      <q-item-section avatar>
-        <q-icon name="videocam" color="primary"></q-icon>
-      </q-item-section>
-      <q-item-section>Buat Link Zoom</q-item-section>
-    </q-item>
-    <q-item clickable v-ripple @click="showEditZoomDialog(
-      props.propsData.row.id,
-      props.propsData.row.zoom_link,
-      props.propsData.row.zoom_link_id)" v-else>
-      <q-item-section avatar>
-        <q-icon name="videocam" color="green"></q-icon>
-      </q-item-section>
-      <q-item-section>Edit Link Zoom</q-item-section>
-    </q-item>
-    <q-item clickable v-show="props.propsData?.row.zoom_link" v-ripple @click="showDeleteZoomDialog(
-      props.propsData.row.id,
-      props.propsData.row.zoom_link,
-      props.propsData.row.zoom_link_id)">
-      <q-item-section avatar>
-        <q-icon name="videocam" color="red">
-        </q-icon>
-      </q-item-section>
-      <q-item-section>Hapus Link Zoom</q-item-section>
-    </q-item>
   </q-menu>
 </template>
 
 <script setup lang="ts">
 import { useCourseStore } from 'src/stores/course';
-import { useZoomLinkStore } from 'src/stores/zoomLink';
 import { useModuleStore } from 'src/stores/module';
 
 const props = defineProps(['propsData', 'touchPosition', 'contextMenu'])
-const { $state: zoomLinkState } = useZoomLinkStore()
 const { $state: courseState } = useCourseStore();
 const { $state: moduleStore } = useModuleStore()
-
-
-const showAddZoomDialog = (courseId: number) => {
-  zoomLinkState.addZoomDialog = true; zoomLinkState.courseId = courseId;
-}
-
-const showEditZoomDialog = (courseId: number, linkName: string, zoomLinkId: number) => {
-  zoomLinkState.editZoomDialog = true;
-  zoomLinkState.zoomLinkData.link = linkName;
-  zoomLinkState.zoomLinkData.id = zoomLinkId;
-  zoomLinkState.zoomLinkData.courseId = courseId;
-}
-
-const showDeleteZoomDialog = (courseId: number, linkName: string, zoomLinkId: number) => {
-  zoomLinkState.deleteZoomDialog = true;
-  zoomLinkState.zoomLinkData.link = linkName;
-  zoomLinkState.zoomLinkData.id = zoomLinkId;
-  zoomLinkState.zoomLinkData.courseId = courseId;
-}
 
 const showAddModuleDialog = (courseId: number) => {
   moduleStore.addModuleDialog = true;

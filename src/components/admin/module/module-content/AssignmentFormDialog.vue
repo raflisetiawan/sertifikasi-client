@@ -196,8 +196,12 @@ const onSubmit = async () => {
     }
     emit('refresh');
     showDialog.value = false;
-  } catch (error) {
-    useNotify(`Gagal ${isEditMode.value ? 'memperbarui' : 'menambahkan'} tugas`, 'negative');
+  } catch (error: any) {
+    let errorMessage = `Gagal ${isEditMode.value ? 'memperbarui' : 'menambahkan'} tugas`;
+    if (error.message) {
+      errorMessage = error.message;
+    }
+    useNotify(errorMessage, 'negative');
   } finally {
     loading.value = false;
   }

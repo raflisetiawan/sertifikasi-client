@@ -316,8 +316,12 @@ const onSubmit = async () => {
     }
     emit('refresh');
     showDialog.value = false;
-  } catch (error) {
-    useNotify(`Gagal ${mode.value === 'edit' ? 'memperbarui' : 'menambahkan'} kuis`, 'negative');
+  } catch (error: any) {
+    let errorMessage = `Gagal ${mode.value === 'edit' ? 'memperbarui' : 'menambahkan'} kuis`;
+    if (error.message) {
+      errorMessage = error.message;
+    }
+    useNotify(errorMessage, 'negative');
   } finally {
     loading.value = false;
   }
