@@ -316,9 +316,11 @@ const onSubmit = async () => {
     }
     emit('refresh');
     showDialog.value = false;
-  } catch (error: any) {
+  } catch (error: unknown) {
     let errorMessage = `Gagal ${mode.value === 'edit' ? 'memperbarui' : 'menambahkan'} kuis`;
-    if (error.message) {
+    if (error && typeof error === 'object' && 'response' in error && error.response && typeof error.response === 'object' && 'data' in error.response && error.response.data && typeof error.response.data === 'object' && 'message' in error.response.data && typeof error.response.data.message === 'string') {
+      errorMessage = error.response.data.message;
+    } else if (error instanceof Error) {
       errorMessage = error.message;
     }
     useNotify(errorMessage, 'negative');

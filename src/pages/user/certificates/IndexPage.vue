@@ -1,24 +1,10 @@
 <template>
   <q-page padding>
     <div class="q-pa-md">
-      <q-table
-        title="My Certificates"
-        :rows="certificates"
-        :columns="columns"
-        row-key="id"
-        :loading="loading"
-        :filter="filter"
-        @request="onRequest"
-        v-model:pagination="pagination"
-      >
+      <q-table title="My Certificates" :rows="certificates" :columns="columns" row-key="id" :loading="loading"
+        :filter="filter" @request="onRequest" v-model:pagination="pagination">
         <template v-slot:top-right>
-          <q-input
-            borderless
-            dense
-            debounce="300"
-            v-model="filter"
-            placeholder="Search"
-          >
+          <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
             <template v-slot:append>
               <q-icon name="search" />
             </template>
@@ -26,13 +12,7 @@
         </template>
         <template v-slot:body-cell-actions="props">
           <q-td :props="props">
-            <q-btn
-              flat
-              icon="download"
-              @click="downloadCertificate(props.row)"
-              label="Download"
-              color="primary"
-            />
+            <q-btn flat icon="download" @click="downloadCertificate(props.row)" label="Download" color="primary" />
           </q-td>
         </template>
       </q-table>
@@ -43,7 +23,7 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue';
 import { api } from 'src/boot/axios';
-import { QTableProps, useQuasar } from 'quasar';
+import { QTableColumn, QTableProps, useQuasar } from 'quasar';
 import { qCookies } from 'src/boot/cookies';
 
 interface Certificate {
@@ -61,7 +41,7 @@ export default defineComponent({
   setup() {
     const $q = useQuasar();
     const certificates = ref<Certificate[]>([]);
-    const columns: QTableProps['columns'] = [
+    const columns: QTableColumn[] = [
       {
         name: 'id',
         required: true,
@@ -110,7 +90,7 @@ export default defineComponent({
       rowsNumber: 0,
     });
 
-    const onRequest = async (props: any) => {
+    const onRequest: QTableProps['onRequest'] = async (props) => {
       const { page, rowsPerPage, sortBy, descending } = props.pagination;
       const filterValue = props.filter;
 
@@ -159,7 +139,17 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      onRequest({ pagination: pagination.value, filter: filter.value });
+      const { page, rowsPerPage, sortBy, descending } = pagination.value;
+      onRequest({
+        pagination: {
+          page,
+          rowsPerPage,
+          sortBy,
+          descending,
+        },
+        filter: filter.value,
+        getCellValue: () => null, // Required by type, but not used
+      });
     });
 
     return {

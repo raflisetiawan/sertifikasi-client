@@ -12,30 +12,12 @@
         </template>
         <template v-slot:body-cell-actions="props">
           <q-td :props="props">
-            <q-btn
-              flat
-              icon="rate_review"
-              @click="openReviewDialog(props.row)"
-              label="Review"
-              color="primary"
-              :disable="props.row.status === 'completed'"
-            />
-            <q-btn
-              v-if="props.row.status === 'completed' && !props.row.certificate_path"
-              flat
-              icon="card_membership"
-              @click="generateCertificate(props.row)"
-              label="Generate Certificate"
-              color="secondary"
-            />
-            <q-btn
-              v-if="props.row.certificate_path"
-              flat
-              icon="download"
-              @click="downloadCertificate(props.row)"
-              label="Download Certificate"
-              color="info"
-            />
+            <q-btn flat icon="rate_review" @click="openReviewDialog(props.row)" label="Review" color="primary"
+              :disable="props.row.status === 'completed'" />
+            <q-btn v-if="props.row.status === 'completed' && !props.row.certificate_path" flat icon="card_membership"
+              @click="generateCertificate(props.row)" label="Generate Certificate" color="secondary" />
+            <q-btn v-if="props.row.certificate_path" flat icon="download" @click="downloadCertificate(props.row)"
+              label="Download Certificate" color="info" />
           </q-td>
         </template>
       </q-table>
@@ -64,7 +46,7 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue';
 import { api } from 'src/boot/axios';
-import { QTableProps, useQuasar } from 'quasar';
+import { useQuasar, QTableColumn } from 'quasar';
 import { qCookies } from 'src/boot/cookies';
 
 interface Enrollment {
@@ -100,7 +82,7 @@ export default defineComponent({
   setup() {
     const $q = useQuasar();
     const enrollments = ref<Enrollment[]>([]);
-    const columns: QTableProps['columns'] = [
+    const columns: QTableColumn[] = [
       {
         name: 'id',
         required: true,
@@ -167,7 +149,16 @@ export default defineComponent({
     const selectedEnrollment = ref<Enrollment | null>(null);
     const finalScore = ref<number | null>(null);
 
-    const onRequest = async (props: any) => {
+    const onRequest = async (props: {
+      pagination: {
+        page: number;
+        rowsPerPage: number;
+        sortBy: string;
+        descending: boolean;
+      };
+      filter?: string;
+      getCellValue?: (col: QTableColumn, row: Enrollment) => unknown;
+    }) => {
       const { page, rowsPerPage, sortBy, descending } = props.pagination;
       const filterValue = props.filter;
 

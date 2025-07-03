@@ -61,6 +61,17 @@
             </q-item>
           </q-list>
           <q-list padding>
+            <q-item clickable v-ripple @click="$router.push({ name: 'AdminLiveSessionPage' })">
+              <q-item-section avatar>
+                <q-icon name="live_tv"></q-icon>
+              </q-item-section>
+
+              <q-item-section>
+                Live Session
+              </q-item-section>
+            </q-item>
+          </q-list>
+          <q-list padding>
             <q-item clickable v-ripple @click="logout">
               <q-item-section avatar>
                 <q-icon name="logout"></q-icon>

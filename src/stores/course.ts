@@ -6,6 +6,7 @@ import {
   CreateCourseForm,
   CourseTable,
   CourseDetail,
+  CourseIdAndNames,
 } from 'src/models/course';
 import { qCookies } from 'src/boot/cookies';
 import { AxiosResponse } from 'axios';
@@ -86,6 +87,14 @@ export const useCourseStore = defineStore('course', {
       id: string | string[] | number
     ): Promise<CourseBenefitExample[]> {
       const response = await api.get(`course/${id}/course_benefits`);
+      return response.data.data;
+    },
+    async getCourseIdAndNames(): Promise<CourseIdAndNames[]> {
+      const response = await api.get('courses/name-and-id', {
+        headers: {
+          Authorization: 'Bearer ' + qCookies.get('token'),
+        },
+      });
       return response.data.data;
     },
   },

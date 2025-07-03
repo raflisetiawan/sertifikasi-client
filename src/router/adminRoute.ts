@@ -100,6 +100,11 @@ const adminRoutes: RouteRecordRaw = {
       component: () => import('pages/admin/enrollment-review/IndexPage.vue'),
       name: 'AdminEnrollmentReviewPage',
     },
+    {
+      path: 'live-sessions',
+      component: () => import('pages/admin/LiveSessionIndexPage.vue'),
+      name: 'AdminLiveSessionPage',
+    },
   ],
   meta: { requiresAuth: true, requiresAdmin: true },
 };

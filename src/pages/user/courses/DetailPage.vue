@@ -38,6 +38,10 @@
       </div>
 
       <div class="q-mt-xl">
+        <LiveSessionList :course-id="courseDetail.course.id" />
+      </div>
+
+      <div class="q-mt-xl">
         <div class="text-h5 q-mb-md">Modul Pembelajaran</div>
         <div class="row q-col-gutter-md">
           <div v-for="module in courseDetail.modules" :key="module.id" class="col-12">
@@ -58,6 +62,7 @@ import RegistrationInfoCard from 'src/components/user/course/detail/Registration
 import PaymentInfoCard from 'src/components/user/course/detail/PaymentInfoCard.vue';
 import ProgressInfoCard from 'src/components/user/course/detail/ProgressInfoCard.vue';
 import ModuleCard from 'src/components/user/course/detail/ModuleCard.vue';
+import LiveSessionList from 'src/components/user/course/LiveSessionList.vue';
 
 const { courseDetail, loading, error, fetchCourseDetail } = useCourseDetail();
 console.log(courseDetail, loading, error);
