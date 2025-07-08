@@ -64,8 +64,6 @@
               @input="v$.duration.$touch" @blur="v$.duration.$touch" />
             <q-file :filter="checkFileSize" hint="ukuran max 2mb" outlined v-model="courseForm.image"
               accept=".jpg, image/*" counter use-chips label="Upload gambar" @rejected="onRejected" />
-            <q-file :filter="checkFileSize20Mb" hint="ukuran max 20mb" outlined v-model="courseForm.guidelines"
-              accept=".pdf" counter use-chips label="Upload Pedoman / handbook" @rejected="onRejected" />
             <q-select filled v-model="courseForm.trainer_selected" use-chips multiple clearable use-input stack-label
               fill-input input-debounce="0" label="Trainer untuk kelas ini" :options="courseForm.trainerSelect"
               @filter="filterFnAutoselect">
@@ -77,8 +75,6 @@
                 </q-item>
               </template>
             </q-select>
-            <q-file :filter="checkFileSize10Mb" hint="ukuran max 10mb" outlined v-model="courseForm.syllabus"
-              accept=".pdf" counter use-chips label="Upload Syllabus" @rejected="onRejected" />
             <q-file :filter="checkFileSize10Mb" hint="ukuran max 10mb" outlined v-model="courseForm.certificate_example"
               accept=".pdf,.jpg,.png" counter use-chips label="Upload Certificate Example" @rejected="onRejected" />
             <q-file :filter="checkFileSize10Mb" hint="ukuran max 10mb" outlined v-model="courseForm.schedule"
@@ -120,8 +116,6 @@ const courseForm = ref<CreateCourseForm>({
   place: '',
   duration: '',
   benefit: '',
-  guidelines: null,
-  syllabus: null,
   certificate_example: null,
   schedule: null,
   trainerSelect: [],
@@ -148,11 +142,6 @@ const rules = {
 const checkFileSize = (files: readonly unknown[] | FileList): readonly unknown[] => {
   const fileList = Array.from(files);
   return fileList.filter(file => (file instanceof File) && file.size < 2e+6);
-};
-
-const checkFileSize20Mb = (files: readonly unknown[] | FileList): readonly unknown[] => {
-  const fileList = Array.from(files);
-  return fileList.filter(file => (file instanceof File) && file.size < 20e+6);
 };
 
 const loadingCreate = ref(false);

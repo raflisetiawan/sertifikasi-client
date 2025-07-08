@@ -63,27 +63,10 @@
             <q-input outlined type="text" v-model="courseForm.duration" lazy-rules label="Durasi *"
               :error="v$.duration.$error" :error-message="v$.duration.$errors.map((e) => e.$message).join()"
               @input="v$.duration.$touch" @blur="v$.duration.$touch" />
-            <!-- Add new file inputs -->
-            <q-file :filter="checkFileSize10Mb" hint="ukuran max 10mb" outlined v-model="courseForm.syllabus"
-              accept=".pdf" counter use-chips label="Upload Syllabus" @rejected="onRejected">
-              <template v-slot:default>
-                <q-btn v-if="syllabusUrl" :href="syllabusUrl" target="_blank" color="primary" size="sm" dense
-                  class="q-mb-sm">
-                  Lihat Syllabus
-                </q-btn>
-              </template>
-            </q-file>
             <q-file :filter="checkFileSize" hint="ukuran max 2mb" outlined v-model="courseForm.image"
               accept=".jpg, image/*" counter use-chips label="Upload gambar" @rejected="onRejected">
               <template v-slot:default v-if="imageUrl.length !== 0 && !courseForm.image">
                 <q-img :src="imageUrl" width="100px" class="q-mb-sm" />
-              </template>
-            </q-file>
-            <q-file :filter="checkFileSize20Mb" hint="ukuran max 20mb" outlined v-model="courseForm.guidelines"
-              accept=".pdf" counter use-chips label="Upload Pedoman / handbook" @rejected="onRejected">
-              <template v-slot:default>
-                <q-btn :href="guidelinesUrl" target="_blank" color="primary" size="sm" dense class="q-mb-sm">Lihat
-                  dokumen</q-btn>
               </template>
             </q-file>
             <q-file :filter="checkFileSize10Mb" hint="ukuran max 10mb" outlined v-model="courseForm.certificate_example"
@@ -156,8 +139,6 @@ const courseForm = reactive<UpdateCourseForm>({
   place: '',
   duration: '',
   benefit: '',
-  guidelines: null,
-  syllabus: null,
   certificate_example: null,
   schedule: null,
   trainerSelect: [],
@@ -166,7 +147,6 @@ const courseForm = reactive<UpdateCourseForm>({
 });
 
 // Add refs for new file URLs
-const syllabusUrl = ref('');
 const certificateExampleUrl = ref('');
 const scheduleUrl = ref('');
 
@@ -190,11 +170,6 @@ const rules = {
 const checkFileSize = (files: readonly unknown[] | FileList): readonly unknown[] => {
   const fileList = Array.from(files);
   return fileList.filter(file => (file instanceof File) && file.size < 2e+6);
-};
-
-const checkFileSize20Mb = (files: readonly unknown[] | FileList): readonly unknown[] => {
-  const fileList = Array.from(files);
-  return fileList.filter(file => (file instanceof File) && file.size < 20e+6);
 };
 
 const loadingCreate = ref(false);
@@ -265,7 +240,6 @@ const filterFnAutoselect = async (val: string, update: DoneFunction) => {
 };
 
 const imageUrl = ref('');
-const guidelinesUrl = ref('');
 const loading = ref(false);
 
 
@@ -317,8 +291,6 @@ onMounted(async () => {
 
     // Set file URLs
     imageUrl.value = data.image ? `${storageBaseUrl}courses/${data.image}` : '';
-    guidelinesUrl.value = data.guidelines ? `${storageBaseUrl}courses/guideline/${data.guidelines}` : '';
-    syllabusUrl.value = data.syllabus_path ? `${storageBaseUrl}courses/syllabus/${data.syllabus_path}` : '';
     certificateExampleUrl.value = data.certificate_example_path ?
       `${storageBaseUrl}courses/certificates/${data.certificate_example_path}` : '';
     scheduleUrl.value = data.schedule_path ? `${storageBaseUrl}courses/schedules/${data.schedule_path}` : '';

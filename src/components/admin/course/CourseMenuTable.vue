@@ -26,19 +26,6 @@
       <q-item-section>Detail Kelas</q-item-section>
     </q-item>
     <q-separator></q-separator>
-    <q-item clickable v-ripple @click="$emit('showAddDialog', props.propsData.row.id, props.propsData.row.name)">
-      <q-item-section avatar>
-        <q-icon name="assignment_add" color="primary"></q-icon>
-      </q-item-section>
-      <q-item-section>Tambah Materi</q-item-section>
-    </q-item>
-    <q-item clickable v-ripple :to="{ name: 'MaterialAdminIndexPage', params: { id: props.propsData.row.id } }">
-      <q-item-section avatar>
-        <q-icon name="menu_book" color="blue"></q-icon>
-      </q-item-section>
-      <q-item-section>Lihat Materi</q-item-section>
-    </q-item>
-    <!-- :to="{ name: 'MaterialAdminIndexPage', params: { id: props.propsData.row.id } }" -->
     <q-item clickable v-ripple
       @click="courseState.showEditStatusDialog = true; courseState.editedStatusDialog = props.propsData.row.id">
       <q-item-section avatar>

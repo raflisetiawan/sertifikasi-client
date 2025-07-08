@@ -11,8 +11,6 @@ export interface CreateCourseForm {
   place: string;
   duration: string;
   benefit: string;
-  guidelines: File | null;
-  syllabus: File | null;
   certificate_example: File | null;
   schedule: File | null;
   trainerSelect: Array<{ label: string; value: number }>;
@@ -39,8 +37,6 @@ export interface Courses {
   operational_end: string;
   status: string;
   benefit: string;
-  guidelines: string | null;
-  syllabus_path: string | null;
   certificate_example_path: string | null;
   schedule_path: string | null;
   created_at?: string;
@@ -59,8 +55,6 @@ export interface UpdateCourseForm {
   place: string;
   duration: string;
   benefit: string;
-  guidelines: File | null;
-  syllabus: File | null;
   certificate_example: File | null;
   schedule: File | null;
   trainerSelect: Array<{ label: string; value: number }>;
@@ -104,7 +98,6 @@ export interface UserCourses {
   created_at?: Date;
   updated_at?: Date;
   trainer?: Trainer;
-  guidelines: File | null;
   status?: string;
 }
 
@@ -116,7 +109,6 @@ export interface RegisteredCourse {
   place: string;
   status: string;
   verification: boolean;
-  guidelines: string;
 }
 
 export interface CourseTable {
@@ -145,20 +137,12 @@ export interface CourseIdAndNameOptions {
   label: string;
 }
 
-interface Material {
-  title: string;
-  file: string;
-  course_id: number;
-  description: string;
-}
-
 export interface MyProfileDetailCourse {
   name: string;
   description: string;
   duration: string;
   facility: string;
   id: number;
-  materials: Material[];
 }
 export interface CourseDetail {
   id: number;

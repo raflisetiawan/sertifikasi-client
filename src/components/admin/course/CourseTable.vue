@@ -15,7 +15,6 @@
             <template v-slot:body="props">
               <q-tr :props="props" @dblclick="handleRowClick(props.row.id)">
                 <CourseMenuTableVue :touchPosition="true" :contextMenu="true" :propsData="props"
-                  @showAddDialog="(id: number, name: string) => showAddDialog(id, name)"
                   @handleRowClick="(id: number) => handleRowClick(id)" />
                 <q-td key="name" :props="props" style="cursor: pointer;" @click="handleRowClick(props.row.id)">
                   {{ props.row.name }}
@@ -35,7 +34,6 @@
                     @click="$router.push({ name: 'UpdateCoursePage', params: { id: props.row.id } })" icon="edit" />
                   <q-btn icon="more_vert" flat>
                     <CourseMenuTableVue :touchPosition="false" :contextMenu="false" :propsData="props"
-                      @showAddDialog="(id: number, name: string) => showAddDialog(id, name)"
                       @handleRowClick="(id: number) => handleRowClick(id)" />
                   </q-btn>
                 </q-td>
@@ -57,7 +55,6 @@
     </div>
     <delete-dialog :course="course" :isDeleteDialogShow="isDeleteDialogShow"
       @closeDeleteDialog="isDeleteDialogShow = false" @successDelete="(async () => await getCourses())" />
-    <AddDialog :courseId="courseId" :courseName="courseName" />
     <EditStatusDialog @getCourses="() => getCourses()" />
     <UploadCertificateTemplateDialog @getCourses="() => getCourses()" />
     <AddModuleDialog @refreshData="getCourses" />
@@ -71,8 +68,6 @@ import { Courses, CourseTable, CourseRows } from 'src/models/course'
 import { QTableColumn } from 'quasar';
 import DeleteDialog from 'components/admin/course/DeleteDialog.vue'
 import { useRouter } from 'vue-router';
-import AddDialog from 'components/admin/material/AddDialog.vue';
-import { useMaterialStore } from 'src/stores/material';
 import { useFormatDateRange } from 'src/composables/format';
 import StatusBadgeComponentVue from 'src/components/StatusBadgeComponent.vue';
 import { useCourseStore } from 'src/stores/course';
@@ -82,9 +77,6 @@ import UploadCertificateTemplateDialog from './UploadCertificateTemplateDialog.v
 import AddModuleDialog from './AddModuleDialog.vue';
 
 useMetaTitle('Manage Kelas - Admin')
-const { $state } = useMaterialStore();
-const courseId = ref(0);
-const courseName = ref('');
 const { push: routerPush } = useRouter();
 const { getCourseForTable } = useCourseStore();
 
@@ -132,11 +124,6 @@ const handleRowClick = (id: number) => {
   routerPush({ name: 'DetailCoursePage', params: { id } })
 }
 
-const showAddDialog = (id: number, name: string) => {
-  courseId.value = id;
-  courseName.value = name;
-  $state.addDialog = true;
-}
 const filter = ref('')
 
 await getCourses();
