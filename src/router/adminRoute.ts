@@ -80,16 +80,8 @@ const adminRoutes: RouteRecordRaw = {
         import('pages/admin/module/module-content/IndexPage.vue'),
       name: 'AdminModuleContentIndexPage',
     },
-    {
-      path: 'course/:courseId/modules/:moduleId/contents/:contentId/practices',
-      component: () => import('pages/admin/module/practice/IndexPage.vue'),
-      name: 'AdminPracticeIndexPage',
-    },
-    {
-      path: 'assignments',
-      component: () => import('pages/admin/assignment/AssignmentPage.vue'),
-      name: 'AdminAssignmentPage',
-    },
+    
+    
     {
       path: 'enrollment-review',
       component: () => import('pages/admin/enrollment-review/IndexPage.vue'),
@@ -99,6 +91,26 @@ const adminRoutes: RouteRecordRaw = {
       path: 'live-sessions',
       component: () => import('pages/admin/LiveSessionIndexPage.vue'),
       name: 'AdminLiveSessionPage',
+    },
+    {
+      path: 'forums',
+      component: () => import('pages/admin/forum/IndexPage.vue'),
+      name: 'AdminForumIndexPage',
+    },
+    {
+      path: 'courses/:courseId/forum',
+      component: () => import('pages/admin/forum/ForumAdminPage.vue'),
+      name: 'AdminCourseForumPage',
+    },
+    {
+      path: 'courses/:courseId/forum/create',
+      component: () => import('pages/admin/forum/CreateForumPage.vue'),
+      name: 'AdminCreateForumPage',
+    },
+    {
+      path: 'forums/:id/edit',
+      component: () => import('pages/admin/forum/EditForumPage.vue'),
+      name: 'AdminEditForumPage',
     },
   ],
   meta: { requiresAuth: true, requiresAdmin: true },

@@ -6,23 +6,31 @@
         <div class="col-md-7 col-sm-10 col-xs-12">
           <q-form @submit="onSubmit" class="q-gutter-md" enctype="multipart/form-data">
             <q-input outlined type="text" v-model="courseForm.name" lazy-rules label="Nama kelas *"
-              :error="v$.name.$error" :error-message="v$.name.$errors.map((e) => e.$message).join()"
+              :error="v$.name.$error || !!serverErrors.name"
+              :error-message="v$.name.$errors.map((e) => e.$message).join() || (serverErrors.name ? serverErrors.name[0] : '')"
               @input="v$.name.$touch" @blur="v$.name.$touch" />
             <div class="text-body1">Konsep Utama:</div>
             <q-select v-model="courseForm.key_concepts" label="Konsep Utama *" filled use-input use-chips multiple
-              hide-dropdown-icon input-debounce="0" new-value-mode="add-unique" :error="v$.key_concepts.$error"
-              :error-message="v$.key_concepts.$errors.map((e) => e.$message).join()" @blur="v$.key_concepts.$touch" />
+              hide-dropdown-icon input-debounce="0" new-value-mode="add-unique"
+              :error="v$.key_concepts.$error || !!serverErrors.key_concepts"
+              :error-message="v$.key_concepts.$errors.map((e) => e.$message).join() || (serverErrors.key_concepts ? serverErrors.key_concepts[0] : '')"
+              @blur="v$.key_concepts.$touch" />
             <q-input outlined type="text" autogrow v-model="courseForm.description" lazy-rules label="Deskripsi *"
-              :error="v$.description.$error" :error-message="v$.description.$errors.map((e) => e.$message).join()"
+              :error="v$.description.$error || !!serverErrors.description"
+              :error-message="v$.description.$errors.map((e) => e.$message).join() || (serverErrors.description ? serverErrors.description[0] : '')"
               @input="v$.description.$touch" @blur="v$.description.$touch" />
             <q-select v-model="courseForm.facility" label="Fasilitas *" filled use-input use-chips multiple
-              hide-dropdown-icon input-debounce="0" new-value-mode="add-unique" :error="v$.facility.$error"
-              :error-message="v$.facility.$errors.map((e) => e.$message).join()" @blur="v$.facility.$touch" />
+              hide-dropdown-icon input-debounce="0" new-value-mode="add-unique"
+              :error="v$.facility.$error || !!serverErrors.facility"
+              :error-message="v$.facility.$errors.map((e) => e.$message).join() || (serverErrors.facility ? serverErrors.facility[0] : '')"
+              @blur="v$.facility.$touch" />
             <q-input outlined type="text" autogrow v-model="courseForm.benefit" lazy-rules label="Benefit *"
-              :error="v$.benefit.$error" :error-message="v$.benefit.$errors.map((e) => e.$message).join()"
+              :error="v$.benefit.$error || !!serverErrors.benefit"
+              :error-message="v$.benefit.$errors.map((e) => e.$message).join() || (serverErrors.benefit ? serverErrors.benefit[0] : '')"
               @input="v$.benefit.$touch" @blur="v$.benefit.$touch" />
             <q-input outlined type="number" autogrow v-model="courseForm.price" lazy-rules label="Harga *"
-              :error="v$.price.$error" :error-message="v$.price.$errors.map((e) => e.$message).join()"
+              :error="v$.price.$error || !!serverErrors.price"
+              :error-message="v$.price.$errors.map((e) => e.$message).join() || (serverErrors.price ? serverErrors.price[0] : '')"
               @input="v$.price.$touch" @blur="v$.price.$touch" hint="Contoh: 1000 / 10.000">
               <template v-slot:prepend>
                 <div class="text-body1">Rp.</div>
@@ -30,7 +38,8 @@
             </q-input>
 
             <q-input outlined type="text" autogrow v-model="courseForm.place" lazy-rules label="Tempat *"
-              :error="v$.place.$error" :error-message="v$.place.$errors.map((e) => e.$message).join()"
+              :error="v$.place.$error || !!serverErrors.place"
+              :error-message="v$.place.$errors.map((e) => e.$message).join() || (serverErrors.place ? serverErrors.place[0] : '')"
               @input="v$.place.$touch" @blur="v$.place.$touch" />
             <div class="text-body1">Operational / waktu</div>
             <q-input filled v-model="courseForm.operational_start">
@@ -60,7 +69,8 @@
               </template>
             </q-input>
             <q-input outlined type="text" v-model="courseForm.duration" lazy-rules label="Durasi *"
-              :error="v$.duration.$error" :error-message="v$.duration.$errors.map((e) => e.$message).join()"
+              :error="v$.duration.$error || !!serverErrors.duration"
+              :error-message="v$.duration.$errors.map((e) => e.$message).join() || (serverErrors.duration ? serverErrors.duration[0] : '')"
               @input="v$.duration.$touch" @blur="v$.duration.$touch" />
             <q-file :filter="checkFileSize" hint="ukuran max 2mb" outlined v-model="courseForm.image"
               accept=".jpg, image/*" counter use-chips label="Upload gambar" @rejected="onRejected" />
@@ -97,12 +107,14 @@ import { useRouter } from 'vue-router';
 import { useMetaTitle } from 'src/composables/meta';
 import { useCourseStore } from 'src/stores/course';
 import { useTrainerStore } from 'src/stores/trainer';
+import { AxiosError } from 'axios';
 
 useMetaTitle('Buat Kelas - Admin')
 const { push: routerPush } = useRouter();
 const { notify } = useQuasar();
 const { storeCourse } = useCourseStore();
 const { getTrainers, $state } = useTrainerStore();
+const serverErrors = ref<Record<string, string[]>>({});
 
 const courseForm = ref<CreateCourseForm>({
   name: '',
@@ -155,6 +167,7 @@ const onRejected = (rejectedEntries: QRejectedEntry[]) => {
 
 const v$ = useVuelidate(rules, courseForm.value)
 const onSubmit = async () => {
+  serverErrors.value = {};
   if (!v$.value.$invalid) {
     try {
       loadingCreate.value = true;
@@ -168,7 +181,19 @@ const onSubmit = async () => {
       await storeCourse(formData);
       routerPush({ name: 'AdminCoursePage' })
     } catch (error) {
-      throw error;
+      if (error instanceof AxiosError && error.response && error.response.data) {
+        serverErrors.value = error.response.data.errors;
+        notify({
+          type: 'negative',
+          message: error.response.data.message || 'Terjadi kesalahan saat membuat kelas.'
+        });
+      } else {
+        console.error(error);
+        notify({
+          type: 'negative',
+          message: 'Terjadi kesalahan yang tidak diketahui.'
+        });
+      }
     } finally {
       loadingCreate.value = false;
     }

@@ -138,6 +138,18 @@ const routes: RouteRecordRaw[] = [
         name: 'dashboard.certificates.index',
         component: () => import('pages/user/certificates/IndexPage.vue'),
       },
+      {
+        path: 'courses/:courseId/forum',
+        name: 'course.forum',
+        component: () => import('pages/forum/ForumDetailPage.vue'),
+        meta: { requiresAuth: true },
+      },
+      {
+        path: 'thread/:id',
+        name: 'thread.show',
+        component: () => import('pages/forum/ThreadDetailPage.vue'),
+        meta: { requiresAuth: true },
+      },
     ],
   },
   adminRoutes,

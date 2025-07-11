@@ -21,6 +21,15 @@
           <h1 class="text-h4 q-mb-md">{{ courseDetail.course.name }}</h1>
           <p class="text-grey-8">{{ courseDetail.course.description }}</p>
 
+          <q-btn
+            v-if="courseDetail.course.id"
+            label="Go to Forum"
+            color="primary"
+            icon="forum"
+            :to="{ name: 'course.forum', params: { courseId: courseDetail.course.id } }"
+            class="q-mb-md"
+          />
+
           <KeyConceptSection v-if="courseDetail.course.key_concepts" :concepts="courseDetail.course.key_concepts" />
           <FacilitySection v-if="courseDetail.course.facility" :facilities="courseDetail.course.facility" />
         </div>

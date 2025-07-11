@@ -72,6 +72,17 @@
             </q-item>
           </q-list>
           <q-list padding>
+            <q-item clickable v-ripple @click="$router.push({ name: 'AdminForumIndexPage' })">
+              <q-item-section avatar>
+                <q-icon name="forum"></q-icon>
+              </q-item-section>
+
+              <q-item-section>
+                Manage Forum
+              </q-item-section>
+            </q-item>
+          </q-list>
+          <q-list padding>
             <q-item clickable v-ripple @click="logout">
               <q-item-section avatar>
                 <q-icon name="logout"></q-icon>
