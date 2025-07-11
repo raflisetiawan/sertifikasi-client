@@ -29,8 +29,13 @@ export const useTrainerStore = defineStore('trainer', {
       );
       return response.data;
     },
-    async addTrainer(data: Trainer) {
-      await api.post('trainers', data, {
+    async addTrainer(data: Omit<Trainer, 'id' | 'created_at' | 'updated_at'> & { password?: string }) {
+      const payload = {
+        ...data,
+        starred: data.starred ? 1 : 0,
+      };
+
+      await api.post('trainers', payload, {
         headers: {
           Authorization: 'Bearer ' + qCookies.get('token'),
           'Content-Type': 'multipart/form-data',
@@ -38,21 +43,13 @@ export const useTrainerStore = defineStore('trainer', {
       });
       await this.getTrainers();
     },
-    async updateTrainer(id: number, updatedTrainer: Trainer): Promise<void> {
-      await api.post(
-        `trainers/${id}`,
-        {
-          id,
-          ...updatedTrainer,
-          _method: 'PUT',
+    async updateTrainer(id: number, formData: FormData): Promise<void> {
+      await api.post(`trainers/${id}`, formData, {
+        headers: {
+          Authorization: 'Bearer ' + qCookies.get('token'),
+          'Content-Type': 'multipart/form-data',
         },
-        {
-          headers: {
-            Authorization: 'Bearer ' + qCookies.get('token'),
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      );
+      });
       await this.getTrainers();
     },
     async deleteTrainer(id: number): Promise<void> {

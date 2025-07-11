@@ -39,6 +39,16 @@ const adminRoutes: RouteRecordRaw = {
       component: () => import('pages/admin/trainer/IndexPage.vue'),
       name: 'TrainerAdminIndexPage',
     },
+    {
+      path: 'trainer/create',
+      component: () => import('pages/admin/trainer/CreatePage.vue'),
+      name: 'TrainerAdminCreatePage',
+    },
+    {
+      path: 'trainer/update/:id',
+      component: () => import('pages/admin/trainer/EditPage.vue'),
+      name: 'TrainerAdminUpdatePage',
+    },
     // registrant
     {
       path: 'course-registrant',

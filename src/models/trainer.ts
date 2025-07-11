@@ -4,8 +4,8 @@ export interface Trainer {
   email: string;
   qualification: string;
   description: string;
-  image: string | null;
-  starred: number;
+  image: string | File | null;
+  starred: boolean;
   created_at: string;
   updated_at: string;
   pivot?: {
