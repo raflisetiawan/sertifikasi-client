@@ -29,14 +29,22 @@ export const useCourseStore = defineStore('course', {
       const response = await api.get('course');
       this.courses = response.data.data;
     },
-    async storeCourse(data: CreateCourseForm) {
-      await api.post('course', data, {
+    async storeCourse(data: CreateCourseForm): Promise<Courses> {
+      const response = await api.post('course', data, {
         headers: {
           Authorization: 'Bearer ' + qCookies.get('token'),
           'Content-Type': 'multipart/form-data',
         },
       });
       await this.setCourses();
+      return response.data.data;
+    },
+    async syncTrainers(courseId: number, trainerIds: number[]) {
+      await api.post(`courses/${courseId}/trainers/sync`, { trainer_ids: trainerIds }, {
+        headers: {
+          Authorization: 'Bearer ' + qCookies.get('token'),
+        },
+      });
     },
     async showCourse(id: string | string[] | number): Promise<AxiosResponse> {
       const response = await api.get(`course/${id}`);

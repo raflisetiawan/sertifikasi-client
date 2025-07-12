@@ -212,11 +212,11 @@ const onSubmit = async () => {
       ...courseForm,
       key_concepts: courseForm.key_concepts, // Remove JSON.stringify
       facility: courseForm.facility, // Remove JSON.stringify
-      trainer_ids: trainerIds,
       _method: 'POST'
     };
 
     await updateCourse(routeParam.id, formData);
+    await useCourseStore().syncTrainers(Number(routeParam.id), trainerIds);
 
     notify({
       type: 'positive',

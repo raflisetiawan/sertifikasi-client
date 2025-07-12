@@ -1,5 +1,6 @@
 import { RouteRecordRaw } from 'vue-router';
 import adminRoutes from './adminRoute';
+import trainerRoutes from './trainerRoute';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -153,6 +154,7 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   adminRoutes,
+  trainerRoutes,
   {
     path: '/email/verify',
     children: [

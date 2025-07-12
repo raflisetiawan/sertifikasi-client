@@ -74,9 +74,10 @@
                     @blur="v$.max_file_size_mb.$touch" />
                 </div>
                 <div class="col-12">
-                  <q-input v-model="form.allowed_file_types" label="Tipe File yang Diizinkan *" outlined
-                    hint="Contoh: pdf,doc,docx" :error="v$.allowed_file_types.$error"
-                    :error-message="v$.allowed_file_types.$errors[0]?.$message?.toString()"
+                  <q-select v-model="form.allowed_file_types" label="Tipe File yang Diizinkan *" outlined use-input
+                    use-chips multiple hide-dropdown-icon input-debounce="0" new-value-mode="add-unique"
+                    :error="v$.allowed_file_types.$error"
+                    :error-message="v$.allowed_file_types.$errors.map((e) => e.$message).join()"
                     @blur="v$.allowed_file_types.$touch" />
                 </div>
               </div>
@@ -133,7 +134,7 @@ const initialFormState: AssignmentContent = {
   submission_requirements: [''],
   due_date: '',
   max_file_size_mb: 10,
-  allowed_file_types: 'pdf,doc,docx',
+  allowed_file_types: [],
   order: 1,
   is_required: true,
 };
@@ -187,11 +188,16 @@ const onSubmit = async () => {
 
   try {
     loading.value = true;
+    const payload = {
+      ...form,
+      allowed_file_types: form.allowed_file_types
+    };
+
     if (isEditMode.value && contentId.value) {
-      await moduleContentStore.updateAssignmentContent(contentId.value, form);
+      await moduleContentStore.updateAssignmentContent(contentId.value, payload);
       useNotify('Tugas berhasil diperbarui', 'positive');
     } else {
-      await moduleContentStore.createAssignmentContent(form);
+      await moduleContentStore.createAssignmentContent(payload);
       useNotify('Tugas berhasil ditambahkan', 'positive');
     }
     emit('refresh');
@@ -221,6 +227,9 @@ defineExpose({
         title: contentToEdit.title,
         order: contentToEdit.order,
         is_required: contentToEdit.is_required,
+        allowed_file_types: Array.isArray(assignmentContent.allowed_file_types)
+          ? assignmentContent.allowed_file_types
+          : (assignmentContent.allowed_file_types as string).split(',').map(type => type.trim()),
       });
 
       const dueDate = new Date(form.due_date);

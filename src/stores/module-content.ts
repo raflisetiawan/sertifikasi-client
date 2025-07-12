@@ -300,5 +300,45 @@ export const useModuleContentStore = defineStore('moduleContent', {
         throw new Error('Failed to update practice content');
       }
     },
+
+    async submitAssignment(
+      enrollmentId: number,
+      moduleId: number,
+      contentId: number,
+      submissionFile: File,
+      notes?: string
+    ) {
+      try {
+        const formData = new FormData();
+        formData.append('submission_file', submissionFile);
+        if (notes) {
+          formData.append('notes', notes);
+        }
+
+        const response = await api.post(
+          `/enrollments/${enrollmentId}/modules/${moduleId}/contents/${contentId}/submit-assignment`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${qCookies.get('token')}`,
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        );
+        return response.data;
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          let errorMessage = 'Failed to submit assignment';
+          if (error.response && error.response.data && error.response.data.errors) {
+            const errors = error.response.data.errors;
+            errorMessage = Object.values(errors).flat().join(', ');
+          } else if (error.response && error.response.data && error.response.data.message) {
+            errorMessage = error.response.data.message;
+          }
+          throw new Error(errorMessage);
+        }
+        throw new Error('Failed to submit assignment');
+      }
+    },
   },
 });

@@ -62,7 +62,7 @@ export interface AssignmentContent {
   submission_requirements: string[];
   due_date: string;
   max_file_size_mb: number;
-  allowed_file_types: string;
+  allowed_file_types: string[];
   order: number;
   is_required: boolean;
 }
@@ -92,4 +92,29 @@ export interface FileContent {
   order: number;
   is_required: boolean;
   file_url?: string; // Add file_url for existing files
+}
+
+export interface SubmissionDetails {
+  notes: string | null;
+  file_path: string;
+  file_size: number;
+  mime_type: string;
+  submitted_at: string;
+  original_filename: string;
+}
+
+export interface AssignmentSubmission {
+  id: number;
+  enrollment_id: number;
+  module_content_id: number;
+  status: 'completed' | 'in_progress' | 'not_started' | 'failed';
+  completed_at: string | null;
+  started_at: string | null;
+  score: number | null;
+  feedback: string | null;
+  attempts: number;
+  last_attempt_at: string | null;
+  submission_details: SubmissionDetails | null;
+  created_at: string;
+  updated_at: string;
 }

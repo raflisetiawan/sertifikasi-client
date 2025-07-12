@@ -64,6 +64,8 @@ import { ref, computed } from 'vue';
 import { date, useQuasar } from 'quasar';
 import DOMPurify from 'dompurify';
 import { AssignmentContent } from 'src/models/module-learning';
+import { useModuleContentStore } from 'src/stores/module-content';
+import { useRoute } from 'vue-router';
 
 const props = defineProps<{
   content: AssignmentContent;
@@ -97,13 +99,23 @@ const onFileRejected = (rejectedEntries: RejectedEntry[]) => {
   });
 };
 
+const moduleContentStore = useModuleContentStore();
+const route = useRoute();
+
 const submitAssignment = async () => {
   if (!assignmentFile.value || loading.value) return;
 
   try {
     loading.value = true;
-    const formData = new FormData();
-    formData.append('submission_file', assignmentFile.value);
+    const enrollmentId = Number(route.params.enrollmentId);
+    const moduleId = Number(route.params.moduleId);
+
+    await moduleContentStore.submitAssignment(
+      enrollmentId,
+      moduleId,
+      props.contentId,
+      assignmentFile.value
+    );
 
     emit('submit-success');
     assignmentFile.value = null;
@@ -113,9 +125,13 @@ const submitAssignment = async () => {
       message: 'Assignment submitted successfully'
     });
   } catch (error) {
+    let errorMessage = 'Failed to submit assignment';
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
     $q.notify({
       type: 'negative',
-      message: 'Failed to submit assignment'
+      message: errorMessage
     });
   } finally {
     loading.value = false;

@@ -8,8 +8,10 @@
       <q-card-section>
         <q-form @submit.prevent="onSubmit">
           <q-input v-model="trainer.name" label="Nama" :rules="[val => !!val || 'Nama tidak boleh kosong']" />
-          <q-input v-model="trainer.email" label="Email" type="email" :rules="[val => !!val || 'Email tidak boleh kosong']" />
-          <q-input v-model="trainer.qualification" label="Kualifikasi" :rules="[val => !!val || 'Kualifikasi tidak boleh kosong']" />
+          <q-input v-model="trainer.email" label="Email" type="email"
+            :rules="[val => !!val || 'Email tidak boleh kosong']" />
+          <q-input v-model="trainer.qualification" label="Kualifikasi"
+            :rules="[val => !!val || 'Kualifikasi tidak boleh kosong']" />
           <q-editor v-model="trainer.description" label="Deskripsi" />
 
           <!-- Display current image -->
@@ -41,7 +43,6 @@
 import { ref, onMounted } from 'vue';
 import { useTrainerStore } from 'src/stores/trainer';
 import { useRouter, useRoute } from 'vue-router';
-import { Trainer } from 'src/models/trainer';
 
 // Create a specific type for the form to ensure required fields are strings
 interface TrainerEditForm {

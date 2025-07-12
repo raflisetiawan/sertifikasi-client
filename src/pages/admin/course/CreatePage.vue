@@ -176,9 +176,9 @@ const onSubmit = async () => {
         ...courseForm.value,
         key_concepts: courseForm.value.key_concepts,
         facility: courseForm.value.facility,
-        trainer_ids: trainerIds
       };
-      await storeCourse(formData);
+      const createdCourse = await storeCourse(formData);
+      await useCourseStore().syncTrainers(createdCourse.id, trainerIds);
       routerPush({ name: 'AdminCoursePage' })
     } catch (error) {
       if (error instanceof AxiosError && error.response && error.response.data) {

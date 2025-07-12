@@ -153,8 +153,10 @@ const onSubmit = async () => {
         sameSite: 'Lax'
       });
 
-      if (response.data.user.role_id === 1) {
+      if (response.data.user.role === 'admin') {
         router.push({ name: 'AdminPage' });
+      } else if (response.data.user.role === 'trainer') {
+        router.push({ name: 'TrainerDashboard' });
       } else {
         router.push({ name: 'home' });
       }
