@@ -20,7 +20,7 @@
           </div>
           <div class="row text-center q-mt-xl ">
             <div class="col-12 q-mb-xl">
-              <q-btn size="lg" outline class="q-mt-xl" :to="{ name: 'CoursePage' }">Lihat Kelas</q-btn>
+              <q-btn size="lg" color="primary" unelevated class="q-mt-xl" :to="{ name: 'courses.index' }">Lihat Semua Kelas</q-btn>
             </div>
           </div>
         </div>

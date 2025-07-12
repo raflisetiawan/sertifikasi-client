@@ -60,11 +60,6 @@
                 <q-item-section>
                   {{ menuItem.label }}
                 </q-item-section>
-                <q-item-section v-if="menuItem.badge" side>
-                  <q-badge color="red" floating>
-                    {{ menuItem.badge }}
-                  </q-badge>
-                </q-item-section>
               </q-item>
               <q-separator v-if="menuItem.separator" class="q-my-sm" />
             </template>
@@ -107,7 +102,6 @@ const userProfileStore = useUserProfileStore();
 // State
 const leftDrawerOpen = ref(true);
 const miniState = ref(false);
-const notificationCount = ref(0);
 const userName = ref(userStore.name || 'User');
 
 // Menu Items
@@ -135,19 +129,6 @@ const menuList = [
     icon: 'workspace_premium',
     label: 'Sertifikat',
     to: { name: 'dashboard.certificates.index' },
-    separator: false
-  },
-  {
-    icon: 'notifications',
-    label: 'Notifikasi',
-    to: { name: 'dashboard.notifications' },
-    separator: false,
-    badge: notificationCount // Add ref for notification count
-  },
-  {
-    icon: 'bookmark',
-    label: 'Wishlist',
-    to: { name: 'dashboard.wishlist' },
     separator: false
   },
   {

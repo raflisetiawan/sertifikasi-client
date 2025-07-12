@@ -17,7 +17,7 @@
           <div class="row fit justify-start items-center q-gutter-xs q-col-gutter no-wrap">
             <!-- Loop through the trainers in the current group -->
             <q-card v-for="trainer in group" :key="trainer.id" class="my-card col-4 text-center" flat
-              @click="$router.push({ name: 'TrainerIndexPage', params: { id: trainer.id } })">
+              @click="$router.push({ name: 'trainers.show', params: { id: trainer.id } })">
               <div class="row justify-center">
                 <q-img :src="storageBaseUrl + trainer.image" width="250px" />
 

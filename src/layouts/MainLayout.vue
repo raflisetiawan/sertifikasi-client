@@ -53,7 +53,7 @@
     <q-drawer v-model="leftDrawer" :width="200" :breakpoint="700" elevated>
       <q-scroll-area style="height: calc(100% - 150px); margin-top: 150px; border-right: 1px solid #ddd">
         <q-list padding>
-          <q-item clickable v-ripple @click="$router.push({ name: 'HomePage' })">
+          <q-item clickable v-ripple :to="{ name: 'home' }">
             <q-item-section avatar>
               <q-icon name="fa-solid fa-house"></q-icon>
             </q-item-section>
@@ -62,7 +62,7 @@
               Home
             </q-item-section>
           </q-item>
-          <q-item clickable v-ripple @click="$router.push({ name: 'CoursePage' })">
+          <q-item clickable v-ripple :to="{ name: 'courses.index' }">
             <q-item-section avatar>
               <q-icon name="local_library"></q-icon>
             </q-item-section>
@@ -71,7 +71,7 @@
               Kelas
             </q-item-section>
           </q-item>
-          <q-item clickable v-ripple @click="$router.push({ name: 'AboutPage' })">
+          <q-item clickable v-ripple :to="{ name: 'about' }">
             <q-item-section avatar>
               <q-icon name="info"></q-icon>
             </q-item-section>
@@ -80,7 +80,7 @@
               Tentang Kami
             </q-item-section>
           </q-item>
-          <q-item clickable v-ripple @click="$router.push({ name: 'ContactPage' })">
+          <q-item clickable v-ripple :to="{ name: 'contact' }">
             <q-item-section avatar>
               <q-icon name="contacts"></q-icon>
             </q-item-section>
@@ -89,7 +89,7 @@
               Kontak
             </q-item-section>
           </q-item>
-          <q-item clickable v-ripple @click="$router.push({ name: 'FaqIndexPage' })">
+          <q-item clickable v-ripple :to="{ name: 'faq' }">
             <q-item-section avatar>
               <q-icon name="quiz"></q-icon>
             </q-item-section>

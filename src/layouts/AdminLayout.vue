@@ -17,7 +17,7 @@
       <q-drawer show-if-above v-model="leftDrawerOpen" side="left" bordered>
         <q-scroll-area style="height: calc(100% - 150px);  border-right: 1px solid #ddd">
           <q-list padding>
-            <q-item clickable v-ripple @click="$router.push({ name: 'HomePage' })">
+            <q-item clickable v-ripple :to="{ name: 'HomePage' }">
               <q-item-section avatar>
                 <q-icon name="home"></q-icon>
               </q-item-section>
@@ -27,8 +27,17 @@
               </q-item-section>
             </q-item>
           </q-list>
+          <q-separator />
           <q-list padding>
-            <q-item clickable v-ripple @click="$router.push({ name: 'AdminCoursePage' })">
+            <q-item clickable v-ripple :to="{ name: 'AdminPage' }">
+              <q-item-section avatar>
+                <q-icon name="dashboard"></q-icon>
+              </q-item-section>
+              <q-item-section>
+                Dashboard
+              </q-item-section>
+            </q-item>
+            <q-item clickable v-ripple :to="{ name: 'AdminCoursePage' }">
               <q-item-section avatar>
                 <q-icon name="local_library"></q-icon>
               </q-item-section>
@@ -72,7 +81,7 @@
             </q-item>
           </q-list>
           <q-list padding>
-            <q-item clickable v-ripple @click="$router.push({ name: 'AdminForumIndexPage' })">
+            <q-item clickable v-ripple :to="{ name: 'AdminForumIndexPage' }">
               <q-item-section avatar>
                 <q-icon name="forum"></q-icon>
               </q-item-section>
@@ -82,6 +91,28 @@
               </q-item-section>
             </q-item>
           </q-list>
+          <q-separator />
+          <q-list padding>
+            <q-item clickable v-ripple :to="{ name: 'FaqAdminIndexPage' }">
+              <q-item-section avatar>
+                <q-icon name="quiz"></q-icon>
+              </q-item-section>
+              <q-item-section>
+                Manage FAQ
+              </q-item-section>
+            </q-item>
+          </q-list>
+          <q-list padding>
+            <q-item clickable v-ripple :to="{ name: 'TrainerAdminIndexPage' }">
+              <q-item-section avatar>
+                <q-icon name="person"></q-icon>
+              </q-item-section>
+              <q-item-section>
+                Manage Trainer
+              </q-item-section>
+            </q-item>
+          </q-list>
+          <q-separator />
           <q-list padding>
             <q-item clickable v-ripple @click="logout">
               <q-item-section avatar>

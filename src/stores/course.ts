@@ -40,11 +40,15 @@ export const useCourseStore = defineStore('course', {
       return response.data.data;
     },
     async syncTrainers(courseId: number, trainerIds: number[]) {
-      await api.post(`courses/${courseId}/trainers/sync`, { trainer_ids: trainerIds }, {
-        headers: {
-          Authorization: 'Bearer ' + qCookies.get('token'),
-        },
-      });
+      await api.post(
+        `courses/${courseId}/trainers/sync`,
+        { trainer_ids: trainerIds },
+        {
+          headers: {
+            Authorization: 'Bearer ' + qCookies.get('token'),
+          },
+        }
+      );
     },
     async showCourse(id: string | string[] | number): Promise<AxiosResponse> {
       const response = await api.get(`course/${id}`);
@@ -74,14 +78,44 @@ export const useCourseStore = defineStore('course', {
       const response = await api.get(`courses/name/${id}`);
       return response.data.course_name;
     },
-    async getCourseForTable(): Promise<CourseTable[]> {
+    async getCourseForTable(
+      filters: { status?: string; start_date?: string; end_date?: string } = {}
+    ): Promise<CourseTable[]> {
+      const params = new URLSearchParams();
+      if (filters.status) params.append('status', filters.status);
+      if (filters.start_date) params.append('start_date', filters.start_date);
+      if (filters.end_date) params.append('end_date', filters.end_date);
+
       const response = await api.get('courses', {
+        params,
         headers: {
           Authorization: 'Bearer ' + qCookies.get('token'),
         },
       });
 
       return response.data.data;
+    },
+    async bulkUpdateStatus(ids: number[], status: string) {
+      await api.post(
+        'admin/courses/bulk-update-status',
+        { ids, status },
+        {
+          headers: {
+            Authorization: 'Bearer ' + qCookies.get('token'),
+          },
+        }
+      );
+    },
+    async bulkDelete(ids: number[]) {
+      await api.post(
+        'courses/bulk-delete',
+        { ids },
+        {
+          headers: {
+            Authorization: 'Bearer ' + qCookies.get('token'),
+          },
+        }
+      );
     },
     async getCourseWithModules(id: number): Promise<CourseDetail> {
       try {
