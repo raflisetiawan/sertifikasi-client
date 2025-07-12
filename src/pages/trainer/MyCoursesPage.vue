@@ -14,7 +14,8 @@
     <div v-else class="row q-col-gutter-md">
       <div class="col-xs-12 col-sm-6 col-md-4" v-for="course in trainerCourseStore.trainerCourses" :key="course.id">
         <q-card class="my-card">
-          <q-img :src="course.image || 'https://via.placeholder.com/400x200'" :ratio="16 / 9" />
+          <q-img :src="storageBaseUrl + 'courses/' + course.image || 'https://via.placeholder.com/400x200'"
+            :ratio="16 / 9" />
 
           <q-card-section>
             <div class="text-h6">{{ course.name }}</div>
@@ -27,7 +28,8 @@
           </q-card-section>
 
           <q-card-actions align="right">
-            <q-btn flat label="Lihat Detail" color="primary" :to="{ name: 'TrainerCourseDetail', params: { courseId: course.id } }" />
+            <q-btn flat label="Lihat Detail" color="primary"
+              :to="{ name: 'TrainerCourseDetail', params: { courseId: course.id } }" />
           </q-card-actions>
         </q-card>
       </div>
@@ -39,6 +41,7 @@
 import { onMounted } from 'vue';
 import { useTrainerCourseStore } from 'src/stores/trainerCourse';
 import { useMetaTitle } from 'src/composables/meta';
+import { storageBaseUrl } from 'src/boot/axios';
 
 useMetaTitle('Kursus Saya - Trainer');
 

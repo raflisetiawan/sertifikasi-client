@@ -21,6 +21,9 @@
             <q-input v-model="formDialog.question" class="q-my-md" label="Pertanyaan" outlined type="text"
               :error="v$.question.$error" :error-message="v$.question.$errors.map((e) => e.$message).join()"
               @input="v$.question.$touch" @blur="v$.question.$touch" />
+            <q-select v-model="formDialog.category" :options="categoryOptions" label="Kategori" outlined class="q-mb-md"
+              :error="v$.category.$error" :error-message="v$.category.$errors.map((e) => e.$message).join()"
+              @input="v$.category.$touch" @blur="v$.category.$touch" />
             <div class="text-body1">Jawaban</div>
 
             <q-editor v-model="formDialog.answer" :dense="$q.screen.lt.md" :toolbar="[
@@ -132,13 +135,17 @@ const { $state, updateFaq } = useFaqStore();
 const loading = ref(false)
 const formDialog = ref({
   question: '',
-  answer: ''
+  answer: '',
+  category: null as string | null,
 })
 const id = ref()
 
+const categoryOptions = ref<string[]>(['Akun', 'Pembayaran', 'Kursus', 'Teknis', 'Lain-lain']); // Example categories
+
 const rules = {
   question: { required: useRequired() },
-  answer: { required: useRequired() }
+  answer: { required: useRequired() },
+  category: { required: useRequired() }
 }
 
 const v$ = useVuelidate(rules, formDialog.value)
@@ -147,7 +154,7 @@ const onSubmit = async () => {
   if (!v$.value.$invalid) {
     try {
       loading.value = true;
-      await updateFaq(id.value, formDialog.value.answer, formDialog.value.question)
+      await updateFaq(id.value, formDialog.value.answer, formDialog.value.question, formDialog.value.category || '')
       $state.updateDialog = false
     } catch (error) {
       useNotify('terjadi masalah', 'red')
@@ -163,6 +170,7 @@ const onSubmit = async () => {
 watchEffect(() => {
   formDialog.value.answer = $state.faq.answer
   formDialog.value.question = $state.faq.question
+  formDialog.value.category = $state.faq.category || null
   id.value = $state.faq.id
 })
 

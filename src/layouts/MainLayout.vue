@@ -34,6 +34,12 @@
                   <q-btn class="full-width" flat @click="$router.push({ name: 'AdminPage' })">Admin</q-btn>
                 </q-item-section>
               </q-item>
+              <q-item v-else-if="isTrainer()">
+                <q-item-section>
+                  <q-btn class="full-width" flat @click="$router.push({ name: 'TrainerDashboard' })">
+                    Dashboard</q-btn>
+                </q-item-section>
+              </q-item>
               <q-item v-else>
                 <q-item-section>
                   <q-btn dense class="full-width" flat @click="$router.push({ name: 'dashboard' })">Profile
@@ -121,7 +127,7 @@
           </div>
           <div v-else>
             <q-separator></q-separator>
-            <q-item v-show="$state.role === 'admin'" clickable v-ripple @click="$router.push({ name: 'AdminPage' })">
+            <q-item v-if="$state.role === 'admin'" clickable v-ripple @click="$router.push({ name: 'AdminPage' })">
               <q-item-section avatar>
                 <q-icon name="admin_panel_settings"></q-icon>
               </q-item-section>
@@ -131,6 +137,27 @@
               </q-item-section>
             </q-item>
 
+            <div v-if="$state.role === 'trainer'">
+              <q-item-label header>Trainer</q-item-label>
+              <q-item clickable v-ripple :to="{ name: 'TrainerDashboard' }">
+                <q-item-section avatar>
+                  <q-icon name="dashboard" />
+                </q-item-section>
+                <q-item-section>Dashboard</q-item-section>
+              </q-item>
+              <q-item clickable v-ripple :to="{ name: 'TrainerCourse' }">
+                <q-item-section avatar>
+                  <q-icon name="school" />
+                </q-item-section>
+                <q-item-section>My Courses</q-item-section>
+              </q-item>
+              <q-item clickable v-ripple :to="{ name: 'TrainerForum' }">
+                <q-item-section avatar>
+                  <q-icon name="forum" />
+                </q-item-section>
+                <q-item-section>My Forums</q-item-section>
+              </q-item>
+            </div>
           </div>
         </q-list>
       </q-scroll-area>
@@ -154,7 +181,7 @@
 </template>
 
 <script setup lang="ts">
-import { isAdmin, isAuthenticated } from 'src/composables/auth';
+import { isAdmin, isAuthenticated, isTrainer } from 'src/composables/auth';
 import { ref } from 'vue';
 import { useUserStore } from 'src/stores/user';
 import { useQuasar } from 'quasar';

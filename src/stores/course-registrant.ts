@@ -33,7 +33,7 @@ export const useCourseRegistrantStore = defineStore('course-registrant', {
     },
 
     async getAllCourseIdAndName(): Promise<CourseIdAndNames[]> {
-      const response = await api.get('courses/name-and-id', {
+      const response = await api.get('courses/get/name-and-id', {
         headers: {
           Authorization: `Bearer ${qCookies.get('token')}`,
         },

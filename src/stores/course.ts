@@ -132,7 +132,7 @@ export const useCourseStore = defineStore('course', {
       return response.data.data;
     },
     async getCourseIdAndNames(): Promise<CourseIdAndNames[]> {
-      const response = await api.get('courses/name-and-id', {
+      const response = await api.get('courses/get/name-and-id', {
         headers: {
           Authorization: 'Bearer ' + qCookies.get('token'),
         },

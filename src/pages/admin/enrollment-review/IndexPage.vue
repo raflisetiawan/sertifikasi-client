@@ -1,14 +1,22 @@
 <template>
   <q-page padding>
     <div class="q-pa-md">
-      <q-table title="Enrollment Reviews" :rows="enrollments" :columns="columns" row-key="id" :loading="loading"
+      <q-table title="Penilaian Akhir Peserta" :rows="enrollments" :columns="columns" row-key="id" :loading="loading"
         :filter="filter" @request="onRequest" v-model:pagination="pagination">
         <template v-slot:top-right>
-          <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
-            <template v-slot:append>
-              <q-icon name="search" />
-            </template>
-          </q-input>
+          <div class="row q-gutter-sm">
+            <q-select outlined dense v-model="statusFilter" :options="statusOptions" label="Filter Status" clearable
+              class="col-auto" />
+            <q-input outlined dense debounce="300" v-model="courseNameFilter" placeholder="Cari Nama Kursus" clearable
+              class="col-auto" />
+            <q-input outlined dense debounce="300" v-model="userNameFilter" placeholder="Cari Nama Peserta" clearable
+              class="col-auto" />
+            <q-input borderless dense debounce="300" v-model="filter" placeholder="Cari Umum">
+              <template v-slot:append>
+                <q-icon name="search" />
+              </template>
+            </q-input>
+          </div>
         </template>
         <template v-slot:body-cell-actions="props">
           <q-td :props="props">
@@ -24,19 +32,78 @@
     </div>
 
     <q-dialog v-model="reviewDialog" persistent>
-      <q-card style="min-width: 350px">
+      <q-card style="min-width: 600px">
         <q-card-section>
-          <div class="text-h6">Review Enrollment</div>
+          <div class="text-h6">Review Peserta</div>
+          <div v-if="reviewLoading" class="text-center q-py-md">
+            <q-spinner-dots color="primary" size="30px" />
+            <p>Memuat detail enrollment...</p>
+          </div>
+          <div v-else-if="selectedEnrollment">
+            <q-list dense>
+              <q-item>
+                <q-item-section>
+                  <q-item-label>Peserta:</q-item-label>
+                </q-item-section>
+                <q-item-section side>{{ selectedEnrollment.user.name }}</q-item-section>
+              </q-item>
+              <q-item>
+                <q-item-section>
+                  <q-item-label>Kursus:</q-item-label>
+                </q-item-section>
+                <q-item-section side>{{ selectedEnrollment.course.name }}</q-item-section>
+              </q-item>
+              <q-item>
+                <q-item-section>
+                  <q-item-label>Progres Keseluruhan:</q-item-label>
+                </q-item-section>
+                <q-item-section side>{{ selectedEnrollment.progress_percentage }}%</q-item-section>
+              </q-item>
+            </q-list>
+
+            <q-separator class="q-my-md" />
+
+            <div class="text-subtitle1 q-mb-sm">Progres Modul:</div>
+            <q-list bordered separator>
+              <q-item v-for="modProg in selectedEnrollment.module_progresses" :key="modProg.id">
+                <q-item-section>
+                  <q-item-label>{{ modProg.module.title }}</q-item-label>
+                  <q-item-label caption>Status: {{ modProg.status }}</q-item-label>
+                </q-item-section>
+                <q-item-section side>
+                  <q-icon v-if="modProg.status === 'completed'" name="check_circle" color="green" />
+                  <q-icon v-else name="pending" color="orange" />
+                </q-item-section>
+              </q-item>
+            </q-list>
+
+            <q-separator class="q-my-md" />
+
+            <div class="text-subtitle1 q-mb-sm">Progres Konten:</div>
+            <q-list bordered separator>
+              <q-item v-for="conProg in selectedEnrollment.content_progresses" :key="conProg.id">
+                <q-item-section>
+                  <q-item-label>{{ conProg.module_content.title }}</q-item-label>
+                  <q-item-label caption>Tipe: {{ conProg.module_content.type }} | Status: {{ conProg.status
+                    }}</q-item-label>
+                </q-item-section>
+                <q-item-section side>
+                  <q-icon v-if="conProg.status === 'completed'" name="check_circle" color="green" />
+                  <q-icon v-else name="pending" color="orange" />
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </div>
         </q-card-section>
 
         <q-card-section class="q-pt-none">
-          <q-input dense v-model="finalScore" label="Final Score (optional)" type="number" step="0.1" autofocus
-            @keyup.enter="reviewEnrollment" />
+          <q-input dense v-model="finalScore" label="Final Score (0-100)" type="number" step="0.1" autofocus
+            :error="!!finalScoreError" :error-message="finalScoreError" />
         </q-card-section>
 
         <q-card-actions align="right" class="text-primary">
           <q-btn flat label="Cancel" v-close-popup />
-          <q-btn flat label="Submit Review" @click="reviewEnrollment" />
+          <q-btn flat label="Submit Review" @click="reviewEnrollment" :loading="reviewLoading" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -44,10 +111,37 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from 'vue';
+import { defineComponent, ref, onMounted, watch } from 'vue';
 import { api } from 'src/boot/axios';
 import { useQuasar, QTableColumn } from 'quasar';
 import { qCookies } from 'src/boot/cookies';
+
+interface ModuleProgress {
+  id: number;
+  module_id: number;
+  enrollment_id: number;
+  status: string;
+  completed_at: string | null;
+  module: {
+    id: number;
+    title: string;
+    order: number;
+  };
+}
+
+interface ContentProgress {
+  id: number;
+  content_id: number;
+  module_progress_id: number;
+  status: string;
+  completed_at: string | null;
+  module_content: {
+    id: number;
+    title: string;
+    type: string;
+    order: number;
+  };
+}
 
 interface Enrollment {
   id: number;
@@ -75,6 +169,8 @@ interface Enrollment {
     name: string;
     description: string;
   };
+  module_progresses?: ModuleProgress[];
+  content_progresses?: ContentProgress[];
 }
 
 export default defineComponent({
@@ -114,6 +210,13 @@ export default defineComponent({
         sortable: true,
       },
       {
+        name: 'progress_percentage',
+        align: 'left',
+        label: 'Progress',
+        field: 'progress_percentage',
+        sortable: true,
+      },
+      {
         name: 'final_score',
         align: 'left',
         label: 'Final Score',
@@ -137,6 +240,17 @@ export default defineComponent({
 
     const loading = ref(false);
     const filter = ref('');
+    const statusFilter = ref(null);
+    const courseNameFilter = ref('');
+    const userNameFilter = ref('');
+
+    const statusOptions = [
+      { label: 'All', value: 'all' },
+      { label: 'Completed', value: 'completed' },
+      { label: 'Pending Admin Review', value: 'pending_admin_review' },
+      { label: 'In Progress', value: 'in_progress' },
+    ];
+
     const pagination = ref({
       sortBy: 'id',
       descending: false,
@@ -148,6 +262,8 @@ export default defineComponent({
     const reviewDialog = ref(false);
     const selectedEnrollment = ref<Enrollment | null>(null);
     const finalScore = ref<number | null>(null);
+    const finalScoreError = ref('');
+    const reviewLoading = ref(false);
 
     const onRequest = async (props: {
       pagination: {
@@ -175,7 +291,9 @@ export default defineComponent({
             sortBy: sortBy,
             descending: descending ? 1 : 0,
             filter: filterValue,
-            status: 'pending_admin_review', // Only fetch enrollments pending review
+            status: statusFilter.value?.value || 'all',
+            course_name: courseNameFilter.value,
+            user_name: userNameFilter.value,
           },
         });
 
@@ -196,14 +314,41 @@ export default defineComponent({
       }
     };
 
-    const openReviewDialog = (enrollment: Enrollment) => {
-      selectedEnrollment.value = enrollment;
-      finalScore.value = enrollment.final_score; // Pre-fill if already has a score
+    const openReviewDialog = async (enrollment: Enrollment) => {
+      selectedEnrollment.value = null; // Clear previous data
+      reviewLoading.value = true;
       reviewDialog.value = true;
+      finalScoreError.value = '';
+
+      try {
+        const response = await api.get(`/admin/enrollments/${enrollment.id}`, {
+          headers: {
+            Authorization: `Bearer ${qCookies.get('token')}`,
+          },
+        });
+        selectedEnrollment.value = response.data.data;
+        finalScore.value = selectedEnrollment.value?.final_score; // Pre-fill if already has a score
+      } catch (error) {
+        console.error('Error fetching enrollment details:', error);
+        $q.notify({
+          type: 'negative',
+          message: 'Failed to load enrollment details.',
+        });
+        reviewDialog.value = false; // Close dialog if details fail to load
+      } finally {
+        reviewLoading.value = false;
+      }
     };
 
     const reviewEnrollment = async () => {
       if (!selectedEnrollment.value) return;
+
+      // Validation for finalScore
+      if (finalScore.value === null || finalScore.value < 0 || finalScore.value > 100) {
+        finalScoreError.value = 'Final Score must be between 0 and 100.';
+        return;
+      }
+      finalScoreError.value = ''; // Clear error if valid
 
       try {
         await api.put(
@@ -272,14 +417,25 @@ export default defineComponent({
       onRequest({ pagination: pagination.value, filter: filter.value });
     });
 
+    watch([statusFilter, courseNameFilter, userNameFilter], () => {
+      onRequest({ pagination: pagination.value, filter: filter.value });
+    });
+
     return {
       enrollments,
       columns,
       loading,
       filter,
+      statusFilter,
+      courseNameFilter,
+      userNameFilter,
+      statusOptions,
       pagination,
       reviewDialog,
+      selectedEnrollment,
       finalScore,
+      finalScoreError,
+      reviewLoading,
       onRequest,
       openReviewDialog,
       reviewEnrollment,

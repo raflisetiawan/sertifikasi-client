@@ -11,5 +11,10 @@ const isAdmin = (): boolean => {
   if (role === 'admin') return true;
   else return false;
 };
+const isTrainer = (): boolean => {
+  const { role } = useUserStore();
+  if (role === 'trainer') return true;
+  else return false;
+};
 
-export { isAuthenticated, isAdmin };
+export { isAuthenticated, isAdmin, isTrainer };

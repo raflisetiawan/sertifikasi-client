@@ -38,7 +38,7 @@ export const useModuleStore = defineStore('module', {
     },
     async getModules(courseId: number): Promise<Module[]> {
       try {
-        const response = await api.get(`courses/${courseId}/modules`, {
+        const response = await api.get(`admin/courses/${courseId}/modules`, {
           headers: {
             Authorization: `Bearer ${qCookies.get('token')}`,
           },

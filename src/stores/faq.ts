@@ -12,16 +12,24 @@ export const useFaqStore = defineStore('faq', {
     updateDialog: false,
   }),
   actions: {
-    async setFaqs() {
-      const response = await api.get('faqs');
+    async setFaqs(search?: string, category?: string) {
+      const params: { search?: string; category?: string } = {};
+      if (search) {
+        params.search = search;
+      }
+      if (category) {
+        params.category = category;
+      }
+      const response = await api.get('faqs', { params });
       this.faqs = response.data;
     },
-    async addFaqs(answer: string, question: string) {
+    async addFaqs(answer: string, question: string, category: string) {
       await api.post(
         'faqs',
         {
           answer,
           question,
+          category,
         },
         {
           headers: {
@@ -31,13 +39,14 @@ export const useFaqStore = defineStore('faq', {
       );
       await this.setFaqs();
     },
-    async updateFaq(id: number, answer: string, question: string) {
+    async updateFaq(id: number, answer: string, question: string, category: string) {
       await api.post(
         `faqs/${id}`,
         {
           id,
           answer,
           question,
+          category,
           _method: 'PUT',
         },
         {
