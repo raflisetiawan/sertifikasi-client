@@ -37,6 +37,8 @@ const CourseCard = defineAsyncComponent(
 
 const TrainerCard = defineAsyncComponent(() => import('components/user/home/TrainerCard.vue'))
 
+
+
 useMetaTitle('Home');
 </script>
 

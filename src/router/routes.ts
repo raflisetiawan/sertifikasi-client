@@ -151,6 +151,16 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/forum/ThreadDetailPage.vue'),
         meta: { requiresAuth: true },
       },
+      {
+        path: 'help',
+        name: 'dashboard.help',
+        component: () => import('pages/user/HelpCenterPage.vue'),
+      },
+      {
+        path: 'help/my-questions',
+        name: 'dashboard.help.my-questions',
+        component: () => import('pages/user/HelpCenterMyQuestionsPage.vue'),
+      },
     ],
   },
   adminRoutes,

@@ -11,7 +11,8 @@
               {{ new Date(course.operational_start).getDate() }} - {{ useFormatOperationalEnd(course.operational_end) }}
             </div>
             <div class="text-overline text-grey3">
-              Rp.{{ useRemoveDecimal(Number(course.price), 2) }}
+              <template v-if="Number(course.price) === 0">Gratis</template>
+              <template v-else>Rp.{{ useRemoveDecimal(Number(course.price), 2) }}</template>
             </div>
           </q-card-section>
           <q-card-actions>

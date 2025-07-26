@@ -101,6 +101,14 @@
                 Manage FAQ
               </q-item-section>
             </q-item>
+            <q-item clickable v-ripple :to="{ name: 'AdminHelpCenterQuestionsPage' }">
+              <q-item-section avatar>
+                <q-icon name="help"></q-icon>
+              </q-item-section>
+              <q-item-section>
+                Help Center
+              </q-item-section>
+            </q-item>
           </q-list>
           <q-list padding>
             <q-item clickable v-ripple :to="{ name: 'TrainerAdminIndexPage' }">

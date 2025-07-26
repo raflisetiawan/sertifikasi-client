@@ -6,7 +6,7 @@
         <q-card>
           <q-card-section class="row q-col-gutter-md">
             <div class="col-12 col-sm-4">
-              <q-select dense outlined v-model="filters.status" :options="statusOptions" label="Filter by Status"
+              <q-select dense outlined v-model="filters.status" :options="publicationStatusOptions" label="Filter by Status"
                 clearable />
             </div>
             <div class="col-12 col-sm-4">
@@ -74,6 +74,18 @@
             <q-td key="status" :props="props">
               <StatusBadgeComponentVue :status="props.row.status" />
             </q-td>
+            <q-td key="readiness" :props="props">
+              <q-icon v-if="props.row.publication_readiness?.is_ready" name="check_circle" color="positive" size="sm">
+                <q-tooltip>Siap untuk dipublikasikan.</q-tooltip>
+              </q-icon>
+              <q-icon v-else name="warning" color="negative" size="sm">
+                <q-tooltip>
+                  <div v-for="(error, index) in props.row.publication_readiness?.errors" :key="index">
+                    - {{ error }}
+                  </div>
+                </q-tooltip>
+              </q-icon>
+            </q-td>
             <q-td key="actions" :props="props" class="text-center">
               <q-btn size="sm" color="grey-7" round dense icon="more_vert">
                 <course-menu-table :props-data="props" :context-menu="false" @handle-row-click="handleRowClick" />
@@ -97,7 +109,7 @@
           <div class="text-h6">Ubah Status untuk {{ selected.length }} Kursus</div>
         </q-card-section>
         <q-card-section>
-          <q-select v-model="newBulkStatus" :options="statusOptions" label="Status Baru" outlined />
+          <q-select v-model="newBulkStatus" :options="publicationStatusOptions" label="Status Baru" outlined />
         </q-card-section>
         <q-card-actions align="right">
           <q-btn flat label="Batal" v-close-popup />
@@ -105,6 +117,8 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+    <PublishErrorDialog :show="showPublishErrorDialog" :errors="courseStore.publicationErrors"
+      @update:show="showPublishErrorDialog = false" />
   </div>
 </template>
 
@@ -118,6 +132,7 @@ import { useFormatDateRange } from 'src/composables/format';
 import StatusBadgeComponentVue from 'src/components/StatusBadgeComponent.vue';
 import DeleteDialog from 'components/admin/course/DeleteDialog.vue';
 import CourseMenuTable from 'src/components/admin/course/CourseMenuTable.vue';
+import PublishErrorDialog from './PublishErrorDialog.vue';
 
 const $q = useQuasar();
 const router = useRouter();
@@ -131,6 +146,7 @@ const loading = ref(false);
 const rows = ref<CourseRows[]>([]);
 const selected = ref<CourseRows[]>([]);
 const searchQuery = ref('');
+const showPublishErrorDialog = ref(false);
 
 const filters = reactive({
   status: null as { label: string; value: string } | null,
@@ -144,10 +160,17 @@ const statusOptions = [
   { label: 'Selesai', value: 'completed' },
 ];
 
+const publicationStatusOptions = [
+  { label: 'Draf', value: 'draft' },
+  { label: 'Publikasi', value: 'published' },
+  { label: 'Arsip', value: 'archived' },
+];
+
 const columns: QTableColumn[] = [
   { name: 'name', required: true, label: 'Nama Kelas', align: 'left', field: 'name', sortable: true },
   { name: 'operational_start', label: 'Tanggal Pelaksanaan', align: 'left', field: 'operational_start', sortable: true },
   { name: 'status', label: 'Status', align: 'center', field: 'status', sortable: true },
+  { name: 'readiness', label: 'Siap Publikasi', align: 'center', field: 'readiness', sortable: true },
   { name: 'actions', label: 'Actions', field: 'id', align: 'center' }
 ];
 
@@ -204,12 +227,25 @@ const handleBulkUpdateStatus = async () => {
   const ids = selected.value.map(row => row.id);
   try {
     await courseStore.bulkUpdateStatus(ids, newBulkStatus.value.value);
-    $q.notify({ type: 'positive', message: 'Status berhasil diperbarui.' });
+    const successCount = ids.length - courseStore.publicationErrors.length;
+    if (successCount > 0) {
+      $q.notify({ type: 'positive', message: `${successCount} status kursus berhasil diperbarui.` });
+    }
+
+    if (courseStore.publicationErrors.length > 0) {
+      showPublishErrorDialog.value = true;
+    }
+
+  } catch (error) {
+    if (courseStore.publicationErrors.length > 0) {
+      showPublishErrorDialog.value = true;
+    } else {
+      $q.notify({ type: 'negative', message: 'Gagal memperbarui status.' });
+    }
+  } finally {
     showBulkStatusDialog.value = false;
     selected.value = [];
     await getCourses();
-  } catch (error) {
-    $q.notify({ type: 'negative', message: 'Gagal memperbarui status.' });
   }
 };
 

@@ -35,7 +35,8 @@
     "vue-i18n": "^9.6.2",
     "vue-router": "^4.0.0",
     "vue3-apexcharts": "^1.8.0",
-    "vue3-marquee-slider": "^1.0.5"
+    "vue3-marquee-slider": "^1.0.5",
+    "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
     "@quasar/app-vite": "^1.0.0",

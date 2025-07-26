@@ -31,7 +31,8 @@
                   Online Course
                 </q-chip>
                 <q-chip icon="payments" color="secondary" text-color="white">
-                  {{ toRupiah(props.course.price) }}
+                  <template v-if="Number(props.course.price) === 0">Gratis</template>
+                  <template v-else>{{ formatPrice(props.course.price) }}</template>
                 </q-chip>
               </div>
 
@@ -64,9 +65,10 @@
 <script setup lang="ts">
 import { storageBaseUrl } from 'src/boot/axios';
 import { useFormatDateRange } from 'src/composables/format';
-import toRupiah from '@develoka/angka-rupiah-js';
+import { useFormatters } from 'src/composables/useFormatters';
 
 const props = defineProps(['course']);
+const { formatPrice } = useFormatters();
 </script>
 
 <style scoped>

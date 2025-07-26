@@ -1,21 +1,30 @@
 import { Trainer } from './trainer';
-export interface CreateCourseForm {
+
+export interface LiveSession {
+  id?: number;
+  title: string;
+  description: string;
+  start_time: string;
+  end_time: string;
+  meeting_link: string;
+  meeting_password?: string;
+}
+
+export interface CourseForm {
   name: string;
   description: string;
-  key_concepts: string[]; // Change to string array
-  facility: string[]; // Change to string array
+  key_concepts: string[];
+  facility: string[];
   price: number;
   image: File | null;
+  syllabus: File | null;
   operational_start: string;
   operational_end: string;
   place: string;
   duration: string;
-  benefit: string;
-  certificate_example: File | null;
-  schedule: File | null;
-  trainerSelect: Array<{ label: string; value: number }>;
   trainer_ids: number[];
-  trainer_selected: Array<{ label: string; value: number }>;
+  trainer_selected: number[];
+  live_sessions: LiveSession[];
 }
 
 export interface TrainerSelect {
@@ -36,30 +45,18 @@ export interface Courses {
   operational_start: string;
   operational_end: string;
   status: string;
-  benefit: string;
-  certificate_example_path: string | null;
-  schedule_path: string | null;
+  syllabus_path: string | null;
   created_at?: string;
   updated_at?: string;
   trainers?: Trainer[];
 }
-export interface UpdateCourseForm {
-  name: string;
-  description: string;
-  key_concepts: string[]; // Change to array
-  facility: string[]; // Change to array
-  price: number;
-  image: File | null;
-  operational_start: string;
-  operational_end: string;
-  place: string;
-  duration: string;
-  benefit: string;
-  certificate_example: File | null;
-  schedule: File | null;
-  trainerSelect: Array<{ label: string; value: number }>;
-  trainer_ids: number[];
-  trainer_selected: Array<{ label: string; value: number }>;
+
+export interface CourseForUpdate extends Courses {
+  live_sessions: LiveSession[];
+  publication_readiness: {
+    is_ready: boolean;
+    errors: string[];
+  };
 }
 
 export interface DetailCourse {
@@ -81,7 +78,7 @@ export interface CreateRegisterForm {
   email: string;
   price: number;
   bank: null | string;
-  priceRupiah: number;
+  priceRupiah: string;
 }
 
 export interface UserCourses {
@@ -117,6 +114,10 @@ export interface CourseTable {
   operational_start: string;
   operational_end: string;
   status: string;
+  publication_readiness: {
+    is_ready: boolean;
+    errors: string[];
+  };
 }
 
 export interface CourseRows {

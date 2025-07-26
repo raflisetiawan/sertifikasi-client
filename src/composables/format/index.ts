@@ -1,4 +1,16 @@
 import { date } from 'quasar';
+import toRupiah from '@develoka/angka-rupiah-js';
+
+export const formatRupiah = (price: number | string | undefined | null): string => {
+  const numericPrice = Number(price);
+  if (price === null || price === undefined || isNaN(numericPrice)) {
+    return '-';
+  }
+  if (numericPrice === 0) {
+    return 'Gratis';
+  }
+  return toRupiah(numericPrice);
+};
 
 export const useFormatOperational = (operational: string) => {
   const dateObject = new Date(operational);

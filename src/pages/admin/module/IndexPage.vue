@@ -46,27 +46,47 @@
                 </q-td>
                 <q-td key="actions" :props="props">
                   <q-btn-group flat>
+                    <!-- Primary Actions -->
                     <q-btn flat round color="success" icon="description" size="sm"
                       :to="`/admin/course/${route.params.id}/modules/${props.row.id}/contents`">
                       <q-tooltip>Kelola Konten</q-tooltip>
                     </q-btn>
-                    <q-btn flat round color="info" icon="visibility" size="sm" @click="showDetailDialog(props.row)">
-                      <q-tooltip>Lihat Detail</q-tooltip>
-                    </q-btn>
                     <q-btn flat round color="primary" icon="edit" size="sm" @click="showEditDialog(props.row)">
                       <q-tooltip>Ubah Modul</q-tooltip>
                     </q-btn>
-                    <q-btn flat round color="warning" icon="school" size="sm"
-                      :to="`/admin/course/${route.params.id}/modules/${props.row.id}/concepts`">
-                      <q-tooltip>Kelola Konsep</q-tooltip>
-                    </q-btn>
-                    <q-btn flat round color="negative" icon="delete" size="sm" @click="confirmDelete(props.row)">
-                      <q-tooltip>Hapus Modul</q-tooltip>
-                    </q-btn>
-                    <q-btn flat round color="info" icon="assignment" size="sm"
-                      :to="`/admin/course/${route.params.id}/modules/${props.row.id}/exercises`">
-                      <q-tooltip>Kelola Latihan</q-tooltip>
-                    </q-btn>
+
+                    <!-- Secondary Actions Dropdown -->
+                    <q-btn-dropdown auto-close flat round dense color="grey" icon="more_vert" size="sm">
+                      <q-list dense style="min-width: 150px">
+                        <q-item clickable @click="showDetailDialog(props.row)">
+                          <q-item-section avatar>
+                            <q-icon name="visibility" size="xs" />
+                          </q-item-section>
+                          <q-item-section>Lihat Detail</q-item-section>
+                        </q-item>
+                        <q-item clickable
+                          :to="`/admin/course/${route.params.id}/modules/${props.row.id}/concepts`">
+                          <q-item-section avatar>
+                            <q-icon name="school" size="xs" />
+                          </q-item-section>
+                          <q-item-section>Kelola Konsep</q-item-section>
+                        </q-item>
+                        <q-item clickable
+                          :to="`/admin/course/${route.params.id}/modules/${props.row.id}/exercises`">
+                          <q-item-section avatar>
+                            <q-icon name="assignment" size="xs" />
+                          </q-item-section>
+                          <q-item-section>Kelola Latihan</q-item-section>
+                        </q-item>
+                        <q-separator class="q-my-sm" />
+                        <q-item clickable @click="confirmDelete(props.row)" class="text-negative">
+                          <q-item-section avatar>
+                            <q-icon name="delete" size="xs" />
+                          </q-item-section>
+                          <q-item-section>Hapus Modul</q-item-section>
+                        </q-item>
+                      </q-list>
+                    </q-btn-dropdown>
                   </q-btn-group>
                 </q-td>
               </q-tr>

@@ -93,6 +93,7 @@ const listenRefreshCourseDetail = async (id: number) => {
 watchEffect(async () => {
   isLoading.value = true;
   const response = await showCourse(routeParams.id);
+  console.log(response);
   course.value = response.data;
   isLoading.value = false;
 });

@@ -28,19 +28,27 @@ export const useRegistrationStore = defineStore('registration', {
           }
         );
 
-        // Map response to Registration interface
+        const registrationData = response.data.data;
+
+        // For free courses, the backend might directly return enrollment info
+        if (registrationData.enrollment) {
+          // Directly return the whole data object for the component to handle redirection
+          return registrationData;
+        }
+
+        // For paid courses, proceed as before
         const registration: Registration = {
-          id: response.data.data.registration.id,
-          user_id: response.data.data.registration.user_id,
-          course_id: response.data.data.registration.course_id,
-          verification: response.data.data.registration.verification,
-          verified_at: response.data.data.registration.verified_at,
-          verified_by: response.data.data.registration.verified_by,
-          status: response.data.data.registration.status,
+          id: registrationData.registration.id,
+          user_id: registrationData.registration.user_id,
+          course_id: registrationData.registration.course_id,
+          verification: registrationData.registration.verification,
+          verified_at: registrationData.registration.verified_at,
+          verified_by: registrationData.registration.verified_by,
+          status: registrationData.registration.status,
         };
 
         this.currentRegistration = registration;
-        return registration;
+        return { registration }; // Return in the same structure as free courses for consistency
       } catch (error) {
         throw error;
       }

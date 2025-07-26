@@ -26,6 +26,12 @@
       <q-item-section>Detail Kelas</q-item-section>
     </q-item>
     <q-separator></q-separator>
+    <q-item clickable v-ripple :to="{ name: 'UpdateCoursePage', params: { id: props.propsData.row.id } }">
+      <q-item-section avatar>
+        <q-icon name="edit" color="orange"></q-icon>
+      </q-item-section>
+      <q-item-section>Edit Kelas</q-item-section>
+    </q-item>
     <q-item clickable v-ripple
       @click="courseState.showEditStatusDialog = true; courseState.editedStatusDialog = props.propsData.row.id">
       <q-item-section avatar>

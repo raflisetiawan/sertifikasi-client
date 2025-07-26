@@ -90,8 +90,7 @@ const adminRoutes: RouteRecordRaw = {
         import('pages/admin/module/module-content/IndexPage.vue'),
       name: 'AdminModuleContentIndexPage',
     },
-    
-    
+
     {
       path: 'enrollment-review',
       component: () => import('pages/admin/enrollment-review/IndexPage.vue'),
@@ -121,6 +120,11 @@ const adminRoutes: RouteRecordRaw = {
       path: 'forums/:id/edit',
       component: () => import('pages/admin/forum/EditForumPage.vue'),
       name: 'AdminEditForumPage',
+    },
+    {
+      path: 'help-center/questions',
+      component: () => import('pages/admin/HelpCenterAdminQuestionsPage.vue'),
+      name: 'AdminHelpCenterQuestionsPage',
     },
   ],
   meta: { requiresAuth: true, requiresAdmin: true },

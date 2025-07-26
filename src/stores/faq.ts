@@ -21,7 +21,7 @@ export const useFaqStore = defineStore('faq', {
         params.category = category;
       }
       const response = await api.get('faqs', { params });
-      this.faqs = response.data;
+      this.faqs = response.data.data;
     },
     async addFaqs(answer: string, question: string, category: string) {
       await api.post(
@@ -39,7 +39,12 @@ export const useFaqStore = defineStore('faq', {
       );
       await this.setFaqs();
     },
-    async updateFaq(id: number, answer: string, question: string, category: string) {
+    async updateFaq(
+      id: number,
+      answer: string,
+      question: string,
+      category: string
+    ) {
       await api.post(
         `faqs/${id}`,
         {

@@ -289,15 +289,48 @@ export const useModuleContentStore = defineStore('moduleContent', {
       } catch (error) {
         if (error instanceof AxiosError) {
           let errorMessage = 'Failed to update practice content';
-          if (error.response && error.response.data && error.response.data.errors) {
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.errors
+          ) {
             const errors = error.response.data.errors;
             errorMessage = Object.values(errors).flat().join(', ');
-          } else if (error.response && error.response.data && error.response.data.message) {
+          } else if (
+            error.response &&
+            error.response.data &&
+            error.response.data.message
+          ) {
             errorMessage = error.response.data.message;
           }
           throw new Error(errorMessage);
         }
         throw new Error('Failed to update practice content');
+      }
+    },
+
+    async updateContentOrder(
+      moduleId: number,
+      contents: { id: number; order: number }[]
+    ) {
+      this.loading = true;
+      try {
+        await api.put(
+          `/modules/${moduleId}/contents/update-order`,
+          { contents },
+          {
+            headers: {
+              Authorization: `Bearer ${qCookies.get('token')}`,
+            },
+          }
+        );
+        // After successful update, re-fetch contents to ensure the store is in sync with the backend
+        await this.fetchContents(moduleId);
+      } catch (error) {
+        this.error = 'Failed to update content order';
+        throw error;
+      } finally {
+        this.loading = false;
       }
     },
 
@@ -329,10 +362,18 @@ export const useModuleContentStore = defineStore('moduleContent', {
       } catch (error) {
         if (error instanceof AxiosError) {
           let errorMessage = 'Failed to submit assignment';
-          if (error.response && error.response.data && error.response.data.errors) {
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.errors
+          ) {
             const errors = error.response.data.errors;
             errorMessage = Object.values(errors).flat().join(', ');
-          } else if (error.response && error.response.data && error.response.data.message) {
+          } else if (
+            error.response &&
+            error.response.data &&
+            error.response.data.message
+          ) {
             errorMessage = error.response.data.message;
           }
           throw new Error(errorMessage);

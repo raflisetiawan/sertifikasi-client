@@ -29,11 +29,13 @@ import { qCookies } from 'src/boot/cookies';
 interface Certificate {
   id: number;
   course_id: number;
-  course_name: string;
   certificate_number: string;
   certificate_path: string;
   certificate_url: string;
   completed_at: string;
+  course: {
+    name: string;
+  };
 }
 
 export default defineComponent({
@@ -55,7 +57,7 @@ export default defineComponent({
         name: 'course_name',
         align: 'left',
         label: 'Course Name',
-        field: 'course_name',
+        field: (row) => row.course.name,
         sortable: true,
       },
       {

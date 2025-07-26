@@ -48,7 +48,10 @@
 
               <q-input outlined type="text" v-model="registerCourseForm.priceRupiah" lazy-rules label="Biaya *" disable>
                 <template v-slot:prepend>
-                  <div class="text-subtitle2">Rp.</div>
+                  <div class="text-subtitle2">
+                    <template v-if="Number(course.price) === 0">Gratis</template>
+                    <template v-else>Rp.</template>
+                  </div>
                 </template>
               </q-input>
             </div>
@@ -57,7 +60,8 @@
           <div class="row justify-between q-mt-lg">
             <q-btn flat color="grey" label="Kembali" @click="$router.back()" />
             <q-btn color="primary" type="submit" :loading="loading">
-              Lanjut ke Pembayaran
+              <span v-if="course.price > 0">Lanjut ke Pembayaran</span>
+              <span v-else>Daftar Sekarang</span>
               <template v-slot:loading>
                 <q-spinner-hourglass class="on-left" />
                 Memproses...
@@ -68,7 +72,7 @@
       </q-step>
 
       <!-- Step 2: Payment -->
-      <q-step :name="2" title="Pembayaran" icon="payment">
+      <q-step v-if="course.price > 0" :name="2" title="Pembayaran" icon="payment">
         <div class="payment-container q-mt-md">
           <div class="text-h6 q-mb-md">
             <q-icon name="payment" class="q-mr-sm" />
@@ -87,12 +91,12 @@
       <q-step :name="3" title="Berhasil" icon="check_circle">
         <div class="column items-center q-pa-lg">
           <q-icon name="check_circle" color="positive" size="4em" />
-          <div class="text-h5 q-mt-md text-positive">Pembayaran Berhasil!</div>
+          <div class="text-h5 q-mt-md text-positive">Pendaftaran Berhasil!</div>
           <div class="text-subtitle1 q-mt-sm text-center">
             Terima kasih telah mendaftar kursus {{ course.name }}
           </div>
           <div class="text-subtitle2 q-mt-md text-grey-7">
-            Detail pembayaran telah dikirim ke email Anda
+            Anda sekarang dapat mengakses materi kursus.
           </div>
           <q-btn color="primary" label="Lihat Kelas" class="q-mt-lg"
             @click="router.push({ name: 'dashboard.courses.show', params: { id: route.params.id } })" />
@@ -109,8 +113,14 @@
         </q-card-section>
 
         <q-card-section>
-          Anda akan mendaftar kursus <strong>{{ course.name }}</strong> dengan biaya
-          <strong>{{ registerCourseForm.priceRupiah }}</strong>. Lanjutkan?
+          Anda akan mendaftar kursus <strong>{{ course.name }}</strong>.
+          <span v-if="course.price > 0">
+            Dengan biaya <strong>{{ registerCourseForm.priceRupiah }}</strong>.
+          </span>
+          <span v-else>
+            Kursus ini <strong>Gratis</strong>.
+          </span>
+          Lanjutkan?
         </q-card-section>
 
         <q-card-actions align="right">
@@ -131,7 +141,7 @@ import { useEmail, useRequired, useName, usePhoneNumber } from 'src/composables/
 import { useUserStore } from 'src/stores/user';
 import { useMetaTitle } from 'src/composables/meta';
 import { useNotify } from 'src/composables/notifications';
-import toRupiah from '@develoka/angka-rupiah-js';
+import { useFormatters } from 'src/composables/useFormatters';
 import { getMidtransErrorMessage } from 'src/models/midtrans';
 import { useRegistrationStore } from 'src/stores/registration';
 import type { PaymentResult, PaymentError } from 'src/models/payment';
@@ -174,6 +184,8 @@ const route = useRoute();
 const router = useRouter();
 const step = ref(parseInt(route.query.step as string) || 1);
 const loading = ref<boolean>(false);
+const { formatPrice } = useFormatters();
+
 const course = ref<Course>({
   id: 0,
   name: '',
@@ -196,7 +208,7 @@ const registerCourseForm = ref<CreateRegisterForm>({
   name: userName,
   phone: userPhone,
   price: 0,
-  priceRupiah: 0,
+  priceRupiah: '0', // ubah tipe di model jika perlu
 })
 
 const { params: routeParams } = useRoute();
@@ -218,17 +230,34 @@ const confirmSubmit = () => {
 }
 
 const onSubmit = async () => {
+  loading.value = true;
+  showConfirmDialog.value = false;
+
   try {
-    loading.value = true;
+    // If course is free
+    if (course.value.price === 0) {
+      const response = await registrationStore.registerForCourse(Number(route.params.id));
+      // Untuk kursus gratis, backend bisa mengembalikan enrollment langsung, atau hanya registration dengan status 'active'
+      if ((response as any).enrollment || (response.registration && response.registration.status === 'active')) {
+        useNotify('Pendaftaran berhasil! Anda sekarang terdaftar di kursus ini.', 'positive');
+        step.value = 3; // Go to success step
+      } else {
+        // This case should ideally not happen for free courses based on backend logic
+        handleError(new Error('Gagal mendapatkan data enrollment untuk kursus gratis.'));
+      }
+      return;
+    }
+
+    // --- Paid Course Logic (existing logic) ---
     // Create registration
-    const registration = await registrationStore.registerForCourse(
-      Number(route.params.id)
-    );
+    const registrationData = await registrationStore.registerForCourse(Number(route.params.id));
+    const registrationId = registrationData.registration.id;
+
 
     // Create payment
     const amount = course.value.price; // Use the original price directly
     const payment = await registrationStore.createPayment(
-      registration.id,
+      registrationId,
       amount
     );
 
@@ -247,7 +276,6 @@ const handlePayment = (token: string | null) => {
     return;
   }
 
-  showConfirmDialog.value = false;
   step.value = 2;
 
   const existingContainer = document.getElementById('snap-container');
@@ -342,23 +370,31 @@ onMounted(async () => {
   try {
     bar.value.start()
     const response = await courseStore.showCourse(routeParams.id)
-    course.value = { ...response.data, priceRupiah: toRupiah(response.data.price) }
-    registerCourseForm.value.priceRupiah = toRupiah(course.value.price);
+
+    // Ensure price is correctly handled as a number
+    const courseData = response.data;
+    courseData.price = Number(courseData.price);
+    course.value = { ...courseData };
+
+    registerCourseForm.value.priceRupiah = formatPrice(course.value.price);
+
     const storedToken = localStorage.getItem('paymentToken');
-    if (storedToken && step.value === 2) {
-      showPayment.value = true;
-      initializeSnapPayment(storedToken);
-    } else if (storedToken && step.value === 1) {
-      step.value = 2;
-      showPayment.value = true;
-      initializeSnapPayment(storedToken);
+    // Only attempt to resume payment if the course is not free
+    if (course.value.price > 0 && storedToken) {
+      if (step.value === 2) {
+        showPayment.value = true;
+        initializeSnapPayment(storedToken);
+      } else if (step.value === 1) {
+        step.value = 2;
+        showPayment.value = true;
+        initializeSnapPayment(storedToken);
+      }
     }
   } catch (error) {
 
   } finally {
     bar.value.stop();
   }
-
 })
 
 onUnmounted(() => {
