@@ -1,14 +1,5 @@
 import { Trainer } from './trainer';
-
-export interface LiveSession {
-  id?: number;
-  title: string;
-  description: string;
-  start_time: string;
-  end_time: string;
-  meeting_link: string;
-  meeting_password?: string;
-}
+import { LiveSession } from './live-session';
 
 export interface CourseForm {
   name: string;
@@ -49,6 +40,7 @@ export interface Courses {
   created_at?: string;
   updated_at?: string;
   trainers?: Trainer[];
+  live_sessions?: LiveSession[];
 }
 
 export interface CourseForUpdate extends Courses {

@@ -313,7 +313,7 @@ const onSubmit = async () => {
       message: 'Kelas berhasil diperbarui!',
       icon: 'check_circle',
     });
-    router.push({ name: 'AdminCourseListPage' });
+    router.push({ name: 'AdminCoursePage' });
   } catch (error) {
     console.error(error);
     $q.notify({

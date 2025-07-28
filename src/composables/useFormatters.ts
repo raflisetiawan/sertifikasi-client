@@ -6,6 +6,13 @@ export function useFormatters() {
     return dateString ? date.formatDate(dateString, 'D MMMM YYYY') : '-';
   };
 
+  const formatTime = (timeString: string | undefined | null): string => {
+    if (!timeString) return '-';
+    // Assuming timeString is in 'HH:mm:ss' or 'HH:mm' format
+    const [hours, minutes] = timeString.split(':');
+    return `${hours}:${minutes}`;
+  };
+
   const formatCurrency = (amount: string | undefined | null): string => {
     return amount ? toRupiah(amount) : 'Rp 0';
   };
@@ -22,6 +29,7 @@ export function useFormatters() {
 
   return {
     formatDate,
+    formatTime,
     formatCurrency,
     formatPrice,
   };
