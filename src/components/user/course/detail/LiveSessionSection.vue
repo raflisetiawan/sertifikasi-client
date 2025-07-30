@@ -27,7 +27,8 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
+import { QCard, QCardSection, QSeparator, QIcon } from 'quasar';
 import { defineProps } from 'vue';
 import { date } from 'quasar';
 import { Courses } from 'src/models/course';
@@ -40,16 +41,18 @@ interface Props {
 defineProps<Props>();
 
 const formatDateTimeRange = (session: LiveSession): string => {
-  const startDateTimeStr = `${session.start_date} ${session.start_time}`;
-  const endDateTimeStr = `${session.end_date} ${session.end_time}`;
+  const startDateTime = new Date(session.start_time);
+  const endDateTime = new Date(session.end_time);
 
-  const mask = 'YYYY-MM-DD HH:mm:ss';
+  const options: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  };
 
-  const startDateTime = date.extractDate(startDateTimeStr, mask);
-  const endDateTime = date.extractDate(endDateTimeStr, mask);
+  const formattedStartDate = startDateTime.toLocaleDateString('id-ID', options);
+  const formattedEndDate = endDateTime.toLocaleDateString('id-ID', options);
 
-  const formattedStartDate = date.formatDate(startDateTime, 'D MMMM YYYY');
-  const formattedEndDate = date.formatDate(endDateTime, 'D MMMM YYYY');
   const formattedStartTime = date.formatDate(startDateTime, 'HH:mm');
   const formattedEndTime = date.formatDate(endDateTime, 'HH:mm');
 
@@ -62,10 +65,12 @@ const formatDateTimeRange = (session: LiveSession): string => {
 
 const isSessionActive = (session: LiveSession): boolean => {
   const now = new Date();
-  const startDateTime = date.extractDate(`${session.start_date} ${session.start_time}`, 'YYYY-MM-DD HH:mm:ss');
-  const endDateTime = date.extractDate(`${session.end_date} ${session.end_time}`, 'YYYY-MM-DD HH:mm:ss');
+  const startDateTime = new Date(session.start_time);
+  const endDateTime = new Date(session.end_time);
 
-  return date.isBetweenDates(now, startDateTime, endDateTime, { inclusive: true });
+  return date.isBetweenDates(now, startDateTime, endDateTime, {
+    inclusive: true,
+  });
 };
 </script>
 

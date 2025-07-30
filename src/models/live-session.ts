@@ -5,11 +5,11 @@ export interface LiveSession {
   course_id: number;
   title: string;
   description: string;
-  start_date: string;
-  end_date: string;
+  start_date?: string;
+  end_date?: string;
   start_time: string;
   end_time: string;
-  join_url: string;
+  join_url?: string;
   meeting_link: string;
   meeting_password?: string | null;
   created_at?: string;

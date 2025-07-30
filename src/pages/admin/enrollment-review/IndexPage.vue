@@ -113,7 +113,7 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted, watch } from 'vue';
 import { api } from 'src/boot/axios';
-import { useQuasar, QTableColumn } from 'quasar';
+import { useQuasar, QTableColumn, date } from 'quasar';
 import { qCookies } from 'src/boot/cookies';
 
 interface ModuleProgress {
@@ -229,6 +229,7 @@ export default defineComponent({
         label: 'Reviewed At',
         field: 'admin_reviewed_at',
         sortable: true,
+        format: (val) => (val ? date.formatDate(val, 'D MMMM YYYY HH:mm') : '-'),
       },
       {
         name: 'actions',
